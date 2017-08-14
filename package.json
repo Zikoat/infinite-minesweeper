@@ -1,0 +1,25 @@
+{
+  "name": "infinite-minesweeper",
+  "version": "0.3.0",
+  "description": "An infinite, open source, minesweeper implementation. Perfect for creating bots, and based on borbit's mienfield.com",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zikoat/infinite-minesweeper.git"
+  },
+  "keywords": [
+    "mines",
+    "minesweeper",
+    "infinite",
+    "minefield"
+  ],
+  "author": "Sigurd Schoeler",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Zikoat/infinite-minesweeper/issues"
+  },
+  "homepage": "https://github.com/Zikoat/infinite-minesweeper#readme"
+}
