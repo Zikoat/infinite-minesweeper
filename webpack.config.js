@@ -14,6 +14,7 @@ module.exports = {
 	plugins: [new HtmlWebpackPlugin({
 			title: "change this meme"
 		})],
+	devtool: "inline-source-map",
 	devServer: {
 		contentBase: "./dist"
 	}
