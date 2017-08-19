@@ -2,9 +2,12 @@
   "name": "infinite-minesweeper",
   "version": "0.3.0",
   "description": "An infinite, open source, minesweeper implementation. Perfect for creating bots, and based on borbit's mienfield.com",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "module": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "start": "npm run build && webpack-dev-server --open"
   },
   "repository": {
     "type": "git",
@@ -21,5 +24,13 @@
   "bugs": {
     "url": "https://github.com/Zikoat/infinite-minesweeper/issues"
   },
-  "homepage": "https://github.com/Zikoat/infinite-minesweeper#readme"
+  "homepage": "https://github.com/Zikoat/infinite-minesweeper#readme",
+  "devDependencies": {
+    "html-webpack-plugin": "^2.30.1",
+    "webpack": "^3.5.4",
+    "webpack-dev-server": "^2.7.1"
+  },
+  "dependencies": {
+    "lodash": "^4.17.4"
+  }
 }
