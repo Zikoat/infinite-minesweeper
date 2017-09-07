@@ -3,6 +3,8 @@
  */
 
 import * as PIXI from "pixi.js";
+import {load} from "./Textures";
+
 
 class CellSprite extends PIXI.Container{ // class for creating and updating sprites
 	
@@ -29,68 +31,54 @@ class CellSprite extends PIXI.Container{ // class for creating and updating spri
 	}
 	
 	chooseTexture(cell){
-		var textures = {};
+		var texture = {};
 		
 		if(cell.isOpen) {
-			textures.back = tex.open;
-			if(cell.isMine) textures.front = tex.mineWrong;
-			else textures.front = tex[cell.value()];
+			texture.back = Textures.open;
+			if(cell.isMine) texture.front = Textures.mineWrong;
+			else texture.front = Textures.numbers[cell.value()];
 		} else {
-			textures.back = tex.closed;
-			textures.front = cell.isFlagged ? tex.flag : PIXI.Texture.EMPTY;
+			texture.back = Textures.closed;
+			texture.front = cell.isFlagged ? Textures.flag : PIXI.Texture.EMPTY;
 		}
-		return textures;
+		return texture;
 	}
 }
 
-class FieldRenderer /*extends PIXI.Application*/ {
+export default class FieldRenderer /*extends PIXI.Application*/ {
 	constructor(field){
-	
+		defaultField = field;
+		load().then(setup);
 	}
 }
 
-// global variables
 var app = new PIXI.Application(800, 600, {backgroundColor : 0x1099bb});
+
 document.body.appendChild(app.view);
-
 app.renderer.autoResize = true;
-app.renderer.resize(window.innerWidth, window.innerHeight);
 
-var fieldContainer = new PIXI.Container();
+app.renderer.resize(window.innerWidth, window.innerHeight);
+self.fieldContainer = new PIXI.Container();
+
+var background;
 var clickHandler = new PIXI.Container();
 clickHandler.interactive = true;
 app.stage.addChild(clickHandler);
+var defaultField;
 
-var f;
-var tex = {};
 var width;
 var counter = 0;
+var Textures;
 
-PIXI.loader
-	.add("closed", "assets/closed.png")
-	.add("flag", "assets/flag.png")
-	.add("mine","assets/mine.png")
-	.add("mineWrong","assets/mineWrong.png")
-	.add("open","assets/open.png")
-	.add("1","assets/1.png")
-	.add("2","assets/2.png")
-	.add("3","assets/3.png")
-	.add("4","assets/4.png")
-	.add("5","assets/5.png")
-	.add("6","assets/6.png")
-	.add("7","assets/7.png")
-	.add("8","assets/8.png")
-	.load(setup);
-
-export function updateCell(x, y){
+export function updateCell(field, x, y){
 	// debugging
 	counter++;
 	if(counter % 1000 === 100){
 		console.log(`update counter is ${counter}, checking field`);
-		f.checkForErrors();
+		field.checkForErrors();
 	}
 	
-	let cell = f.getCell(x, y);
+	let cell = field.getCell(x, y);
 	
 	if(cell.sprite===undefined){
 		cell.sprite = new CellSprite(cell);
@@ -101,21 +89,20 @@ export function updateCell(x, y){
 		cell.sprite.update(cell);
 	}
 }
+function updateAll(){
+	defaultField.getAll().forEach(cell=>updateCell(defaultField, cell));
+}
+function setup(Tex){
 
-function setup(loader, resources){
-	tex.closed = resources.closed.texture;
-	tex.flag = resources.flag.texture;
-	tex.mine = resources.mine.texture;
-	tex.mineWrong = resources.mineWrong.texture;
-	tex.open = resources.open.texture;
-	for(let i = 1; i <= 8; i++) tex[i] = resources[i.toString()].texture;
-	width = tex.closed.width;
-	window.background = new PIXI.extras.TilingSprite(
-		tex.closed,
+	width = Tex.closed.width;
+	
+	background = new PIXI.extras.TilingSprite(
+		Tex.closed,
 		app.renderer.width,
 		app.renderer.height
 	);
-	window.background.tint = 0x4fe1ff;
+	background.tint = 0x4fe1ff;
+	background.alpha = 0.5;
 	
 	clickHandler.addChildAt(background, 0);
 	clickHandler.addChildAt(fieldContainer, 1);
@@ -128,13 +115,8 @@ function setup(loader, resources){
 		.on("rightclick", onRightClick);
 	
 	document.addEventListener('contextmenu', event => event.preventDefault());
-	
-	// gameplay
-	f = new Field(0.3, 7);
-	centerField(0,0);
-	f.open(0,0);
-	//console.info(runBotSimple(f));
-	
+	Textures = Tex;
+	updateAll();
 }
 
 function onDragStart(event) {
@@ -153,8 +135,9 @@ function onDragEnd() {
 		this.data = null;
 		let x = Math.floor(this.dragPoint.x / width);
 		let y = Math.floor(this.dragPoint.y / width);
-		f.open(x, y);
+		let openedCells = defaultField.open(x, y);
 		console.log("clicked "+x+", "+y);
+		load().then(openedCells.forEach(cell=>updateCell(defaultField, cell)));
 	}
 }
 
@@ -190,5 +173,5 @@ function onRightClick(event){
 	let x = Math.floor(position.x / width);
 	let y = Math.floor(position.y / width);
 	
-	f.flag(x,y);
+	defaultField.flag(x,y);
 }

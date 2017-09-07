@@ -2,7 +2,6 @@
  * Created by sisc0606 on 19.08.2017.
  */
 import Cell from "./Cell";
-import {updateCell} from "./FieldRenderer";
 
 export default class Field {
 	// do not call any of the cell's functions in the field class, to prevent
@@ -23,7 +22,7 @@ export default class Field {
 			[0,-1],
 			[1,-1],
 			[-1,0],
-			// counting with the centerpiece makes bombs not have a value of 0, and open its neigbhors
+			// counting with the centerpiece makes bombs not have a value of 0, and open its neighbors
 			//[0,0],
 			[1,0],
 			[-1,1],
@@ -49,41 +48,25 @@ export default class Field {
 		return this.field[x][y];
 	}
 	open(x, y){
+		// returns an array of all the opened cells: [Cell, Cell, Cell, ...]
 		
-		if(this.gameOver){
-			console.log("game is over, cant open");
-			return;
-		}
+		if(!this.isEligibleToOpen(x, y)) return [];
+		
 		if(this.pristine) this.setSafeCells(x, y);
 		
-		// we check if the cell is generated if we want to change the cell
 		let cell = this.getCell(x,y);
+		
+		//todo better generation
 		if(cell.isMine === undefined){
-			
 			cell = this.generateCell(x, y, cell.isFlagged);
-			// we call the function with cell.isFlagged so that the flagged state
-			// gets carried over (not implemented)
-		}
-		
-		if(cell.isOpen){
-			// debugging
-			//console.log(x, y, "is already open, cant open");
-			return;
-		}
-		if(cell.isOpen) console.log(x, y, "is open, and updating");
-		
-		if(cell.isFlagged){
-			console.log(x, y, "is flagged, cant open");
-			return;
 		}
 		
 		cell.isOpen = true;
+		
 		if(cell.isMine){
 			console.log("game over, you stepped on a mine: ("+x+", "+y+")");
 			this.gameOver = true;
 		}
-		// debugging
-		//console.log("opening "+x+","+y);
 		
 		// generating of neighbors. we generate the cells when a neighbor is opened
 		let neighbors = cell.getNeighbors();
@@ -94,25 +77,20 @@ export default class Field {
 				this.generateCell(neighbors[i].x, neighbors[i].y);
 			}
 		}
-		// debugging
-		// console.log(x, y, "value:", cell.value());
+		
+		let openedCells = [];
+		openedCells.push(cell);
 		
 		// floodfill
 		if(cell.value() === 0){
-			// debugging
-			//console.log("should open", x, y, "'s neighbors");
 			cell.getNeighbors() // get all the neighbors
-				.filter(cell=>!cell.isOpen) // filter the array, so only the closed neighbors are in it
-				.forEach(cell=>cell.open()); // open all the cells in the array
+				.filter(neighbor=>!neighbor.isOpen) // filter the array, so only the closed neighbors are in it
+				.forEach(closedNeighbor=>{
+					let openedNeighbors = closedNeighbor.open();
+					openedNeighbors.forEach(openedNeighbor=>openedCells.push(openedNeighbor));
+				});
 		}
-		
-		// call the update method which pixi uses to draw things.
-		// the function is in another file.
-		// todo: make this not dependent of the funcion in the game script.
-		updateCell(x, y);
-		
-		// debugging
-		//this.checkForErrors();
+		return openedCells;
 	}
 	flag(x, y){
 		if(this.gameOver){
@@ -125,8 +103,8 @@ export default class Field {
 		if(!cell.isOpen){
 			cell.isFlagged = !cell.isFlagged;
 			//console.log("flagged: ", x, y);
-			updateCell(x, y);
 		} //else console.log("cant flag, is open", cell.x, cell.y);
+		return cell;
 	}
 	getNeighbors(x, y){
 		let neighbors = [];
@@ -161,6 +139,7 @@ export default class Field {
 		// todo: delete all of the rows, update all of the cells
 	}
 	getAll(){// returns all the cells, in a 1-dimensonal array, for easy iteration
+		// includes all af the open cells, and their neighbors(the border)
 		let cells = [];
 		let rows = Object.keys(this.field);
 		for (var i = 0; i < rows.length; i++) {
@@ -195,19 +174,27 @@ export default class Field {
 		}
 		
 	}
-	setSafeCells(x0, y0){ // opens a circle of tiles around a point
+	isEligibleToOpen(x, y){
+		if(this.gameOver) return false;
+		let cell = this.getCell(x, y);
+		if(cell.isFlagged) return false;
+		if(cell.isOpen)	return false;
+		return true;
+	}
+	setSafeCells(x0, y0){
 		this.pristine = false;
-		var r = this.safeRadius;
+		let r = this.safeRadius;
+		
 		console.log("safeRadius", this.safeRadius);
-		for (var dy = Math.floor(-r); dy < Math.ceil(r); dy++) {
-			for (var dx = Math.floor(-r); dx < Math.ceil(r); dx++) {
+		
+		for (let dy = Math.floor(-r); dy < Math.ceil(r); dy++) {
+			for (let dx = Math.floor(-r); dx < Math.ceil(r); dx++) {
+				// if the cell is in a circle with radius r
 				if(r**2>dx**2+dy**2){
 					let x = x0+dx;
 					let y = y0+dy;
 					// we generate the cell, and overwrite the isMine state
 					this.generateCell(x, y, false, false);
-					// debugging
-					//console.log(x, y, "is safe");
 				}
 				// one-lined version
 				// if(r**2>dx**2+dy**2) this.open(x0+dx, y0+dx);

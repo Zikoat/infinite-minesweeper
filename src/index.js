@@ -1,19 +1,11 @@
 import _ from 'lodash';
-import { square, diag } from './lib';
 import Field from "./Field";
+import FieldRenderer from "./FieldRenderer";
 
-function component() {
-	var element = document.createElement('div');
-	
-	// Lodash, now imported by this script
-	element.innerHTML = _.join(['owo', "does", 'webpack', "work"], ' ');
-	
-	return element;
-}
+import css from "./css/stylesheet.css";
 
-console.log(square(11));
-
-const f = new Field();
+self.f = new Field(0.5, 2);
 f.open(1,1);
-
-document.body.appendChild(component());
+//f.centerField(1,1);
+f.getAll();
+var renderer = new FieldRenderer(f);

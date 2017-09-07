@@ -17,12 +17,12 @@ export default class Cell {
 	
 	open(){// opens this cell
 		if(this.parent===undefined) console.error("i don't know my parents", this);
-		this.parent.open(this.x, this.y);
+		return this.parent.open(this.x, this.y);
 	}
 	
 	flag(){// flags this cell
 		if(this.parent===undefined) console.error("i don't know my parents", this);
-		this.parent.flag(this.x, this.y);
+		return this.parent.flag(this.x, this.y);
 	}
 	getNeighbors(){//returns an array of this cell's neighbors
 		if(this.parent===undefined) console.error("i don't know my parents", this);

@@ -8,3 +8,9 @@ export function square(x) {
 export function diag(x, y) {
 	return sqrt(square(x) + square(y));
 }
+
+export let changeThis;
+
+setTimeout(function() {
+	changeThis += 20;
+}, 100);

@@ -1,7 +1,9 @@
 /**
  * Created by sisc0606 on 19.08.2017.
  */
+
 import * as PIXI from "pixi.js";
+
 import mine from "./assets/mine.png";
 import closed from "./assets/closed.png";
 import flag from "./assets/flag.png";
@@ -17,28 +19,52 @@ import six      from "./assets/6.png";
 import seven    from "./assets/7.png";
 import eight    from "./assets/8.png";
 
-const numberImages = {
-	1:one,
-	2:two,
-	3:three,
-	4:four,
-	5:five,
-	6:six,
-	7:seven,
-	8:eight
-};
 
-let numberTextures = {};
+let Textures;
+let loadingPromise;
 
-for(let i = 1; i <= 8; i++) {
-	numberTextures[i] = PIXI.Texture.fromImage(numberImages[i]);
+function processTextures(){
+	return new Promise((resolve, reject)=>{
+		PIXI.loader
+			.add("closed",closed)
+			.add("flag",flag)
+			.add("mine",mine)
+			.add("mineWrong",mineWrong)
+			.add("open",open)
+			
+			.add("1",one)
+			.add("2",two)
+			.add("3",three)
+			.add("4",four)
+			.add("5",five)
+			.add("6",six)
+			.add("7",seven)
+			.add("8",eight)
+			
+			.load((loader, resources) => {
+				resolve(resources);
+			});
+	});
 }
 
-export default {
-	mine: PIXI.Texture.fromImage(mine),
-	closed: PIXI.Texture.fromImage(closed),
-	flag: PIXI.Texture.fromImage(flag),
-	mineWrong: PIXI.Texture.fromImage(mineWrong),
-	open: PIXI.Texture.fromImage(open),
-	numbers: numberTextures
-};
+export function load() {
+	if(!loadingPromise) {
+		loadingPromise = processTextures().then((resources)=>{
+			Textures = {
+				mine: resources.mine.texture,
+				closed: resources.closed.texture,
+				flag: resources.flag.texture,
+				mineWrong: resources.mineWrong.texture,
+				open: resources.open.texture,
+			};
+			
+			for(let i = 1; i <= 8; i++) Textures[i] = resources[i.toString()].texture;
+			
+			console.log("done loading");
+			
+			return Textures;
+		}).catch(reason=>console.error(reason));
+	}
+	
+	return loadingPromise;
+}
