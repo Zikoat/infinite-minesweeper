@@ -50,6 +50,9 @@ export default class FieldRenderer /*extends PIXI.Application*/ {
 		defaultField = field;
 		load().then(setup);
 	}
+	updateCell(x,y){
+		updateCell(defaultField, x, y);
+	}
 }
 
 var app = new PIXI.Application(800, 600, {backgroundColor : 0x1099bb});
@@ -58,7 +61,7 @@ document.body.appendChild(app.view);
 app.renderer.autoResize = true;
 
 app.renderer.resize(window.innerWidth, window.innerHeight);
-self.fieldContainer = new PIXI.Container();
+var fieldContainer = new PIXI.Container();
 
 var background;
 var clickHandler = new PIXI.Container();
@@ -89,11 +92,18 @@ export function updateCell(field, x, y){
 		cell.sprite.update(cell);
 	}
 }
-function updateAll(){
-	defaultField.getAll().forEach(cell=>updateCell(defaultField, cell.x, cell.y));
+function updateCells(array){
+	array.forEach(cell=>{
+		updateCell(defaultField, cell.x, cell.y);
+	});
 }
-function setup(Tex){
+function updateAllCells(field){
+	field.getAll()
+		.filter(cell=>cell.isOpen)
+		.forEach(cell=>updateCell(field, cell.x, cell.y));
+}
 
+function setup(Tex){
 	width = Tex.closed.width;
 	
 	background = new PIXI.extras.TilingSprite(
@@ -102,7 +112,6 @@ function setup(Tex){
 		app.renderer.height
 	);
 	background.tint = 0x4fe1ff;
-	background.alpha = 0.5;
 	
 	clickHandler.addChildAt(background, 0);
 	clickHandler.addChildAt(fieldContainer, 1);
@@ -116,7 +125,8 @@ function setup(Tex){
 	
 	document.addEventListener('contextmenu', event => event.preventDefault());
 	Textures = Tex;
-	updateAll();
+	updateAllCells(defaultField);
+	centerField(0,0);
 }
 
 function onDragStart(event) {
@@ -135,9 +145,8 @@ function onDragEnd() {
 		this.data = null;
 		let x = Math.floor(this.dragPoint.x / width);
 		let y = Math.floor(this.dragPoint.y / width);
-		let openedCells = defaultField.open(x, y);
+		updateCells(defaultField.open(x, y));
 		console.log("clicked "+x+", "+y);
-		load().then(openedCells.forEach(cell=>updateCell(defaultField, cell)));
 	}
 }
 
