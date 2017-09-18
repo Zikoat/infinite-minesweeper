@@ -8,4 +8,4 @@ self.f = new Field(0.5, 2);
 f.open(1,1);
 //f.centerField(1,1);
 f.getAll();
-var renderer = new FieldRenderer(f);
+self.renderer = new FieldRenderer(f);

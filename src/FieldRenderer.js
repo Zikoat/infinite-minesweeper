@@ -36,7 +36,7 @@ class CellSprite extends PIXI.Container{ // class for creating and updating spri
 		if(cell.isOpen) {
 			texture.back = Textures.open;
 			if(cell.isMine) texture.front = Textures.mineWrong;
-			else texture.front = Textures.numbers[cell.value()];
+			else texture.front = Textures[cell.value()];
 		} else {
 			texture.back = Textures.closed;
 			texture.front = cell.isFlagged ? Textures.flag : PIXI.Texture.EMPTY;
@@ -90,7 +90,7 @@ export function updateCell(field, x, y){
 	}
 }
 function updateAll(){
-	defaultField.getAll().forEach(cell=>updateCell(defaultField, cell));
+	defaultField.getAll().forEach(cell=>updateCell(defaultField, cell.x, cell.y));
 }
 function setup(Tex){
 
@@ -174,4 +174,5 @@ function onRightClick(event){
 	let y = Math.floor(position.y / width);
 	
 	defaultField.flag(x,y);
+	updateCell(defaultField, x, y);
 }
