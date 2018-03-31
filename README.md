@@ -8,7 +8,9 @@ An infinite, open source, minesweeper implementation. Perfect for creating bots,
 
 ## Installation
 clone the git repository to your computer
+
 open your terminal, and change your directory to the cloned folder(`cd infinite-minesweeper`)
+
 run these commands: (be sure to have npm installed)
 ```
 npm install
