@@ -111,7 +111,7 @@ function setup(Tex){
 		app.renderer.width,
 		app.renderer.height
 	);
-	background.tint = 0x4fe1ff;
+	background.tint = 0xffffff;
 	
 	clickHandler.addChildAt(background, 0);
 	clickHandler.addChildAt(fieldContainer, 1);
