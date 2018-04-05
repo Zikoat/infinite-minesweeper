@@ -183,3 +183,15 @@ function onRightClick(event){
 	defaultField.flag(x,y);
 	updateCell(defaultField, x, y);
 }
+
+function moveViewTo(x, y) {
+
+}
+// todo add jsdoc comment: returns point, param event
+function getTileCoordsFromEvent(event) {
+	let position = event.data.getLocalPosition(fieldContainer);
+	
+	const x = Math.floor(position.x / width);
+	const y = Math.floor(position.y / width);
+	return {x: x, y: y};
+}

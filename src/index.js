@@ -5,7 +5,10 @@ import FieldRenderer from "./FieldRenderer";
 import css from "./css/stylesheet.css";
 
 self.f = new Field(0.15, 4);
+
 f.open(1,1);
-//f.centerField(1,1);
-f.getAll();
+//f.moveViewTo(1,1);
+
+f.getAll()
+
 self.renderer = new FieldRenderer(f);
