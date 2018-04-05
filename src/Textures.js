@@ -4,20 +4,20 @@
 
 import * as PIXI from "pixi.js";
 
-import mine from "./assets/mine.png";
-import closed from "./assets/closed.png";
-import flag from "./assets/flag.png";
-import mineWrong from "./assets/mineWrong.png";
-import open from "./assets/open.png";
+import mine from "./assets/default/mine.png";
+import closed from "./assets/default/closed.png";
+import flag from "./assets/default/flag.png";
+import mineWrong from "./assets/default/mineWrong.png";
+import open from "./assets/default/open.png";
 
-import one      from "./assets/1.png";
-import two      from "./assets/2.png";
-import three    from "./assets/3.png";
-import four     from "./assets/4.png";
-import five     from "./assets/5.png";
-import six      from "./assets/6.png";
-import seven    from "./assets/7.png";
-import eight    from "./assets/8.png";
+import one      from "./assets/default/1.png";
+import two      from "./assets/default/2.png";
+import three    from "./assets/default/3.png";
+import four     from "./assets/default/4.png";
+import five     from "./assets/default/5.png";
+import six      from "./assets/default/6.png";
+import seven    from "./assets/default/7.png";
+import eight    from "./assets/default/8.png";
 
 
 let Textures;
@@ -48,8 +48,10 @@ function processTextures(){
 }
 
 export function load() {
+	// if the loading has already started, return the same promise
 	if(!loadingPromise) {
 		loadingPromise = processTextures().then((resources)=>{
+			// extract the textures out from the resources we loaded
 			Textures = {
 				mine: resources.mine.texture,
 				closed: resources.closed.texture,
@@ -57,11 +59,11 @@ export function load() {
 				mineWrong: resources.mineWrong.texture,
 				open: resources.open.texture,
 			};
-			
-			for(let i = 1; i <= 8; i++) Textures[i] = resources[i.toString()].texture;
+			for(let i = 1; i <= 8; i++) {
+				Textures[i] = resources[i.toString()].texture;
+			}
 			
 			console.log("done loading");
-			
 			return Textures;
 		}).catch(reason=>console.error(reason));
 	}
