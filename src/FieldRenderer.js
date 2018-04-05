@@ -56,13 +56,11 @@ export default class FieldRenderer /*extends PIXI.Application*/ {
 }
 
 var app = new PIXI.Application(800, 600, {backgroundColor : 0x1099bb});
-
 document.body.appendChild(app.view);
 app.renderer.autoResize = true;
-
 app.renderer.resize(window.innerWidth, window.innerHeight);
-var fieldContainer = new PIXI.Container();
 
+var fieldContainer = new PIXI.Container();
 var background;
 var clickHandler = new PIXI.Container();
 clickHandler.interactive = true;
@@ -121,8 +119,9 @@ function setup(Tex){
 		.on('mouseup', onDragEnd)
 		.on('pointerupoutside', onDragEnd)
 		.on('pointermove', onDragMove)
-		.on("rightclick", onRightClick);
+		.on('rightclick', onRightClick);
 	
+	// disable right click context menu
 	document.addEventListener('contextmenu', event => event.preventDefault());
 	Textures = Tex;
 	updateAllCells(defaultField);
@@ -141,12 +140,14 @@ function onDragEnd() {
 		this.dragging = false;
 		this.data = null;
 	} else {
+		// if the mousebutton didnt move, it means the user clicked
 		this.dragging = false;
 		this.data = null;
 		let x = Math.floor(this.dragPoint.x / width);
 		let y = Math.floor(this.dragPoint.y / width);
+
+		console.log(`clicked ${x}, ${y}`);
 		updateCells(defaultField.open(x, y));
-		console.log("clicked "+x+", "+y);
 	}
 }
 
@@ -162,21 +163,18 @@ function onDragMove() {
 	}
 }
 /** center the field around a coordinate */
-function centerField(x,y){
-	if(x==="undefined") x=0;
-	if(y==="undefined") y=0;
-	
+function centerField (x = 0, y = 0) {
+	// x and y are tile coordinates
 	let centerX = app.renderer.width/2;
 	let centerY = app.renderer.height/2;
-	
 	let newX = -x*width + centerX;
 	let newY = -y*width + centerY;
+	// newX and newY are pixel-coordinates
 	fieldContainer.position.set(newX,newY);
 	background.tilePosition.set(newX,newY);
 }
 
 function onRightClick(event){
-	// reminder: use selector
 	let position = event.data.getLocalPosition(fieldContainer);
 	
 	let x = Math.floor(position.x / width);

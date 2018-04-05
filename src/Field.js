@@ -14,31 +14,30 @@ export default class Field {
 		// Field.restart()
 		this.pristine = true;
 		// todo: implement safeRadius
-		// makes the first click not press a mine, is a float and checks in a circle
+		// makes the first click not press a mine, radius is a float and checks in a circle
 		this.safeRadius = safeRadius;
 		this.gameOver = false;
+
 		this.neighborPosition = [
 			[-1,-1],
 			[0,-1],
 			[1,-1],
+			
 			[-1,0],
-			// counting with the centerpiece makes bombs not have a value of 0, and open its neighbors
 			//[0,0],
 			[1,0],
+
 			[-1,1],
 			[0,1],
 			[1,1]
 		];
 		
-		// todo: more options:
-		// generate on get or open neighbor
-		// count with itself
-		// permadeath
-		// opened mines counter
-		// opened cells
+		// todo someday: more options:
+		// non-permadeath
+		// opened mines/cells counter
 		// wrongly flagged cells
-		// dig up mines
-		// freeze
+		// overwrite mine state
+		// freeze mode
 	}
 	getCell(x, y){
 		// if the row or cell is not created, we will get an error: cant read property of undefined
@@ -49,9 +48,7 @@ export default class Field {
 	}
 	open(x, y){
 		// returns an array of all the opened cells: [Cell, Cell, Cell, ...]
-		
 		if(!this.isEligibleToOpen(x, y)) return [];
-		
 		if(this.pristine) this.setSafeCells(x, y);
 		
 		let cell = this.getCell(x,y);
@@ -62,7 +59,6 @@ export default class Field {
 		}
 		
 		cell.isOpen = true;
-		
 		if(cell.isMine){
 			console.log("game over, you stepped on a mine: ("+x+", "+y+")");
 			this.gameOver = true;
@@ -80,7 +76,6 @@ export default class Field {
 		
 		let openedCells = [];
 		openedCells.push(cell);
-		
 		// floodfill
 		if(cell.value() === 0){
 			cell.getNeighbors() // get all the neighbors
@@ -118,9 +113,7 @@ export default class Field {
 	generateCell(x, y, isFlagged = false, isMine = undefined){
 		
 		// if the row is not created yet, create the row
-		// if we didnt check this, we would get "cannot read property [column] of undefined"
 		if(!(x in this.field)) this.field[x] = {};
-		// if the cell is not created
 		if(!(y in this.field[x])) {
 			// here, ismine is being put to something else than undefined, which
 			// means isMine is undefined when the cell is not generated. this
