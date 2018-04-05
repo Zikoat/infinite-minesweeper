@@ -4,7 +4,7 @@ import FieldRenderer from "./FieldRenderer";
 
 import css from "./css/stylesheet.css";
 
-self.f = new Field(0.15, 4);
+self.f = new Field(0.20, 3);
 
 f.open(1,1);
 //f.moveViewTo(1,1);
