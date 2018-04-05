@@ -15,6 +15,12 @@ class CellSprite extends PIXI.Container{ // class for creating and updating spri
 		let textures = this.chooseTexture(cell);
 		let back = new PIXI.Sprite(textures.back);
 		let front = new PIXI.Sprite(textures.front);
+		
+		back.width = width;
+		back.height = width;
+		front.width = width;
+		front.height = width;
+
 		this.addChildAt(back, 0);
 		this.addChildAt(front, 1);
 		fieldContainer.addChild(this);
@@ -58,6 +64,7 @@ export default class FieldRenderer /*extends PIXI.Application*/ {
 var app = new PIXI.Application(800, 600, {backgroundColor : 0x1099bb});
 
 document.body.appendChild(app.view);
+//todo change scalemode
 app.renderer.autoResize = true;
 
 app.renderer.resize(window.innerWidth, window.innerHeight);
@@ -104,13 +111,15 @@ function updateAllCells(field){
 }
 
 function setup(Tex){
-	width = Tex.closed.width;
+	//width = Tex.closed.width;
 	
 	background = new PIXI.extras.TilingSprite(
 		Tex.closed,
 		app.renderer.width,
 		app.renderer.height
 	);
+	background.tileScale = width;
+	// todo fix doesnt render
 	background.tint = 0xffffff;
 	
 	clickHandler.addChildAt(background, 0);
