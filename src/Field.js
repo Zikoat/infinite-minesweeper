@@ -48,11 +48,35 @@ export default class Field {
 	}
 	open(x, y){
 		// returns an array of all the opened cells: [Cell, Cell, Cell, ...]
-		if(!this.isEligibleToOpen(x, y)) return [];
+		
+		
+		
 		if(this.pristine) this.setSafeCells(x, y);
-		
 		let cell = this.getCell(x,y);
-		
+
+		if(!this.isEligibleToOpen(x, y)){
+			if(!this.gameOver && cell.isOpen){
+				let neighbors = cell.getNeighbors();
+				let flagged_count = 0;
+				let mine_count = 0;
+				neighbors.forEach(neighbor => {
+					if(neighbor.isMine===undefined)this.generateCell(neighbor.x,neighbor.y);
+					if(neighbor.isMine) mine_count++;
+					if(neighbor.isFlagged) flagged_count++; 
+				});
+				if(flagged_count == mine_count){
+					let openedCells = [];
+					neighbors.filter(neighbor=>{
+						return !neighbor.isOpen && !neighbor.isFlagged;
+					}).forEach(neighbor=>{
+						let openedNeighbors = neighbor.open();
+						openedNeighbors.forEach(openedNeighbor=>openedCells.push(openedNeighbor));
+					});
+					return openedCells;
+				} 
+			}
+			return [];
+		}
 		//todo better generation
 		if(cell.isMine === undefined){
 			cell = this.generateCell(x, y, cell.isFlagged);
