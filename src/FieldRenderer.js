@@ -180,8 +180,8 @@ function onRightClick(event){
 	let x = Math.floor(position.x / width);
 	let y = Math.floor(position.y / width);
 	
-	defaultField.flag(x,y);
-	updateCell(defaultField, x, y);
+	
+	updateCells(defaultField.flag(x,y));
 }
 
 function moveViewTo(x, y) {
