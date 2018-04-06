@@ -58,13 +58,11 @@ export default class Field {
 			if(!this.gameOver && cell.isOpen){
 				let neighbors = cell.getNeighbors();
 				let flagged_count = 0;
-				let mine_count = 0;
 				neighbors.forEach(neighbor => {
 					if(neighbor.isMine===undefined)this.generateCell(neighbor.x,neighbor.y);
-					if(neighbor.isMine) mine_count++;
 					if(neighbor.isFlagged) flagged_count++; 
 				});
-				if(flagged_count == mine_count){
+				if(cell.value() == flagged_count){
 					let openedCells = [];
 					neighbors.filter(neighbor=>{
 						return !neighbor.isOpen && !neighbor.isFlagged;

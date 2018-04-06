@@ -25,7 +25,6 @@ class CellSprite extends PIXI.Container{ // class for creating and updating spri
 		let front = this.getChildAt(1);
 		
 		let textures = this.chooseTexture(cell);
-		
 		back.texture = textures.back;
 		front.texture = textures.front;
 	}
@@ -36,7 +35,8 @@ class CellSprite extends PIXI.Container{ // class for creating and updating spri
 		if(cell.isOpen) {
 			texture.back = Textures.open;
 			if(cell.isMine) texture.front = Textures.mineWrong;
-			else texture.front = Textures[cell.value()];
+			else if(cell.value()>0)texture.front = Textures[cell.value()];
+			else texture.front = Textures.open;
 		} else {
 			texture.back = Textures.closed;
 			texture.front = cell.isFlagged ? Textures.flag : PIXI.Texture.EMPTY;
