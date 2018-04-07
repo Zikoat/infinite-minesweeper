@@ -7,3 +7,18 @@ html, body {
 canvas {
 	image-rendering: pixelated;
 }
+
+.menu {
+    font-family: sans-serif;
+    border: 2px solid #696969;
+    background-color: #292929;
+    padding: 2px;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    color: lightgray;
+}
+
+a {
+	color:lightblue;
+}

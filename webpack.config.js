@@ -13,6 +13,9 @@ module.exports = {
 	},
 	plugins: [new HtmlWebpackPlugin({
 			title: "Minefield Resurrected",
+			filename: "index.html",
+			path: "./dist",
+			template: "./src/index.html",
 			favicon: 'src/assets/favicon.ico'
 		})],
 	devtool: "inline-source-map",
