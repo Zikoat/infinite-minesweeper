@@ -150,9 +150,9 @@ function onDragEnd() {
 		// if the mousebutton didnt move, it means the user clicked
 		this.dragging = false;
 		this.data = null;
+
 		let x = Math.floor(this.dragPoint.x / width);
 		let y = Math.floor(this.dragPoint.y / width);
-
 		console.log(`clicked ${x}, ${y}`);
 		updateCells(defaultField.open(x, y));
 	}

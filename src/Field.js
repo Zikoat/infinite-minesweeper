@@ -13,7 +13,6 @@ export default class Field {
 		// the field is pristine if no cells are opened, set this to true again with
 		// Field.restart()
 		this.pristine = true;
-		// todo: implement safeRadius
 		// makes the first click not press a mine, radius is a float and checks in a circle
 		this.safeRadius = safeRadius;
 		this.gameOver = false;
@@ -48,9 +47,6 @@ export default class Field {
 	}
 	open(x, y){
 		// returns an array of all the opened cells: [Cell, Cell, Cell, ...]
-		
-		
-		
 		if(this.pristine) this.setSafeCells(x, y);
 		let cell = this.getCell(x,y);
 
@@ -143,7 +139,6 @@ export default class Field {
 		return neighbors;
 	}
 	generateCell(x, y, isFlagged = false, isMine = undefined){
-		
 		// if the row is not created yet, create the row
 		if(!(x in this.field)) this.field[x] = {};
 		if(!(y in this.field[x])) {
@@ -197,7 +192,6 @@ export default class Field {
 			console.warn("mine dug up, but gameOver wasnt set");
 			this.gameOver = true;
 		}
-		
 	}
 	isEligibleToOpen(x, y){
 		if(this.gameOver) return false;
