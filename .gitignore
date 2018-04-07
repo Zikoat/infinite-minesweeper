@@ -91,6 +91,9 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
-
 .idea/*
+
 dist/
+
+# Sublime text Markdown preview plugin
+README.html
