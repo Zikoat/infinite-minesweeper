@@ -12,7 +12,8 @@ module.exports = {
 		path: path.resolve(__dirname, "dist"),
 	},
 	plugins: [new HtmlWebpackPlugin({
-			title: "change this meme"
+			title: "Minefield Resurrected",
+			favicon: 'src/assets/favicon.ico'
 		})],
 	devtool: "inline-source-map",
 	devServer: {
@@ -21,7 +22,7 @@ module.exports = {
 	module: {
 	     rules: [
 		     {
-		     	test: /\.(png|svg|jpg|gif)$/,
+		     	test: /\.(png|svg|jpg|gif|ico)$/,
 			     use:[
 			     	"file-loader"
 			     ]
