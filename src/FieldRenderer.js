@@ -59,6 +59,10 @@ var app = new PIXI.Application(800, 600, {backgroundColor : 0x1099bb});
 document.body.appendChild(app.view);
 app.renderer.autoResize = true;
 app.renderer.resize(window.innerWidth, window.innerHeight);
+PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+window.addEventListener('resize', function(event){
+	app.renderer.resize(window.innerWidth, window.innerHeight);
+});
 
 var fieldContainer = new PIXI.Container();
 var background;
@@ -154,11 +158,11 @@ function onDragEnd() {
 function onDragMove() {
 	if (this.dragging) {
 		var newPosition = this.data.getLocalPosition(this.parent);
-		let x = newPosition.x - this.dragPoint.x;
-		let y = newPosition.y - this.dragPoint.y;
-		
+		let x = Math.floor( newPosition.x - this.dragPoint.x );
+		let y = Math.floor( newPosition.y - this.dragPoint.y );
 		fieldContainer.position.set(x,y);
 		background.tilePosition.set(x,y);
+
 		this.hasDragged = true;
 	}
 }
@@ -167,8 +171,8 @@ function centerField (x = 0, y = 0) {
 	// x and y are tile coordinates
 	let centerX = app.renderer.width/2;
 	let centerY = app.renderer.height/2;
-	let newX = -x*width + centerX;
-	let newY = -y*width + centerY;
+	let newX = Math.floor( -x*width + centerX );
+	let newY = Math.floor( -y*width + centerY );
 	// newX and newY are pixel-coordinates
 	fieldContainer.position.set(newX,newY);
 	background.tilePosition.set(newX,newY);
