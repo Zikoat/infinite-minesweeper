@@ -181,14 +181,14 @@ export default class Field {
 			this.gameOver = true;
 		}
 	}
-	isEligibleToOpen(x, y){
+	isEligibleToOpen(x, y){// returns a bool, whether this cell can be opened
 		if(this.gameOver) return false;
 		let cell = this.getCell(x, y);
 		if(cell.isFlagged) return false;
 		if(cell.isOpen)	return false;
 		return true;
 	}
-	setSafeCells(x0, y0){
+	setSafeCells(x0, y0){// initiate the field with a circle of cells that aren't mines
 		this.pristine = false;
 		let r = this.safeRadius;
 		
