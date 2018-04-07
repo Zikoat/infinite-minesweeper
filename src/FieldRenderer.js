@@ -57,11 +57,14 @@ export default class FieldRenderer /*extends PIXI.Application*/ {
 
 var app = new PIXI.Application(800, 600, {backgroundColor : 0x1099bb});
 document.body.appendChild(app.view);
+
 app.renderer.autoResize = true;
 app.renderer.resize(window.innerWidth, window.innerHeight);
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 window.addEventListener('resize', function(event){
 	app.renderer.resize(window.innerWidth, window.innerHeight);
+	background.width = app.renderer.width;
+	background.height = app.renderer.height;
 });
 
 var fieldContainer = new PIXI.Container();
