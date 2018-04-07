@@ -2,6 +2,7 @@
  * Created by sisc0606 on 19.08.2017.
  */
 import Cell from "./Cell";
+import * as Layouts from "./Layouts.js";
 
 export default class Field {
 	// do not call any of the cell's functions in the field class, to prevent
@@ -17,20 +18,7 @@ export default class Field {
 		this.safeRadius = safeRadius;
 		this.gameOver = false;
 
-		this.neighborPosition = [
-			[-1,-1],
-			[0,-1],
-			[1,-1],
-			
-			[-1,0],
-			//[0,0],
-			[1,0],
-
-			[-1,1],
-			[0,1],
-			[1,1]
-		];
-		
+		this.neighborPosition = Layouts.normal;
 		// todo someday: more options:
 		// non-permadeath
 		// opened mines/cells counter
