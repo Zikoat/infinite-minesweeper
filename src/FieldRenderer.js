@@ -133,6 +133,7 @@ function setup(Tex){
 	Textures = Tex;
 	updateAllCells(defaultField);
 	centerField(0,0);
+	updateScore();
 }
 
 function onDragStart(event) {
@@ -155,6 +156,7 @@ function onDragEnd() {
 		let y = Math.floor(this.dragPoint.y / width);
 		console.log(`clicked ${x}, ${y}`);
 		updateCells(defaultField.open(x, y));
+		updateScore();
 	}
 }
 
@@ -189,6 +191,7 @@ function onRightClick(event){
 	
 	
 	updateCells(defaultField.flag(x,y));
+	updateScore();
 }
 
 function moveViewTo(x, y) {
@@ -201,4 +204,11 @@ function getTileCoordsFromEvent(event) {
 	const x = Math.floor(position.x / width);
 	const y = Math.floor(position.y / width);
 	return {x: x, y: y};
+}
+
+function updateScore(amount) {
+	const score = defaultField.getAll()
+		.filter(cell=>cell.isOpen || cell.isFlagged)
+		.length;
+	document.getElementById("score").innerHTML = score;
 }
