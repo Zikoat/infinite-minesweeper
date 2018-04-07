@@ -207,8 +207,5 @@ function getTileCoordsFromEvent(event) {
 }
 
 function updateScore(amount) {
-	const score = defaultField.getAll()
-		.filter(cell=>cell.isOpen || cell.isFlagged)
-		.length;
-	document.getElementById("score").innerHTML = score;
+	document.getElementById("score").innerHTML = defaultField.score;
 }

@@ -19,6 +19,7 @@ export default class Field {
 		this.gameOver = false;
 
 		this.neighborPosition = Layouts.normal;
+		this.score = 0;
 		// todo someday: more options:
 		// non-permadeath
 		// opened mines/cells counter
@@ -35,16 +36,17 @@ export default class Field {
 	}
 	open(x, y){
 		// returns an array of all the opened cells: [Cell, Cell, Cell, ...]
+		
 		if(this.pristine) this.setSafeCells(x, y);
 		let cell = this.getCell(x,y);
 
 		if(!this.isEligibleToOpen(x, y)){
-			if(!this.gameOver && cell.isOpen){
+			if(!cell.isMine && cell.isOpen){
 				let neighbors = cell.getNeighbors();
 				let flagged_count = 0;
 				neighbors.forEach(neighbor => {
 					if(neighbor.isMine===undefined)this.generateCell(neighbor.x,neighbor.y);
-					if(neighbor.isFlagged) flagged_count++; 
+					if(neighbor.isFlagged||(neighbor.isMine&&neighbor.isOpen)) flagged_count++; 
 				});
 				if(cell.value() == flagged_count){
 					let openedCells = [];
@@ -59,17 +61,23 @@ export default class Field {
 			}
 			return [];
 		}
+		
 		//todo better generation
 		if(cell.isMine === undefined){
 			cell = this.generateCell(x, y, cell.isFlagged);
 		}
 		
 		cell.isOpen = true;
+
+		let openedCells = [];
+		openedCells.push(cell);
+
 		if(cell.isMine){
 			console.log("game over, you stepped on a mine: ("+x+", "+y+")");
-			this.gameOver = true;
+			this.score-=100;
+			return openedCells;
 		}
-		
+		this.score++;
 		// generating of neighbors. we generate the cells when a neighbor is opened
 		let neighbors = cell.getNeighbors();
 		for (var i = 0; i < neighbors.length; i++) {
@@ -80,8 +88,7 @@ export default class Field {
 			}
 		}
 		
-		let openedCells = [];
-		openedCells.push(cell);
+		
 		// floodfill
 		if(cell.value() === 0){
 			cell.getNeighbors() // get all the neighbors
@@ -95,10 +102,10 @@ export default class Field {
 	}
 	flag(x, y){
 		let changed_cells = [];
-		if(this.gameOver){
+		/*if(this.gameOver){
 			console.log("game is over, cant flag");
 			return changed_cells;
-		}
+		}*/
 		// debugging
 		//console.log("the cell's flagged status is: ", f.getCell(x, y).isFlagged);
 		let cell = this.getCell(x, y);
@@ -109,7 +116,7 @@ export default class Field {
 		} else if(cell.value()>0){
 			let closed_count = 0;
 			let neighbors = cell.getNeighbors();
-			neighbors.forEach(neighbor => {if(!neighbor.isOpen)closed_count++;});
+			neighbors.forEach(neighbor => {if(!neighbor.isOpen||(neighbor.isOpen&&neighbor.isMine))closed_count++;});
 			if(closed_count == cell.value()){
 				neighbors.filter(neighbor=>{return !neighbor.isOpen}).forEach(neighbor=>{neighbor.isFlagged = true; changed_cells.push(neighbor)});
 			}
@@ -182,7 +189,7 @@ export default class Field {
 		}
 	}
 	isEligibleToOpen(x, y){// returns a bool, whether this cell can be opened
-		if(this.gameOver) return false;
+		//if(this.gameOver) return false;
 		let cell = this.getCell(x, y);
 		if(cell.isFlagged) return false;
 		if(cell.isOpen)	return false;
