@@ -9,7 +9,7 @@ import closed from "./assets/default/closed.png";
 import flag from "./assets/default/flag.png";
 import mineWrong from "./assets/default/mineWrong.png";
 import open from "./assets/default/open.png";
-
+import cursor from "./assets/default/cursor.png";
 import one      from "./assets/default/1.png";
 import two      from "./assets/default/2.png";
 import three    from "./assets/default/3.png";
@@ -31,7 +31,8 @@ function processTextures(){
 			.add("mine",mine)
 			.add("mineWrong",mineWrong)
 			.add("open",open)
-			
+			.add("cursor",cursor)
+
 			.add("1",one)
 			.add("2",two)
 			.add("3",three)
@@ -58,6 +59,7 @@ export function load() {
 				flag: resources.flag.texture,
 				mineWrong: resources.mineWrong.texture,
 				open: resources.open.texture,
+				cursor: resources.cursor.texture
 			};
 			for(let i = 1; i <= 8; i++) {
 				Textures[i] = resources[i.toString()].texture;

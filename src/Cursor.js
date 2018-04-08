@@ -1,14 +1,32 @@
-class Cursor {
-	constructor(x = 0, y = 0) {
-		this.x = x;
-		this.y = y;
+
+export default class Cursor extends PIXI.Sprite{
+	
+	constructor(x = 0, y = 0, Tex,fieldContainer) {
+		super(Tex.cursor);
+
+		this.pointX = x;
+		this.pointY = y;
+		this.fieldContainer = fieldContainer;
+		moveTo(x,y);
 	}
 	moveTo(x, y) {
-		this.x = x;
-		this.y = y;
-		// send move event
+		this.pointX = x;
+		this.pointY = y;
+		let pos = this.fieldContainer.getGlobalPosition();
+		this.x = pos.x+x*this.width;
+		this.y = pos.y+y*this.width;
 	}
-	displace(dx, dy) {
-		this.moveTo(this.x + dx, this.y + dy);
+	move(dx,dy){
+		this.pointX += dx;
+		this.pointY += dy;
+		let pos = this.fieldContainer.getGlobalPosition();
+		this.x = pos.x+this.pointX*this.width;
+		this.y = pos.y+this.pointY*this.width;
+	}
+	getX(){
+		return this.pointX;
+	}
+	getY(){
+		return this.pointY;
 	}
 }
