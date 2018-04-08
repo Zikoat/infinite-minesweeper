@@ -141,6 +141,7 @@ function onDragStart(event) {
 	this.dragging = true;
 	this.hasDragged = false;
 	this.dragPoint = event.data.getLocalPosition(fieldContainer);
+	this.startPosition = {x : fieldContainer.position.x, y : fieldContainer.position.y};
 }
 
 function onDragEnd() {
@@ -167,8 +168,9 @@ function onDragMove() {
 		let y = Math.floor( newPosition.y - this.dragPoint.y );
 		fieldContainer.position.set(x,y);
 		background.tilePosition.set(x,y);
-
-		this.hasDragged = true;
+		console.log(this.startPosition.x+" "+x);
+		if(Math.pow(this.startPosition.x-x,2)+Math.pow(this.startPosition.y-y,2)>Math.pow(width,2)/9)
+			this.hasDragged = true;
 	}
 }
 /** center the field around a coordinate */
