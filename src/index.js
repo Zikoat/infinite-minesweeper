@@ -16,3 +16,5 @@ if (localStorage.getItem('defaultSavedField')) {
 
 self.renderer = new FieldRenderer(f);
 self.FieldStorage = FieldStorage;
+
+// f.on("changedCells", ()=>FieldStorage.save(f, 'defaultSavedField'));

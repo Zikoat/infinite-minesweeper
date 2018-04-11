@@ -5,6 +5,7 @@
 import * as PIXI from "pixi.js";
 import {load} from "./Textures";
 import Cursor from "./Cursor";
+import FieldStorage from "./FieldStorage";
 
 class CellSprite extends PIXI.Container{ // class for creating and updating sprites
 	
@@ -258,6 +259,8 @@ function getTileCoordsFromEvent(event) {
 	return {x: x, y: y};
 }
 
+// onupdate
 function updateScore(amount) {
 	document.getElementById("score").innerHTML = defaultField.score;
+	FieldStorage.save(f, 'defaultSavedField');
 }

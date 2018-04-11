@@ -1,4 +1,3 @@
-import cycle from "cycle";
 import Field from "./Field.js";
 import Cell from "./Cell.js";
 
@@ -13,26 +12,23 @@ export default class FieldStorage {
 		return field;
 	}
 	static compress(field) { // returns JSON string;
-		const decycledField = cycle.decycle(field);
-
-		const stringifiedField = JSON.stringify(decycledField, (key, value)=>{
-			if(key == "sprite") {
+		const stringifiedField = JSON.stringify(field, (key, value)=>{
+			if(key == "sprite" || key == "parent") {
 				return undefined;
 			} else {
 				return value;
 			}
 		});
-		FieldStorage.logStats(field, stringifiedField);
+		//FieldStorage.logStats(field, stringifiedField);
+
 		return stringifiedField;
 	}
 	static decompress(compressedField) {
 		// when stringifying, we have changed the class into an object, and we 
 		// need to recreate the class from the data
-		const decycledField = JSON.parse(compressedField);
-		
-		let recoveredField = cycle.retrocycle(decycledField);
-
+		let recoveredField = JSON.parse(compressedField);
 		let field = new Field();
+
 		for (const property in recoveredField) {
 			field[property] = recoveredField[property];	
 		}
@@ -49,7 +45,6 @@ export default class FieldStorage {
 				cell.isFlagged = recoveredCell.isFlagged;
 
 				field.field[row][column] = cell;
-				console.log(field.field[row][column].isFlagged);
 			}
 		}
 

@@ -34,8 +34,6 @@
     "webpack-dev-server": "^2.7.1"
   },
   "dependencies": {
-    "cycle": "^1.0.3",
-    "lodash": "^4.17.4",
     "pixi.js": "^4.5.4"
   }
 }
