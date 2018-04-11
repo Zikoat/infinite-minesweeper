@@ -82,34 +82,33 @@ var cursor;
 var mouseInput = false;
 window.addEventListener("keydown", event => {
 	console.log(event.keyCode);
-	if(event.keyCode == 65){
+	if(event.keyCode == 37){
 		moveViewTo(cursor.getX()-1, cursor.getY());
 		cursor.move(-1,0);
 		mouseInput = false;
 		document.getElementsByTagName("BODY")[0].style.cursor = "none";
-	}else if(event.keyCode == 87){
+	}else if(event.keyCode == 38){
 		moveViewTo(cursor.getX(), cursor.getY()-1);
 		cursor.move(0,-1);
 		mouseInput = false;
 		document.getElementsByTagName("BODY")[0].style.cursor = "none";
-	}else if(event.keyCode == 83){
+	}else if(event.keyCode == 40){
 		moveViewTo(cursor.getX(), cursor.getY()+1);
 		cursor.move(0,+1);
 		mouseInput = false;
 		document.getElementsByTagName("BODY")[0].style.cursor = "none";
-	}else if(event.keyCode == 68){
+	}else if(event.keyCode == 39){
 		moveViewTo(cursor.getX()+1, cursor.getY());
 		cursor.move(1,0);
 		mouseInput = false;
 		document.getElementsByTagName("BODY")[0].style.cursor = "none";
-	}else if(event.keyCode == 32){
+	}else if(event.keyCode == 88){
 		open();
 		mouseInput = false;
-	}else if(event.keyCode == 16){
+	}else if(event.keyCode == 90){
 		flag();
 		mouseInput = false;
 	}
-	
 },false);
 
 let uiElements = document.getElementsByClassName('ui');
