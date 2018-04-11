@@ -111,6 +111,12 @@ window.addEventListener("keydown", event => {
 	}
 	
 },false);
+
+let uiElements = document.getElementsByClassName('ui');
+for (let element of uiElements) {
+	element.addEventListener('click', event=>event.stopPropagation(), false)
+}
+
 export function updateCell(field, x, y){
 	// debugging
 	counter++;
@@ -137,7 +143,7 @@ function updateCells(array){
 }
 function updateAllCells(field){
 	field.getAll()
-		.filter(cell=>cell.isOpen)
+		.filter(cell=> cell.isOpen || cell.isFlagged)
 		.forEach(cell=>updateCell(field, cell.x, cell.y));
 }
 

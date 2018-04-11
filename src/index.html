@@ -4,11 +4,13 @@
 	<title>Minefield Resurrected</title>
 </head>
 <body>
-	<div class="menu">
+	<div class="menu ui">
 		<a href="https://discord.gg/UWWueDb">Discord</a><br>
 		<a href="https://github.com/Zikoat/infinite-minesweeper">Source code</a><br>
 		<!-- todo add settings -->
-		Score:<div id="score"></div>
+		Score:<div id="score"></div><br>
+		<button onclick="FieldStorage.save(f, 'defaultSavedField');">Save</button><br>
+		<button onclick="localStorage.removeItem('defaultSavedField'); window.location.reload();">restart</button><br>
 	</div>
 </body>
 </html>
