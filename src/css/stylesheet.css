@@ -15,8 +15,14 @@ canvas {
 	user-select: none;
 }
 
+@font-face {
+  font-family: "silkscreen";
+  src: url("../assets/fonts/silkscreen.ttf") format("truetype");
+}
+
 .menu {
-    font-family: sans-serif;
+    font-family: "silkscreen";
+    font-size: 16px;
     border: 2px solid #696969;
     background-color: #292929;
     padding: 2px;
@@ -26,8 +32,28 @@ canvas {
     color: lightgray;
 }
 
+.menu button {
+    font-family: "silkscreen";
+    font-size: 16px;
+    background-color: Transparent;
+    padding: 2px;
+    color: lightgray;
+}
+
+.menu {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    border: 2px solid #696969;
+}
+
+button {
+    border: 2px #696969;
+    padding: 4px;
+    border-style: dashed;
+}
 a {
-	color:lightblue;
+	color:dodgerblue;
 }
 
 #score {

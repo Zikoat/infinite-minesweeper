@@ -6,10 +6,13 @@
 <body>
 	<div class="menu ui">
 		<a href="https://discord.gg/UWWueDb">Discord</a><br>
-		<a href="https://github.com/Zikoat/infinite-minesweeper">Source code</a><br>
+		<a href="https://github.com/Zikoat/infinite-minesweeper">Source code</a><br><br>
 		<!-- todo add settings -->
-		Score:<div id="score"></div><br>
-		<button onclick="localStorage.removeItem('defaultSavedField'); window.location.reload();">restart</button><br>
+		Score:<div id="score"></div><br><br>
+		<button onclick="
+			localStorage.removeItem('defaultSavedField');
+			window.location.reload();
+			">restart</button><br>
 	</div>
 </body>
 </html>
