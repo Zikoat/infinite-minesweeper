@@ -5,6 +5,7 @@ export default class FieldStorage {
 	static save(field, id) { // saves a Field
 		const compressedField = FieldStorage.compress(field);
 		localStorage.setItem(id, compressedField);
+		// console.log(`saved: ${compressedField}`);
 	}
 	static load(id) { // returns a Field
 		const compressedField = localStorage.getItem(id);
@@ -12,14 +13,8 @@ export default class FieldStorage {
 		return field;
 	}
 	static compress(field) { // returns JSON string;
-		const stringifiedField = JSON.stringify(field, (key, value)=>{
-			if(key == "sprite" || key == "parent") {
-				return undefined;
-			} else {
-				return value;
-			}
-		});
-		//FieldStorage.logStats(field, stringifiedField);
+		const stringifiedField = JSON.stringify(field);
+		FieldStorage.logStats(field, stringifiedField);
 
 		return stringifiedField;
 	}
@@ -36,14 +31,12 @@ export default class FieldStorage {
 		for (const row in recoveredField.field) {
 			for (const column in recoveredField.field[row]) {
 				const recoveredCell = recoveredField.field[row][column];
-				let cell = new Cell(
-					recoveredCell.x,
-					recoveredCell.y,
-					field);
-				cell.isOpen = recoveredCell.isOpen;
-				cell.isMine = recoveredCell.isMine;
-				cell.isFlagged = recoveredCell.isFlagged;
+				let cell = new Cell(parseInt(row), parseInt(column), field);
+				console.log(row===parseInt(row));
 
+				cell.isOpen = (recoveredCell.charAt(0) == true);
+				cell.isMine = (recoveredCell.charAt(1) == true);
+				cell.isFlagged = (recoveredCell.charAt(2) == true);
 				field.field[row][column] = cell;
 			}
 		}
@@ -55,5 +48,6 @@ export default class FieldStorage {
 		const compressedByteCount = unescape(encodeURI(string)).length;
 		const ratio = compressedByteCount / cellsCount;
 		console.log(`saved ${compressedByteCount} bytes with a compression ratio of ${ratio.toPrecision(5)} bytes/cell`);
+		console.log(field);
 	}
 }

@@ -178,7 +178,7 @@ export default class Field {
 		let cells = this.getAll();
 		let openedCells = cells.filter(cell=>cell.isOpen);
 		
-		if(openedCells.some(cell=>cell.isFlagged)) console.error("cell is flagged and open", flagAndOpen);
+		if(openedCells.some(cell=>cell.isFlagged)) console.error("cell is flagged and open", openedCells.filter(cell=>cell.isFlagged));
 		
 		let undefinedCells = cells.filter(cell=>cell.isMine===undefined);
 		if(undefinedCells.length > 1) console.error("undefined cells", undefinedCells);

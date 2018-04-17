@@ -32,4 +32,10 @@ export default class Cell {
 		if(this.parent===undefined) console.error("i don't know my parents", this);
 		return this.parent.value(this.x, this.y);
 	}
+	toJSON(){
+		const open = this.isOpen ? "1":"0";
+		const mine = this.isMine ? "1":"0";
+		const flagged = this.isFlagged ? "1":"0";
+		return open + mine + flagged;
+	}
 }

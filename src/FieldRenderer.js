@@ -82,7 +82,6 @@ var cursor;
 
 var mouseInput = false;
 window.addEventListener("keydown", event => {
-	console.log(event.keyCode);
 	if(event.keyCode == 37){
 		moveViewTo(cursor.getX()-1, cursor.getY());
 		cursor.move(-1,0);
