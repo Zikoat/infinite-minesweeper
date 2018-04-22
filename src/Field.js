@@ -189,4 +189,10 @@ export default class Field extends EventEmitter{
 			}
 		}
 	}
+	toJSON() {
+		const fieldToStore = {};
+		Object.assign(fieldToStore, this)
+		delete fieldToStore._events;
+		return fieldToStore;
+	}
 }
