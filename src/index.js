@@ -1,6 +1,7 @@
 import Field from "./Field";
 import FieldRenderer from "./FieldRenderer";
 import FieldStorage from "./FieldStorage";
+import SimpleBot from "./bots/botSimple";
 
 import css from "./css/stylesheet.css";
 
@@ -13,6 +14,7 @@ if (localStorage.getItem('defaultSavedField')) {
 }
 
 self.renderer = new FieldRenderer(field);
+self.bot = new SimpleBot(field);
 self.FieldStorage = FieldStorage;
 
 field.on("cellChanged", ()=>{

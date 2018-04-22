@@ -59,6 +59,9 @@ export default class FieldRenderer /*extends PIXI.Application*/ {
 	updateCell(x,y){
 		updateCell(defaultField, x, y);
 	}
+	updateAllCells(){
+		updateAllCells(defaultField);
+	}
 }
 
 var app = new PIXI.Application(800, 600, {backgroundColor : 0x1099bb});
