@@ -25,32 +25,34 @@ export default class Controls {
 
 	static addKeyboardControls() {
 		window.addEventListener("keydown", event => {
-			if(event.keyCode == 37){
-				moveViewTo(cursor.getX()-1, cursor.getY());
-				cursor.move(-1,0);
-				mouseInput = false;
-				document.getElementsByTagName("BODY")[0].style.cursor = "none";
-			}else if(event.keyCode == 38){
-				moveViewTo(cursor.getX(), cursor.getY()-1);
-				cursor.move(0,-1);
-				mouseInput = false;
-				document.getElementsByTagName("BODY")[0].style.cursor = "none";
-			}else if(event.keyCode == 40){
-				moveViewTo(cursor.getX(), cursor.getY()+1);
-				cursor.move(0,+1);
-				mouseInput = false;
-				document.getElementsByTagName("BODY")[0].style.cursor = "none";
-			}else if(event.keyCode == 39){
-				moveViewTo(cursor.getX()+1, cursor.getY());
-				cursor.move(1,0);
-				mouseInput = false;
-				document.getElementsByTagName("BODY")[0].style.cursor = "none";
-			}else if(event.keyCode == 88){
-				open();
-				mouseInput = false;
-			}else if(event.keyCode == 90){
-				flag();
-				mouseInput = false;
+			Controls.mouseInput = false;
+			
+			switch (event.keyCode) {
+				case 88:
+					Controls.open();
+					break;
+				case 90:
+					Controls.flag();
+					break;
+				case 37:
+					move(-1, 0);
+					break;
+				case 38:
+					move(0, -1);
+					break;
+				case 40:
+					move(0, 1);
+					break;
+				case 39:
+					move(1, 0);
+					break;
+			}
+
+			function move(deltaX, deltaY) {
+				Controls.moveViewTo(Controls.cursor.getX()+deltaX, Controls.cursor.getY()+deltaY);
+				Controls.cursor.move(deltaX, deltaY);
+				// disable mouse cursor
+				document.getElementsByTagName("BODY")[0].style.cursor = "none";	
 			}
 		},false);
 	}
@@ -115,35 +117,48 @@ export default class Controls {
 	static open(){
 		const x = Controls.cursor.getX();
 		const y = Controls.cursor.getY();
+		const cell = Controls.field.getCell(x, y);
+		const neighbors = Controls.field.getNeighbors(x, y);
+		const flaggedNeighbors = neighbors.filter(cell=>cell.isFlagged);
+		const closedNotFlaggedNeighbors = neighbors.filter(cell=>!cell.isOpen && !cell.isFlagged);
 
-		console.log(`opened ${x}, ${y}`);
-		Controls.field.open(x, y);
+		if (!cell.isOpen && !cell.isFlagged) {
+			cell.open();
+			//console.log(`opened`, cell);
+		} else if (flaggedNeighbors.length === cell.value()) {
+			closedNotFlaggedNeighbors.forEach(neighbor=>{
+				neighbor.open();
+			})
+			//console.log(`opened the neighbors of`, cell);
+		}
 	}
 
 	static flag(){
 		const x = Controls.cursor.getX();
 		const y = Controls.cursor.getY();
 		const cell = Controls.field.getCell(x, y);
-		const isOpen = cell.isOpen;
-		const closedNeighbors = Controls.field.getNeighbors(x, y).filter(cell=>!cell.isOpen);
-		cell.flag();
-		if (!isOpen) {
-			//console.log(`flagged ${x}, ${y}`);
+		const neighbors = Controls.field.getNeighbors(x, y);
+		const closedNeighbors = neighbors.filter(cell=>!cell.isOpen);
+		const closedNotFlaggedNeighbors = neighbors.filter(cell=>!cell.isOpen && !cell.isFlagged);
+
+		if (!cell.isOpen) {
+			cell.flag();
+			//console.log(`flagged`, cell);
 		} else if (closedNeighbors.length === cell.value()) {
-			closedNeighbors.forEach(neighbor=>{
+			closedNotFlaggedNeighbors.forEach(neighbor=>{
 				neighbor.flag();
 			})
-			console.log(`flagged the neighbors of ${x}, ${y}`);
+			//console.log(`flagged the neighbors of`, cell);
 		}
 	}
-
-	// todo move keyboard controls here
 	
 	static moveViewTo(newx, newy) {
-		const width = Controls.rootObject.getChildByName("bg").texture.width;
+		const width = Controls.cursor.parent.getChildByName("bg").texture.width;
 		const x = newx*width;
 		const y = newy*width;
-		fieldContainer.position.set(-x+Math.floor(window.innerWidth/width/2)*width,-y+Math.floor(window.innerHeight/width/2)*width);
-		background.tilePosition.set(-x+Math.floor(window.innerWidth/width/2)*width,-y+Math.floor(window.innerHeight/width/2)*width);
+		const newPixelPositionX = -x+Math.floor(window.innerWidth/width/2)*width;
+		const newPixelPositionY = -y+Math.floor(window.innerHeight/width/2)*width;
+		Controls.cursor.parent.getChildByName("fg").position.set(newPixelPositionX,newPixelPositionY);
+		Controls.cursor.parent.getChildByName("bg").tilePosition.set(newPixelPositionX,newPixelPositionY);
 	}
 }

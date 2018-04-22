@@ -51,7 +51,6 @@ export default class FieldRenderer /*extends PIXI.Application*/ {
 		defaultField = field;
 		
 		defaultField.on("cellChanged", (cell)=>{
-			console.log(`got event with cell:`, cell);
 			updateCell(defaultField, cell.x, cell.y);
 		});
 
@@ -135,12 +134,15 @@ function setup(Tex){
 	Controls.addControls(clickHandler, defaultField, Tex.cursor);
 	clickHandler
 	
+	// todo move to controls
 	// disable right click context menu
 	document.addEventListener('contextmenu', event => event.preventDefault());
+
 	Textures = Tex;
 	updateAllCells(defaultField);
 	centerField(0,0);
-	updateScore();
+
+	document.getElementById("score").innerHTML = field.score;
 }
 
 /** center the field around a coordinate */
@@ -153,19 +155,4 @@ function centerField (x = 0, y = 0) {
 	// newX and newY are pixel-coordinates
 	fieldContainer.position.set(newX,newY);
 	background.tilePosition.set(newX,newY);
-}
-
-// todo add jsdoc comment: returns point, param event
-function getTileCoordsFromEvent(event) {
-	let position = event.data.getLocalPosition(fieldContainer);
-	
-	const x = Math.floor(position.x / width);
-	const y = Math.floor(position.y / width);
-	return {x: x, y: y};
-}
-
-// onupdate
-function updateScore(amount) {
-	document.getElementById("score").innerHTML = defaultField.score;
-	FieldStorage.save(f, 'defaultSavedField');
 }

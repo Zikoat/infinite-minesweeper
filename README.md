@@ -25,8 +25,7 @@ to install the required dependencies
 ```
 npm start
 ```
-`npm start` will open a new tab in your browser, showing you a new field. gameplay is the same as mienfield.com, but works locally and is not multiplayer
-the files in your repository are being watched, and the site is getting reloaded
+`npm start` will open a new tab in your browser, showing you a new field. gameplay is the same as mienfield.com, but works locally and is not multiplayer. The files in your repository are being watched, and the site is getting reloaded automatically when you change a file.
 
 ## Deploying
 ```

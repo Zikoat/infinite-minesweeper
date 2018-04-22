@@ -27,10 +27,8 @@ export default class Field extends EventEmitter{
 
 		this.neighborPosition = Layouts.normal;
 		this.score = 0;
-		// todo someday: more options:
-		// non-permadeath
-		// opened mines/cells counter
-		// wrongly flagged cells
+		// todo someday: 
+		// be able to change the options through an object
 		// overwrite mine state
 		// freeze mode
 	}
@@ -62,12 +60,13 @@ export default class Field extends EventEmitter{
 		openedCells.push(cell);
 
 		if(cell.isMine){
-			console.log("game over, you stepped on a mine: ("+x+", "+y+")");
+			console.log("game over, you stepped on a mine:", cell);
 			this.score-=100;
 			this.emit("cellChanged", cell);
 			return false; 
 		}
 		this.score++;
+
 		// generating of neighbors. we generate the cells when a neighbor is opened
 		let neighbors = cell.getNeighbors();
 		for (var i = 0; i < neighbors.length; i++) {
@@ -77,7 +76,6 @@ export default class Field extends EventEmitter{
 				this.generateCell(neighbors[i].x, neighbors[i].y);
 			}
 		}
-		
 		
 		// floodfill
 		if(cell.value() === 0){

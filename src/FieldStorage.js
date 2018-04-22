@@ -32,7 +32,7 @@ export default class FieldStorage {
 			for (const column in recoveredField.field[row]) {
 				const recoveredCell = recoveredField.field[row][column];
 				let cell = new Cell(parseInt(row), parseInt(column), field);
-				console.log(row===parseInt(row));
+				
 
 				cell.isOpen = (recoveredCell.charAt(0) == true);
 				cell.isMine = (recoveredCell.charAt(1) == true);
@@ -48,6 +48,6 @@ export default class FieldStorage {
 		const compressedByteCount = unescape(encodeURI(string)).length;
 		const ratio = compressedByteCount / cellsCount;
 		console.log(`saved ${compressedByteCount} bytes with a compression ratio of ${ratio.toPrecision(5)} bytes/cell`);
-		console.log(field);
+		//console.log(string);
 	}
 }
