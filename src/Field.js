@@ -2,12 +2,19 @@
  * Created by sisc0606 on 19.08.2017.
  */
 import Cell from "./Cell";
-import * as Layouts from "./Layouts.js";
-
-export default class Field {
+import * as Layouts from "./Layouts";
+import EventEmitter from "eventemitter3"
+/**
+ * events:
+ * changedCells, if any cells have been changed, returns an array of the cells that have been changed
+ * wrongMove, if a wrong cell has been pressed (open mine or flag non-mine), returns the cell that was pressed
+ */
+export default class Field extends EventEmitter{
 	// do not call any of the cell's functions in the field class, to prevent
 	// infinite loops
 	constructor(probability=0.5, safeRadius=1){
+		super();
+
 		this.field = {};
 		// this is the probability that a mine is a cell
 		this.probability = probability;
@@ -75,7 +82,8 @@ export default class Field {
 		if(cell.isMine){
 			console.log("game over, you stepped on a mine: ("+x+", "+y+")");
 			this.score-=100;
-			return openedCells;
+			this.emit("cellChanged", cell);
+			return false; 
 		}
 		this.score++;
 		// generating of neighbors. we generate the cells when a neighbor is opened
@@ -98,7 +106,9 @@ export default class Field {
 					openedNeighbors.forEach(openedNeighbor=>openedCells.push(openedNeighbor));
 				});
 		}
-		return openedCells;
+
+		this.emit("cellChanged", cell);
+		return openedCells.length >= 1;
 	}
 	flag(x, y){
 		let changed_cells = [];

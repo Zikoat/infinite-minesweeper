@@ -49,6 +49,12 @@ class CellSprite extends PIXI.Container{ // class for creating and updating spri
 export default class FieldRenderer /*extends PIXI.Application*/ {
 	constructor(field){
 		defaultField = field;
+		
+		defaultField.on("cellChanged", (cell)=>{
+			console.log(`got event with cell:`, cell);
+			updateCell(defaultField, cell.x, cell.y);
+		});
+
 		load().then(setup);
 	}
 	updateCell(x,y){
