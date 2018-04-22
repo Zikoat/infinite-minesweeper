@@ -48,25 +48,7 @@ export default class Field extends EventEmitter{
 		let cell = this.getCell(x,y);
 
 		if(!this.isEligibleToOpen(x, y)){
-			if(!cell.isMine && cell.isOpen){
-				let neighbors = cell.getNeighbors();
-				let flagged_count = 0;
-				neighbors.forEach(neighbor => {
-					if(neighbor.isMine===undefined)this.generateCell(neighbor.x,neighbor.y);
-					if(neighbor.isFlagged||(neighbor.isMine&&neighbor.isOpen)) flagged_count++; 
-				});
-				if(cell.value() == flagged_count){
-					let openedCells = [];
-					neighbors.filter(neighbor=>{
-						return !neighbor.isOpen && !neighbor.isFlagged;
-					}).forEach(neighbor=>{
-						let openedNeighbors = neighbor.open();
-						openedNeighbors.forEach(openedNeighbor=>openedCells.push(openedNeighbor));
-					});
-					return openedCells;
-				} 
-			}
-			return [];
+			return false;
 		}
 		
 		//todo better generation
@@ -102,8 +84,7 @@ export default class Field extends EventEmitter{
 			cell.getNeighbors() // get all the neighbors
 				.filter(neighbor=>!neighbor.isOpen) // filter the array, so only the closed neighbors are in it
 				.forEach(closedNeighbor=>{
-					let openedNeighbors = closedNeighbor.open();
-					openedNeighbors.forEach(openedNeighbor=>openedCells.push(openedNeighbor));
+					closedNeighbor.open();
 				});
 		}
 
@@ -111,28 +92,11 @@ export default class Field extends EventEmitter{
 		return openedCells.length >= 1;
 	}
 	flag(x, y){
-		let changed_cells = [];
-		/*if(this.gameOver){
-			console.log("game is over, cant flag");
-			return changed_cells;
-		}*/
-		// debugging
-		//console.log("the cell's flagged status is: ", f.getCell(x, y).isFlagged);
 		let cell = this.getCell(x, y);
 		if(!cell.isOpen){
 			cell.isFlagged = !cell.isFlagged;
-			changed_cells.push(cell);
-			//console.log("flagged: ", x, y);
-		} else if(cell.value()>0){
-			let closed_count = 0;
-			let neighbors = cell.getNeighbors();
-			neighbors.forEach(neighbor => {if(!neighbor.isOpen||(neighbor.isOpen&&neighbor.isMine))closed_count++;});
-			if(closed_count == cell.value()){
-				neighbors.filter(neighbor=>{return !neighbor.isOpen}).forEach(neighbor=>{neighbor.isFlagged = true; changed_cells.push(neighbor)});
-			}
-		}//else console.log("cant flag, is open", cell.x, cell.y);
-
-		return changed_cells;
+			this.emit("cellChanged", cell);
+		}
 	}
 	getNeighbors(x, y){
 		let neighbors = [];

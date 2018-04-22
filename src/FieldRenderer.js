@@ -4,8 +4,8 @@
 
 import * as PIXI from "pixi.js";
 import {load} from "./Textures";
-import Cursor from "./Cursor";
 import FieldStorage from "./FieldStorage";
+import Controls from "./Controls"
 
 class CellSprite extends PIXI.Container{ // class for creating and updating sprites
 	
@@ -86,42 +86,6 @@ var counter = 0;
 var Textures;
 var cursor;
 
-var mouseInput = false;
-window.addEventListener("keydown", event => {
-	if(event.keyCode == 37){
-		moveViewTo(cursor.getX()-1, cursor.getY());
-		cursor.move(-1,0);
-		mouseInput = false;
-		document.getElementsByTagName("BODY")[0].style.cursor = "none";
-	}else if(event.keyCode == 38){
-		moveViewTo(cursor.getX(), cursor.getY()-1);
-		cursor.move(0,-1);
-		mouseInput = false;
-		document.getElementsByTagName("BODY")[0].style.cursor = "none";
-	}else if(event.keyCode == 40){
-		moveViewTo(cursor.getX(), cursor.getY()+1);
-		cursor.move(0,+1);
-		mouseInput = false;
-		document.getElementsByTagName("BODY")[0].style.cursor = "none";
-	}else if(event.keyCode == 39){
-		moveViewTo(cursor.getX()+1, cursor.getY());
-		cursor.move(1,0);
-		mouseInput = false;
-		document.getElementsByTagName("BODY")[0].style.cursor = "none";
-	}else if(event.keyCode == 88){
-		open();
-		mouseInput = false;
-	}else if(event.keyCode == 90){
-		flag();
-		mouseInput = false;
-	}
-},false);
-
-let uiElements = document.getElementsByClassName('ui');
-for (let element of uiElements) {
-	element.addEventListener('click', event=>event.stopPropagation(), false)
-}
-
 export function updateCell(field, x, y){
 	// debugging
 	counter++;
@@ -162,77 +126,23 @@ function setup(Tex){
 	);
 	background.tint = 0xffffff;
 	
+	background.name = "bg";
+	fieldContainer.name = "fg";
+
 	clickHandler.addChildAt(background, 0);
 	clickHandler.addChildAt(fieldContainer, 1);
-	cursor = new Cursor(0,0,Tex,fieldContainer);
-	clickHandler.addChildAt(cursor, 2);
 	
+	Controls.addControls(clickHandler, defaultField, Tex.cursor);
 	clickHandler
-		.on('mousedown', onDragStart)
-		.on('mouseup', onDragEnd)
-		.on('pointerupoutside', onDragEnd)
-		.on('pointermove', onDragMove)
-		.on('rightclick', onRightClick);
 	
 	// disable right click context menu
 	document.addEventListener('contextmenu', event => event.preventDefault());
 	Textures = Tex;
 	updateAllCells(defaultField);
 	centerField(0,0);
-	cursor.moveTo(0,0);
 	updateScore();
 }
 
-function onDragStart(event) {
-	this.dragging = true;
-	this.hasDragged = false;
-	this.dragPoint = event.data.getLocalPosition(fieldContainer);
-	this.startPosition = {x : fieldContainer.position.x, y : fieldContainer.position.y};
-	
-}
-
-function onDragEnd() {
-	if(this.hasDragged) {
-		this.dragging = false;
-	} else {
-		// if the mousebutton didnt move, it means the user clicked
-		this.dragging = false;
-		open();
-		
-	}
-}
-function open(){
-	let x = cursor.getX();
-	let y = cursor.getY();
-
-	console.log(`clicked ${x}, ${y}`);
-	updateCells(defaultField.open(x, y));
-	updateScore();
-}
-function flag(){
-	updateCells(defaultField.flag(cursor.getX(),cursor.getY()));
-	updateScore();
-}
-function onDragMove(event) {
-	
-	if (this.dragging) {
-		var newPosition = event.data.getLocalPosition(this.parent);
-		let x = Math.floor( newPosition.x - this.dragPoint.x );
-		let y = Math.floor( newPosition.y - this.dragPoint.y );
-		fieldContainer.position.set(x,y);
-		background.tilePosition.set(x,y);
-		if(Math.pow(this.startPosition.x-x,2)+Math.pow(this.startPosition.y-y,2)>Math.pow(width,2)/9)
-			this.hasDragged = true;
-	}
-	if(mouseInput){
-		let position = event.data.getLocalPosition(fieldContainer);
-		let x = Math.floor(position.x/width);
-		let y = Math.floor(position.y/width);
-		cursor.moveTo(x, y);
-	}
-	mouseInput = true;
-	document.getElementsByTagName("BODY")[0].style.cursor = "default";
-}
 /** center the field around a coordinate */
 function centerField (x = 0, y = 0) {
 	// x and y are tile coordinates
@@ -245,16 +155,6 @@ function centerField (x = 0, y = 0) {
 	background.tilePosition.set(newX,newY);
 }
 
-function onRightClick(event){
-	flag();
-}
-
-function moveViewTo(newx, newy) {
-	let x = newx*width;
-	let y = newy*width;
-	fieldContainer.position.set(-x+Math.floor(window.innerWidth/width/2)*width,-y+Math.floor(window.innerHeight/width/2)*width);
-	background.tilePosition.set(-x+Math.floor(window.innerWidth/width/2)*width,-y+Math.floor(window.innerHeight/width/2)*width);
-}
 // todo add jsdoc comment: returns point, param event
 function getTileCoordsFromEvent(event) {
 	let position = event.data.getLocalPosition(fieldContainer);
