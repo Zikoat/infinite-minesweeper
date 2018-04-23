@@ -14,7 +14,7 @@ export default class FieldStorage {
 	}
 	static compress(field) { // returns JSON string;
 		const stringifiedField = JSON.stringify(field);
-		FieldStorage.logStats(field, stringifiedField);
+		// FieldStorage.logStats(field, stringifiedField);
 
 		return stringifiedField;
 	}

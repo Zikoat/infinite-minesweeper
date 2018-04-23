@@ -1,8 +1,9 @@
-export default class Cursor extends PIXI.Sprite{
-	
+import { textures } from "./Textures";
 
-	constructor(x = 0, y = 0, cursorTexture) {
-		super(cursorTexture);
+export default class Cursor extends PIXI.Sprite{
+
+	constructor(x = 0, y = 0) {
+		super(textures.cursor);
 		this.pointX = x;
 		this.pointY = y;
 

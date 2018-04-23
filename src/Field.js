@@ -153,12 +153,7 @@ export default class Field extends EventEmitter{
 		if(openedCells.some(cell=>cell.isFlagged)) console.error("cell is flagged and open", openedCells.filter(cell=>cell.isFlagged));
 		
 		let undefinedCells = cells.filter(cell=>cell.isMine===undefined);
-		if(undefinedCells.length > 1) console.error("undefined cells", undefinedCells);
-		
-		if(openedCells.some(cell=>cell.isMine) && !this.gameOver){
-			console.warn("mine dug up, but gameOver wasnt set");
-			this.gameOver = true;
-		}
+		if(undefinedCells.length > 0) console.error("undefined cells", undefinedCells);
 	}
 	isEligibleToOpen(x, y){// returns a bool, whether this cell can be opened
 		//if(this.gameOver) return false;

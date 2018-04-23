@@ -5,17 +5,20 @@
 </head>
 <body>
 	<div class="menu ui">
-		<a href="https://discord.gg/UWWueDb">Discord</a><br>
-		<a href="https://github.com/Zikoat/infinite-minesweeper">Source code</a><br><br>
+		<div><a href="https://discord.gg/UWWueDb">Discord</a></div>
+		<div><a href="https://github.com/Zikoat/infinite-minesweeper">Source code</a></div>
 		<!-- todo add settings -->
-		Score:<div id="score"></div><br><br>
-		<button onclick="
-			localStorage.removeItem('defaultSavedField');
-			window.location.reload();
-			">restart</button><br>
-		Zoom: Ctrl +<br>
-		Keyboard controls:<br>
-		arrow keys and z/x
+		<div>
+			Score:<span id="score"></span>
+		</div>
+		<div>
+			<button onclick="
+				localStorage.removeItem('defaultSavedField');
+				window.location.reload();
+				">restart</button><br>
+		</div>
+		<div>Zoom: Ctrl +</div>
+		<div>Keyboard controls:<br>arrow keys and z/x</div>
 	</div>
 </body>
 </html>

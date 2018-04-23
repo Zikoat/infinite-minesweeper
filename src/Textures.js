@@ -4,6 +4,7 @@
 
 import * as PIXI from "pixi.js";
 
+// todo make loading multiple skins possible
 import mine from "./assets/default/mine.png";
 import closed from "./assets/default/closed.png";
 import flag from "./assets/default/flag.png";
@@ -20,8 +21,9 @@ import seven    from "./assets/default/7.png";
 import eight    from "./assets/default/8.png";
 
 
-let Textures;
 let loadingPromise;
+export let textures = null;
+export let width = 2;	
 
 function processTextures(){
 	return new Promise((resolve, reject)=>{
@@ -53,7 +55,7 @@ export function load() {
 	if(!loadingPromise) {
 		loadingPromise = processTextures().then((resources)=>{
 			// extract the textures out from the resources we loaded
-			Textures = {
+			textures = {
 				mine: resources.mine.texture,
 				closed: resources.closed.texture,
 				flag: resources.flag.texture,
@@ -62,11 +64,13 @@ export function load() {
 				cursor: resources.cursor.texture
 			};
 			for(let i = 1; i <= 8; i++) {
-				Textures[i] = resources[i.toString()].texture;
+				textures[i] = resources[i.toString()].texture;
 			}
+
+			width = textures.closed.width;
 			
 			console.log("done loading");
-			return Textures;
+			return textures;
 		}).catch(reason=>console.error(reason));
 	}
 	

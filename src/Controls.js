@@ -9,7 +9,7 @@ export default class Controls {
 		Controls.removeUIEventBubbling();
 
 		// todo move into own addCursor method
-		Controls.cursor = new Cursor(0, 0, cursorTexture, rootObject.getChildByName("bg").texture.width);
+		Controls.cursor = new Cursor(0, 0);
 		rootObject.addChildAt(Controls.cursor, 2);
 
 	}

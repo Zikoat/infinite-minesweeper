@@ -3,48 +3,10 @@
  */
 
 import * as PIXI from "pixi.js";
-import {load} from "./Textures";
+import * as Textures from "./Textures.js";
 import FieldStorage from "./FieldStorage";
 import Controls from "./Controls"
-
-class CellSprite extends PIXI.Container{ // class for creating and updating sprites
-	
-	constructor(cell){
-		super();
-		this.x = cell.x * width;
-		this.y = cell.y * width;
-		let textures = this.chooseTexture(cell);
-		let back = new PIXI.Sprite(textures.back);
-		let front = new PIXI.Sprite(textures.front);
-		this.addChildAt(back, 0);
-		this.addChildAt(front, 1);
-		fieldContainer.addChild(this);
-	}
-	
-	update(cell){
-		let back = this.getChildAt(0);
-		let front = this.getChildAt(1);
-		
-		let textures = this.chooseTexture(cell);
-		back.texture = textures.back;
-		front.texture = textures.front;
-	}
-	
-	chooseTexture(cell){
-		var texture = {};
-		
-		if(cell.isOpen) {
-			texture.back = Textures.open;
-			if(cell.isMine) texture.front = Textures.mineWrong;
-			else if(cell.value()>0)texture.front = Textures[cell.value()];
-			else texture.front = Textures.open;
-		} else {
-			texture.back = Textures.closed;
-			texture.front = cell.isFlagged ? Textures.flag : PIXI.Texture.EMPTY;
-		}
-		return texture;
-	}
-}
+import CellSprite from "./CellSprite";
 
 export default class FieldRenderer /*extends PIXI.Application*/ {
 	constructor(field){
@@ -54,7 +16,7 @@ export default class FieldRenderer /*extends PIXI.Application*/ {
 			updateCell(defaultField, cell.x, cell.y);
 		});
 
-		load().then(setup);
+		Textures.load().then(setup);
 	}
 	updateCell(x,y){
 		updateCell(defaultField, x, y);
@@ -85,33 +47,26 @@ var defaultField;
 
 var width;
 var counter = 0;
-var Textures;
 var cursor;
 
-export function updateCell(field, x, y){
-	// debugging
-	counter++;
-	if(counter % 1000 === 100){
-		console.log(`update counter is ${counter}, checking field`);
-		field.checkForErrors();
-	}
-	
+function updateCell(field, x, y){
 	let cell = field.getCell(x, y);
 	
 	if(cell.sprite===undefined){
 		cell.sprite = new CellSprite(cell);
+		fieldContainer.addChild(cell.sprite);
 	}
 	else {
-		// debugging
-		//console.log("updating", x, y);
 		cell.sprite.update(cell);
 	}
 }
+
 function updateCells(array){
 	array.forEach(cell=>{
 		updateCell(defaultField, cell.x, cell.y);
 	});
 }
+
 function updateAllCells(field){
 	field.getAll()
 		.filter(cell=> cell.isOpen || cell.isFlagged)
@@ -141,7 +96,6 @@ function setup(Tex){
 	// disable right click context menu
 	document.addEventListener('contextmenu', event => event.preventDefault());
 
-	Textures = Tex;
 	updateAllCells(defaultField);
 	centerField(0,0);
 
