@@ -20,7 +20,7 @@ canvas {
   src: url("../assets/fonts/silkscreen.ttf") format("truetype");
 }
 
-.menu {
+.ui {
     font-family: "silkscreen";
     font-size: 16px;
     border: 2px solid #696969;
@@ -32,6 +32,15 @@ canvas {
     color: lightgray;
 }
 
+.menubutton {
+    width:2em;
+}
+
+.menubutton > img {
+    image-rendering: pixelated;
+    width: 100%;
+}
+
 .menu button {
     font-family: "silkscreen";
     font-size: 16px;
@@ -41,8 +50,9 @@ canvas {
 }
 
 .menu {
+    display:none;
     position: absolute;
-    top: 2px;
+    top: 32px;
     left: 2px;
     border: 2px solid #696969;
 }

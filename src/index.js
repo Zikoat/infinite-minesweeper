@@ -2,6 +2,7 @@ import Field from "./Field";
 import FieldRenderer from "./FieldRenderer";
 import FieldStorage from "./FieldStorage";
 import SimpleBot from "./bots/botSimple";
+import menubutton from "./assets/default/menubutton.png";
 
 import css from "./css/stylesheet.css";
 
@@ -21,3 +22,11 @@ field.on("cellChanged", ()=>{
 	document.getElementById("score").innerHTML = field.score;
 	FieldStorage.save(field, 'defaultSavedField');
 });
+
+let button = document.getElementById('menubutton');
+button.src = menubutton;
+button.onclick = function () {
+	console.log("cliced menubutton");
+	let menu = document.getElementById("menu");
+	menu.style.display = menu.style.display == "none" ? "block" : "none";
+}
