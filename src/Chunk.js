@@ -1,0 +1,32 @@
+import Cell from "./Cell";
+
+export const CHUNK_SIZE = 10;
+export class Chunk{
+    constructor(x,y,parent){
+        this.x = x;
+        this.y = y;
+        this.cells = {};
+        for(let i = 0; i<CHUNK_SIZE;i++){
+            this.cells[i] = {};
+            for(let j = 0; j<CHUNK_SIZE;j++){
+                this.cells[i][j] = new Cell(x*CHUNK_SIZE+i, y*CHUNK_SIZE+j,parent);
+            }
+        }
+    }
+    getCell(x,y){
+        return this.cells[x][y];
+    }
+    getCellFromGlobalCoords(x,y){
+        return this.cells[x-this.x*CHUNK_SIZE][y-this.y*CHUNK_SIZE];
+    }
+    getAll(){
+        let ans = [];
+        var i,j;
+        for(i in this.cells){
+            for(j in this.cells[i]){
+                ans.push(this.cells[i][j])
+            }
+        }
+        return ans;
+    }
+}

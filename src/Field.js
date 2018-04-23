@@ -4,6 +4,10 @@
 import Cell from "./Cell";
 import * as Layouts from "./Layouts";
 import EventEmitter from "eventemitter3"
+
+
+import {Chunk} from "./Chunk"
+import {CHUNK_SIZE} from "./Chunk"
 /**
  * events:
  * changedCells, if any cells have been changed, returns an array of the cells that have been changed
@@ -32,12 +36,17 @@ export default class Field extends EventEmitter{
 		// overwrite mine state
 		// freeze mode
 	}
+	getChunk(x,y){
+		return this.field[x][y];
+	}
 	getCell(x, y){
 		// if the row or cell is not created, we will get an error: cant read property of undefined
-		if(!(x in this.field)) return new Cell(x, y, this);
-		if(!(y in this.field[x])) return new Cell(x, y, this);
+		let chunkX = Math.floor(x/CHUNK_SIZE);
+		let chunkY = Math.floor(y/CHUNK_SIZE);
+		if(!(chunkX in this.field)) return new Cell(x, y, this);
+		if(!(chunkY in this.field[chunkX])) return new Cell(x, y, this);
 		
-		return this.field[x][y];
+		return this.field[chunkX][chunkY].getCellFromGlobalCoords(x,y);
 	}
 	open(x, y){
 		// returns an array of all the opened cells: [Cell, Cell, Cell, ...]
@@ -105,19 +114,29 @@ export default class Field extends EventEmitter{
 		}
 		return neighbors;
 	}
-	generateCell(x, y, isFlagged = false, isMine = undefined){
-		// if the row is not created yet, create the row
+	generateChunk(x,y){
 		if(!(x in this.field)) this.field[x] = {};
-		if(!(y in this.field[x])) {
-			// here, ismine is being put to something else than undefined, which
-			// means isMine is undefined when the cell is not generated. this
-			// is why we can check isMine===undefined to determine if the cell is generated
-			
-			// determine if the cell is a mine
-			if(isMine===undefined) isMine = Math.random() < this.probability;
-			// and add it to the field
-			let cell =  new Cell(x, y, this, isFlagged, isMine);
-			this.field[x][y] = cell;
+		if(!(y in this.field[x])){
+			this.field[x][y] = new Chunk(x,y,this);
+		}
+	}
+	generateCell(x, y, isFlagged = false, isMine = undefined){
+		//calculates coordinates of a chunk
+		let chunkX = Math.floor(x/CHUNK_SIZE);
+		let chunkY = Math.floor(y/CHUNK_SIZE);
+		//generates a chunk if it isn't already generated
+		this.generateChunk(chunkX,chunkY);
+
+		//gets a reference to a cell that we want to generate from the chunk
+		let cell = this.field[chunkX][chunkY].getCellFromGlobalCoords(x,y);
+
+		//if isMine field of the cell is undefined we calculate it
+		if(cell.isMine===undefined) {
+			//todo: seed based generation
+			if(isMine === undefined)
+				isMine = Math.random() < this.probability;
+			cell.isMine = isMine;
+			cell.isFlagged = isFlagged;
 			return cell;
 		} else {console.warn(x, y, "is already generated");}
 	}
@@ -132,7 +151,9 @@ export default class Field extends EventEmitter{
 		for (var i = 0; i < rows.length; i++) {
 			let columns = Object.keys(this.field[rows[i]]);
 			for (var j = 0; j < columns.length; j++) {
-				cells.push(this.getCell(rows[i],columns[j]));
+				let fromChunk =this.getChunk(rows[i],columns[j]).getAll();
+				for(let k in fromChunk)
+					cells.push(fromChunk[k]);
 			}
 		}
 		return cells;
