@@ -7,6 +7,7 @@ import * as Textures from "./Textures.js";
 import FieldStorage from "./FieldStorage";
 import Controls from "./Controls"
 import CellSprite from "./CellSprite";
+import {TweenMax, Power2, TimelineLite} from "gsap";
 
 export default class FieldRenderer /*extends PIXI.Application*/ {
 	constructor(field){

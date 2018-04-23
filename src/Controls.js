@@ -1,4 +1,5 @@
 import Cursor from "./Cursor";
+import { TweenMax, Power4 } from "gsap";
 
 export default class Controls {
 	static addControls(rootObject, field, cursorTexture) {
@@ -158,7 +159,13 @@ export default class Controls {
 		const y = newy*width;
 		const newPixelPositionX = -x+Math.floor(window.innerWidth/width/2)*width;
 		const newPixelPositionY = -y+Math.floor(window.innerHeight/width/2)*width;
+
 		Controls.cursor.parent.getChildByName("fg").position.set(newPixelPositionX,newPixelPositionY);
 		Controls.cursor.parent.getChildByName("bg").tilePosition.set(newPixelPositionX,newPixelPositionY);
+
+		// didnt work as expected
+		// TweenMax.to(Controls.cursor.parent.getChildByName("fg").position, 0.2, {x:newPixelPositionX,y:newPixelPositionY})
+		// TweenMax.to(Controls.cursor.parent.getChildByName("bg").tilePosition, 0.2, {x:newPixelPositionX,y:newPixelPositionY});
+
 	}
 }

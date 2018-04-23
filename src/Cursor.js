@@ -1,4 +1,5 @@
 import { textures } from "./Textures";
+import { TweenMax, Power4 } from "gsap";
 
 export default class Cursor extends PIXI.Sprite{
 
@@ -13,15 +14,14 @@ export default class Cursor extends PIXI.Sprite{
 		this.pointX = x;
 		this.pointY = y;
 		let pos = this.parent.getChildByName("fg").getGlobalPosition();
-		this.x = pos.x+x*this.width;
-		this.y = pos.y+y*this.width;
+
+		const newX = pos.x+this.pointX*this.width;
+		const newY = pos.y+this.pointY*this.width;
+
+		TweenMax.to(this, 0.1, {x: newX, y:newY, ease:Power4.easeOut});
 	}
 	move(dx,dy){
-		this.pointX += dx;
-		this.pointY += dy;
-		let pos = this.parent.getChildByName("fg").getGlobalPosition();
-		this.x = pos.x+this.pointX*this.width;
-		this.y = pos.y+this.pointY*this.width;
+		this.moveTo(this.pointX + dx, this.pointY + dy);
 	}
 	getX(){
 		return this.pointX;

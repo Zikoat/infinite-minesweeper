@@ -1,4 +1,5 @@
 import { textures, width } from "./Textures";
+import { TweenMax } from "gsap";
 
 export default class CellSprite extends PIXI.Container{ // class for creating and updating sprites
 	constructor(cell){
@@ -8,8 +9,11 @@ export default class CellSprite extends PIXI.Container{ // class for creating an
 		let cellTexture = this.getCellTexture(cell);
 		let back = new PIXI.Sprite(cellTexture.back);
 		let front = new PIXI.Sprite(cellTexture.front);
+		back.name = "bg";
+		front.name = "fg";
 		this.addChildAt(back, 0);
 		this.addChildAt(front, 1);
+		this.playUpdateAnimation();
 	}
 	
 	update(cell){
@@ -19,8 +23,20 @@ export default class CellSprite extends PIXI.Container{ // class for creating an
 		let cellTexture = this.getCellTexture(cell);
 		back.texture = cellTexture.back;
 		front.texture = cellTexture.front;
+		this.playUpdateAnimation();
 	}
 	
+	playUpdateAnimation(cell) {
+		let currentY = this.position.y;
+		let currentX = this.position.x;
+		let front = this.getChildByName("fg");
+		let back = this.getChildByName("bg");
+
+		TweenMax.from(front.scale, 0.2, {x:0, y:0});
+		TweenMax.from(front, 0.2, {x:"+=8", y:"+=8"});
+		TweenMax.from(back, 0.2, {alpha: 0});
+	}
+
 	getCellTexture(cell){
 		var texture = {};
 		
