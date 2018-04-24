@@ -25,8 +25,8 @@ field.on("cellChanged", ()=>{
 
 let button = document.getElementById('menubutton');
 button.src = menubutton;
-button.onclick = function () {
-	console.log("cliced menubutton");
+
+self.toggleMenu = function () {
 	let menu = document.getElementById("menu");
 	menu.style.display = menu.style.display == "none" ? "block" : "none";
 }
