@@ -6,12 +6,15 @@ import menubutton from "./assets/default/menubutton.png";
 
 import css from "./css/stylesheet.css";
 
-if (localStorage.getItem('defaultSavedFieldChunk')) {
-	self.field = FieldStorage.load('defaultSavedFieldChunk');
+const fieldName = "defaultSavedFieldv2";
+
+if (localStorage.getItem(fieldName)) {
+	self.field = FieldStorage.load(fieldName);
 	console.log(`loading previous field with ${self.field.getAll().filter((cell)=>cell.isOpen).length} mines opened`);
 } else {
 	self.field = new Field(0.20, 3);
 	field.open(1,1);
+	FieldStorage.save(field, fieldName);
 }
 
 self.renderer = new FieldRenderer(field);
@@ -20,7 +23,7 @@ self.FieldStorage = FieldStorage;
 
 field.on("cellChanged", ()=>{
 	document.getElementById("score").innerHTML = field.score;
-	FieldStorage.save(field, 'defaultSavedFieldChunk');
+	FieldStorage.save(field, fieldName);
 });
 
 let button = document.getElementById('menubutton');
@@ -32,7 +35,7 @@ self.toggleMenu = function () {
 }
 
 self.restart = function () {
-	localStorage.removeItem('defaultSavedFieldChunk');
-	console.log("romoved defaultSavedFieldChunk");
+	localStorage.removeItem(fieldName);
+	console.log("romoved: ", fieldName);
 	window.location.reload();
 }

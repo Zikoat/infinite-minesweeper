@@ -8,7 +8,7 @@ console.log(HtmlWebpackPlugin);
 module.exports = {
 	entry: "./src/index.js",
 	output: {
-		filename: "bundle.js",
+		filename: "bundle-[hash].js",
 		path: path.resolve(__dirname, "dist"),
 	},
 	plugins: [new HtmlWebpackPlugin({
@@ -27,7 +27,12 @@ module.exports = {
 		     {
 		     	test: /\.(png|svg|jpg|gif|ico)$/,
 			     use:[
-			     	"file-loader"
+			     	{
+			     		loader: "file-loader",
+			     		options: {
+			     			name: "texture-[name]-[hash].[ext]"
+			     		}
+			     	}
 			     ]
 		     },
 		     {
