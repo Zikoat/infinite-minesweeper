@@ -34,7 +34,7 @@ export default class Cell {
 	}
 	toJSON(){
 		const open = this.isOpen ? "1":"0";
-		const mine = this.isMine ? "1":"0";
+		const mine = this.isMine===undefined?"2":this.isMine ? "1":"0";
 		const flagged = this.isFlagged ? "1":"0";
 		return open + mine + flagged;
 	}
