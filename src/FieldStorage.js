@@ -1,6 +1,7 @@
 import Field from "./Field.js";
 import Cell from "./Cell.js";
-
+import {Chunk} from "./Chunk.js";
+import {CHUNK_SIZE} from "./Chunk.js";
 export default class FieldStorage {
 	static save(field, id) { // saves a Field
 		const compressedField = FieldStorage.compress(field);
@@ -30,14 +31,21 @@ export default class FieldStorage {
 
 		for (const row in recoveredField.field) {
 			for (const column in recoveredField.field[row]) {
-				const recoveredCell = recoveredField.field[row][column];
-				let cell = new Cell(parseInt(row), parseInt(column), field);
+				const recoveredChunk = recoveredField.field[row][column];
+				let chunk = new Chunk(parseInt(row), parseInt(column), field);
+				for (const row1 in recoveredField.field[row][column].cells) {
+					for (const column1 in recoveredField.field[row][column].cells[row1]) {
+						const recoveredCell = recoveredField.field[row][column].cells[row1][column1];
+						let cell = new Cell(parseInt(row1)+parseInt(row)*CHUNK_SIZE, parseInt(column1)+parseInt(column)*CHUNK_SIZE, field);
 				
 
-				cell.isOpen = (recoveredCell.charAt(0) == true);
-				cell.isMine = (recoveredCell.charAt(1) == true);
-				cell.isFlagged = (recoveredCell.charAt(2) == true);
-				field.field[row][column] = cell;
+						cell.isOpen = (recoveredCell.charAt(0) == true);
+						cell.isMine = (recoveredCell.charAt(1) == true);
+						cell.isFlagged = (recoveredCell.charAt(2) == true);
+						chunk.cells[row1][column1] = cell;
+					}
+				}
+				field.field[row][column] = chunk;
 			}
 		}
 

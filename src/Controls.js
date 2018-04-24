@@ -120,10 +120,10 @@ export default class Controls {
 		const y = Controls.cursor.getY();
 		const cell = Controls.field.getCell(x, y);
 		const neighbors = Controls.field.getNeighbors(x, y);
-		const flaggedNeighbors = neighbors.filter(cell=>cell.isFlagged);
+		const flaggedNeighbors = neighbors.filter(cell=>cell.isFlagged||(cell.isOpen&&cell.isMine));
 		const closedNotFlaggedNeighbors = neighbors.filter(cell=>!cell.isOpen && !cell.isFlagged);
 
-		if (!cell.isOpen && !cell.isFlagged) {
+		if (!cell.isOpen && !cell.isFlagged || (cell.isOpen&&cell.isMine)) {
 			cell.open();
 			//console.log(`opened`, cell);
 		} else if (flaggedNeighbors.length === cell.value()) {
@@ -139,7 +139,7 @@ export default class Controls {
 		const y = Controls.cursor.getY();
 		const cell = Controls.field.getCell(x, y);
 		const neighbors = Controls.field.getNeighbors(x, y);
-		const closedNeighbors = neighbors.filter(cell=>!cell.isOpen);
+		const closedNeighbors = neighbors.filter(cell=>!cell.isOpen||(cell.isOpen&&cell.isMine));
 		const closedNotFlaggedNeighbors = neighbors.filter(cell=>!cell.isOpen && !cell.isFlagged);
 
 		if (!cell.isOpen) {

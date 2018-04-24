@@ -96,10 +96,8 @@ function setup(Tex){
 	// todo move to controls
 	// disable right click context menu
 	document.addEventListener('contextmenu', event => event.preventDefault());
-
 	updateAllCells(defaultField);
 	centerField(0,0);
-
 	document.getElementById("score").innerHTML = field.score;
 }
 
