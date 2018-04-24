@@ -24,11 +24,11 @@ export default class FieldStorage {
 		// need to recreate the class from the data
 		let recoveredField = JSON.parse(compressedField);
 		let field = new Field();
-
+		
 		for (const property in recoveredField) {
 			field[property] = recoveredField[property];	
 		}
-
+		console.log(field.pristine);
 		for (const row in recoveredField.field) {
 			for (const column in recoveredField.field[row]) {
 				const recoveredChunk = recoveredField.field[row][column];
@@ -40,7 +40,8 @@ export default class FieldStorage {
 				
 
 						cell.isOpen = (recoveredCell.charAt(0) == true);
-						cell.isMine = (recoveredCell.charAt(1) == true);
+						const isMine = recoveredCell.charAt(1);
+						cell.isMine = isMine == "2"?undefined:isMine == "1"?true:false;
 						cell.isFlagged = (recoveredCell.charAt(2) == true);
 						chunk.cells[row1][column1] = cell;
 					}
