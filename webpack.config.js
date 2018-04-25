@@ -23,26 +23,31 @@ module.exports = {
 		contentBase: "./dist"
 	},
 	module: {
-	     rules: [
-		     {
-		     	test: /\.(png|svg|jpg|gif|ico)$/,
-			     use:[
-			     	{
-			     		loader: "file-loader",
-			     		options: {
-			     			name: "texture-[name]-[hash].[ext]"
-			     		}
-			     	}
-			     ]
-		     },
-		     {
-			     test: /\.css$/,
-			     use: [ 'style-loader', 'css-loader' ]
-		     },
-		     {
-		         test: /\.(eot|svg|ttf|woff|woff2)$/,
-		         loader: 'file-loader?name=[name].[ext]'
-		     }
-	     ]
+		rules: [
+			{
+				test: /\.tsx?$/,
+				use: 'ts-loader',
+				exclude: /node_modules/
+			},
+			{
+				test: /\.(png|svg|jpg|gif|ico)$/,
+				use:[
+					{
+						loader: "file-loader",
+						options: {
+							name: "texture-[name]-[hash].[ext]"
+						}
+					}
+				]
+			},
+			{
+				 test: /\.css$/,
+				 use: [ 'style-loader', 'css-loader' ]
+			},
+			{
+				test: /\.(eot|svg|ttf|woff|woff2)$/,
+				loader: 'file-loader?name=[name].[ext]'
+			}
+		]
 	}
 };
