@@ -2,6 +2,7 @@ import Field from "./Field.js";
 import Cell from "./Cell.js";
 import {Chunk} from "./Chunk.js";
 import {CHUNK_SIZE} from "./Chunk.js";
+
 export default class FieldStorage {
 	static save(field, id) { // saves a Field
 		const compressedField = FieldStorage.compress(field);
@@ -12,6 +13,22 @@ export default class FieldStorage {
 		const compressedField = localStorage.getItem(id);
 		const field = FieldStorage.decompress(compressedField);
 		return field;
+	}
+	static registerAutoSave(field, saveName) {
+		let timeSinceLastSave = 0;
+		let lastInteractionTime = Date.now();
+		FieldStorage.timerID = 0;
+
+		field.on("cellChanged", ()=>{
+			console.log(FieldStorage.timerID);
+
+			clearTimeout(FieldStorage.timerID);
+			FieldStorage.timerID = setTimeout(()=>{
+				console.log("trying to save");
+				FieldStorage.save(field, saveName);
+			}, 1000);
+		});
+
 	}
 	static compress(field) { // returns JSON string;
 		const stringifiedField = JSON.stringify(field);

@@ -17,13 +17,15 @@ if (localStorage.getItem(fieldName)) {
 	FieldStorage.save(field, fieldName);
 }
 
+// make the variables available globally, like in index.html and the console
 self.renderer = new FieldRenderer(field);
 self.bot = new SimpleBot(field);
 self.FieldStorage = FieldStorage;
 
+FieldStorage.registerAutoSave(field, fieldName);
+
 field.on("cellChanged", ()=>{
 	document.getElementById("score").innerHTML = field.score;
-	FieldStorage.save(field, fieldName);
 });
 
 let button = document.getElementById('menubutton');
@@ -36,6 +38,6 @@ self.toggleMenu = function () {
 
 self.restart = function () {
 	localStorage.removeItem(fieldName);
-	console.log("romoved: ", fieldName);
+	console.log("removed: ", fieldName);
 	window.location.reload();
 }

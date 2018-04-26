@@ -85,6 +85,9 @@ export default class Field extends EventEmitter{
 				this.generateCell(neighbors[i].x, neighbors[i].y);
 			}
 		}
+
+		// we emit the event before doing the floodfill
+		this.emit("cellChanged", cell);
 		
 		// floodfill
 		if(cell.value() === 0){
@@ -95,7 +98,6 @@ export default class Field extends EventEmitter{
 				});
 		}
 
-		this.emit("cellChanged", cell);
 		return openedCells.length >= 1;
 	}
 	flag(x, y){
