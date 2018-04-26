@@ -99,6 +99,7 @@ function setup(Tex){
 	updateAllCells(defaultField);
 	centerField(0,0);
 	document.getElementById("score").innerHTML = field.score;
+	console.log("done setup");
 }
 
 /** center the field around a coordinate */

@@ -68,8 +68,8 @@ export function load() {
 			}
 
 			width = textures.closed.width;
-			
-			console.log("done loading");
+			// debugging
+			// console.log("done loading");
 			return textures;
 		}).catch(reason=>console.error(reason));
 	}

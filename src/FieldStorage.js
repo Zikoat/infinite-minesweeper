@@ -20,11 +20,8 @@ export default class FieldStorage {
 		FieldStorage.timerID = 0;
 
 		field.on("cellChanged", ()=>{
-			console.log(FieldStorage.timerID);
-
 			clearTimeout(FieldStorage.timerID);
 			FieldStorage.timerID = setTimeout(()=>{
-				console.log("trying to save");
 				FieldStorage.save(field, saveName);
 			}, 1000);
 		});
@@ -45,7 +42,6 @@ export default class FieldStorage {
 		for (const property in recoveredField) {
 			field[property] = recoveredField[property];	
 		}
-		console.log(field.pristine);
 		for (const row in recoveredField.field) {
 			for (const column in recoveredField.field[row]) {
 				const recoveredChunk = recoveredField.field[row][column];
@@ -74,6 +70,6 @@ export default class FieldStorage {
 		const compressedByteCount = unescape(encodeURI(string)).length;
 		const ratio = compressedByteCount / cellsCount;
 		console.log(`saved ${compressedByteCount} bytes with a compression ratio of ${ratio.toPrecision(5)} bytes/cell`);
-		//console.log(string);
+		console.log(string);
 	}
 }
