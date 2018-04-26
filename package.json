@@ -26,17 +26,18 @@
   },
   "homepage": "https://github.com/Zikoat/infinite-minesweeper#readme",
   "devDependencies": {
-    "css-loader": "^0.28.7",
-    "file-loader": "^0.11.2",
+    "css-loader": "^0.28.11",
+    "file-loader": "^1.1.11",
     "html-webpack-plugin": "^2.30.1",
     "style-loader": "^0.18.2",
     "ts-loader": "^4.2.0",
     "typescript": "^2.8.3",
     "webpack": "^3.5.4",
-    "webpack-dev-server": "^2.7.1"
+    "webpack-cli": "^2.0.15",
+    "webpack-dev-server": "^2.11.2"
   },
   "dependencies": {
     "gsap": "^1.20.4",
-    "pixi.js": "^4.5.4"
+    "pixi.js": "^4.7.3"
   }
 }
