@@ -12,7 +12,7 @@ img, canvas {
     -ms-interpolation-mode: nearest-neighbor;
 }
 
-canvas {
+canvas, .ui {
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;

@@ -5,14 +5,16 @@ export default class Controls {
 	static addControls(rootObject, field, cursorTexture) {
 		Controls.field = field;
 		
+		Controls.addCursor(rootObject);
 		Controls.addMouseControls(rootObject);
 		Controls.addKeyboardControls();
 		Controls.removeUIEventBubbling();
+		Controls.disableRightClick();
+	}
 
-		// todo move into own addCursor method
+	static addCursor(rootObject) {
 		Controls.cursor = new Cursor(0, 0);
 		rootObject.addChildAt(Controls.cursor, 2);
-
 	}
 
 	static addMouseControls(rootObject) {
@@ -63,6 +65,11 @@ export default class Controls {
 		for (let element of uiElements) {
 			element.addEventListener('click', (event)=>{event.stopPropagation();}, false);
 		}
+	}
+
+	static disableRightClick() {
+		// disable right click context menu
+		document.addEventListener('contextmenu', event => event.preventDefault());
 	}
 
 	static _onDragStart(event) {
