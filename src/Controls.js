@@ -1,6 +1,7 @@
 import Cursor from "./Cursor";
 import { TweenMax, Power4 } from "gsap";
-
+import FieldRenderer from "./FieldRenderer";
+import {CHUNK_SIZE} from "./Chunk";
 export default class Controls {
 	static addControls(rootObject, field, cursorTexture) {
 		Controls.field = field;
@@ -107,6 +108,8 @@ export default class Controls {
 			if(Math.pow(this.startPosition.x-x,2)+Math.pow(this.startPosition.y-y,2)>Math.pow(width,2)/9) {
 				this.hasDragged = true;
 			}
+			
+			Controls.setLoadedChunksAround(-Math.floor(x/width/CHUNK_SIZE),-Math.floor(y/width/CHUNK_SIZE),width);
 		}
 		if(Controls.mouseInput){
 			let position = event.data.getLocalPosition(this.getChildByName("fg"));
@@ -117,11 +120,19 @@ export default class Controls {
 		Controls.mouseInput = true;
 		document.getElementsByTagName("BODY")[0].style.cursor = "default";
 	}
-
+	static setLoadedChunksAround(x,y,width){
+		let windowChunkWidth =  Math.ceil(window.innerWidth/width/CHUNK_SIZE);
+		let windowChunkHeight = Math.ceil(window.innerHeight/width/CHUNK_SIZE);
+		for(let i = x-1; i<x+windowChunkWidth;i++){
+			for(let j = y-1; j<y+windowChunkHeight;j++){
+				Controls.field.setVisibleChunk(i, j);
+			}
+		}
+		Controls.field.loadVisibleChunks();
+	}
 	static _onRightClick(event){
 		Controls.flag();
 	}
-
 	static open(){
 		const x = Controls.cursor.getX();
 		const y = Controls.cursor.getY();
@@ -139,6 +150,7 @@ export default class Controls {
 			})
 			//console.log(`opened the neighbors of`, cell);
 		}
+		Controls.field.save();
 	}
 
 	static flag(){
@@ -158,6 +170,7 @@ export default class Controls {
 			})
 			//console.log(`flagged the neighbors of`, cell);
 		}
+		Controls.field.save();
 	}
 	
 	static moveViewTo(newx, newy) {
@@ -166,10 +179,12 @@ export default class Controls {
 		const y = newy*width;
 		const newPixelPositionX = -x+Math.floor(window.innerWidth/width/2)*width;
 		const newPixelPositionY = -y+Math.floor(window.innerHeight/width/2)*width;
-
+		
 		Controls.cursor.parent.getChildByName("fg").position.set(newPixelPositionX,newPixelPositionY);
 		Controls.cursor.parent.getChildByName("bg").tilePosition.set(newPixelPositionX,newPixelPositionY);
 
+		Controls.setLoadedChunksAround(Math.floor(newx/CHUNK_SIZE),Math.floor(newy/CHUNK_SIZE),width);
+		
 		// didnt work as expected
 		// TweenMax.to(Controls.cursor.parent.getChildByName("fg").position, 0.2, {x:newPixelPositionX,y:newPixelPositionY})
 		// TweenMax.to(Controls.cursor.parent.getChildByName("bg").tilePosition, 0.2, {x:newPixelPositionX,y:newPixelPositionY});
