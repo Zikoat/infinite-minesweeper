@@ -3,7 +3,9 @@
  */
 import Cell from "./Cell";
 import * as Layouts from "./Layouts";
-import EventEmitter from "eventemitter3"
+import * as PIXI from "pixi.js";
+
+const EventEmitter = PIXI.utils.EventEmitter;
 
 
 import {Chunk} from "./Chunk"
@@ -13,9 +15,21 @@ import {CHUNK_SIZE} from "./Chunk"
  * changedCells, if any cells have been changed, returns an array of the cells that have been changed
  * wrongMove, if a wrong cell has been pressed (open mine or flag non-mine), returns the cell that was pressed
  */
-export default class Field extends EventEmitter{
+export default class Field extends EventEmitter {
 	// do not call any of the cell's functions in the field class, to prevent
 	// infinite loops
+
+	private field: any;
+	private chunksToSave: any;
+	public probability: number;
+	public safeRadius: number;
+	public pristine: boolean;
+	public gameOver:boolean;
+	public neighborPosition: any;
+	public score: number;
+	public visibleChunks: any;
+
+
 	constructor(probability=0.5, safeRadius=1){
 		super();
 
@@ -51,7 +65,8 @@ export default class Field extends EventEmitter{
 	}
 	open(x, y){
 		// returns an array of all the opened cells: [Cell, Cell, Cell, ...]
-		
+		// todo sanitize input
+
 		if(this.pristine) this.setSafeCells(x, y);
 		let cell = this.getCell(x,y);
 
@@ -129,7 +144,7 @@ export default class Field extends EventEmitter{
 	generateChunk(x,y){
 		if(!(x in this.field)) this.field[x] = {};
 		if(!(y in this.field[x])){
-			this.field[x][y] = self.FieldStorage.loadChunk(fieldName,x,y,this);
+			this.field[x][y] = window.FieldStorage.loadChunk(window.fieldName,x,y,this);
 			if(this.field[x][y]===undefined)
 				this.field[x][y] = new Chunk(x,y,this);
 			else{
@@ -147,7 +162,7 @@ export default class Field extends EventEmitter{
 	showChunk(x,y){
 		if(!(x in this.field)) this.field[x] = {};
 		if(!(y in this.field[x])){
-			let chunk = self.FieldStorage.loadChunk(fieldName,x,y,this);
+			let chunk = window.FieldStorage.loadChunk(window.fieldName,x,y,this);
 			if(!(chunk===undefined)){
 			this.field[x][y]=chunk;
 			this.field[x][y].getAll().forEach((cell)=>{
@@ -275,7 +290,7 @@ export default class Field extends EventEmitter{
 		}
 	}
 	toJSON() {
-		const fieldToStore = {};
+		const fieldToStore: any = {};
 		fieldToStore.probability = this.probability;
 		fieldToStore.score = this.score;
 		return fieldToStore;

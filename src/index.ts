@@ -8,7 +8,7 @@ const menubutton = require("./assets/default/menubutton.png");
 var fieldName = window.fieldName = "defaultSavedFieldv3";
 window.FieldStorage = FieldStorage;
 
-var field: any;
+var field: Field;
 
 if (localStorage.getItem(fieldName)) {
 	field = FieldStorage.load(fieldName);
@@ -29,7 +29,7 @@ window.FieldStorage = FieldStorage;
 FieldStorage.registerAutoSave(field, fieldName);
 
 field.on("cellChanged", ()=>{
-	document.getElementById("score").innerHTML = field.score;
+	document.getElementById("score").innerHTML = field.score.toString();
 });
 
 let button: HTMLImageElement = document.getElementById('menubutton') as HTMLImageElement;

@@ -8,8 +8,4 @@ interface Window {
     fieldName: string;
 }
 
-interface Field extends Event {
-
-}
-
 declare function require(string): string;
