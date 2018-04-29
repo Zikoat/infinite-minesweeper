@@ -5,7 +5,8 @@ import SimpleBot from "./bots/botSimple";
 import "./css/stylesheet.css";
 const menubutton = require("./assets/default/menubutton.png");
 
-const fieldName = "defaultSavedFieldv2";
+var fieldName = window.fieldName = "defaultSavedFieldv3";
+window.FieldStorage = FieldStorage;
 
 var field: any;
 
@@ -40,7 +41,7 @@ self.toggleMenu = function () {
 }
 
 self.restart = function () {
-	localStorage.removeItem(fieldName);
+	localStorage.clear();
 	console.log("removed: ", fieldName);
 	window.location.reload();
 }

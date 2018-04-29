@@ -31,6 +31,8 @@ export default class Field extends EventEmitter{
 
 		this.neighborPosition = Layouts.normal;
 		this.score = 0;
+		this.chunksToSave = [];
+		this.visibleChunks = [];
 		// todo someday: 
 		// be able to change the options through an object
 		// overwrite mine state
@@ -43,8 +45,7 @@ export default class Field extends EventEmitter{
 		// if the row or cell is not created, we will get an error: cant read property of undefined
 		let chunkX = Math.floor(x/CHUNK_SIZE);
 		let chunkY = Math.floor(y/CHUNK_SIZE);
-		if(!(chunkX in this.field)) return new Cell(x, y, this);
-		if(!(chunkY in this.field[chunkX])) return new Cell(x, y, this);
+		this.generateChunk(chunkX,chunkY);
 		
 		return this.field[chunkX][chunkY].getCellFromGlobalCoords(x,y);
 	}
@@ -100,11 +101,20 @@ export default class Field extends EventEmitter{
 
 		return openedCells.length >= 1;
 	}
+	save(){
+		this.emit("save",this.chunksToSave.slice(0));
+		this.chunksToSave = [];
+	}
 	flag(x, y){
 		let cell = this.getCell(x, y);
 		if(!cell.isOpen){
 			cell.isFlagged = !cell.isFlagged;
 			this.emit("cellChanged", cell);
+		}
+		let chunkX = Math.floor(x/CHUNK_SIZE);
+		let chunkY = Math.floor(y/CHUNK_SIZE);
+		if(!this.chunksToSave.includes(this.getChunk(chunkX,chunkY))){
+			this.chunksToSave.push(this.getChunk(chunkX,chunkY));
 		}
 	}
 	getNeighbors(x, y){
@@ -119,8 +129,42 @@ export default class Field extends EventEmitter{
 	generateChunk(x,y){
 		if(!(x in this.field)) this.field[x] = {};
 		if(!(y in this.field[x])){
-			this.field[x][y] = new Chunk(x,y,this);
+			this.field[x][y] = self.FieldStorage.loadChunk(fieldName,x,y,this);
+			if(this.field[x][y]===undefined)
+				this.field[x][y] = new Chunk(x,y,this);
+			else{
+
+				this.field[x][y].getAll().forEach((cell)=>{
+
+					if(cell.isOpen||cell.isFlagged){
+						this.emit("cellChanged", cell);
+					}
+				});
+				
+			}
 		}
+	}
+	showChunk(x,y){
+		if(!(x in this.field)) this.field[x] = {};
+		if(!(y in this.field[x])){
+			let chunk = self.FieldStorage.loadChunk(fieldName,x,y,this);
+			if(!(chunk===undefined)){
+			this.field[x][y]=chunk;
+			this.field[x][y].getAll().forEach((cell)=>{
+				if(cell.isOpen||cell.isFlagged){
+					this.emit("cellChanged", cell);
+				}
+			});
+		}
+		}
+	}
+	unloadChunk(x,y){
+		this.field[x][y].getAll().forEach((cell)=>{
+			if(!(cell.sprite === undefined)){
+				cell.sprite.parent.removeChild(cell.sprite);
+			}
+		});
+		delete this.field[x][y];
 	}
 	generateCell(x, y, isFlagged = false, isMine = undefined){
 		//calculates coordinates of a chunk
@@ -128,9 +172,11 @@ export default class Field extends EventEmitter{
 		let chunkY = Math.floor(y/CHUNK_SIZE);
 		//generates a chunk if it isn't already generated
 		this.generateChunk(chunkX,chunkY);
-
+		if(!this.chunksToSave.includes(this.getChunk(chunkX,chunkY))){
+			this.chunksToSave.push(this.getChunk(chunkX,chunkY));
+		}
 		//gets a reference to a cell that we want to generate from the chunk
-		let cell = this.field[chunkX][chunkY].getCellFromGlobalCoords(x,y);
+		let cell = this.getChunk(chunkX,chunkY).getCellFromGlobalCoords(x,y);
 
 		//if isMine field of the cell is undefined we calculate it
 		if(cell.isMine===undefined) {
@@ -141,6 +187,7 @@ export default class Field extends EventEmitter{
 			cell.isFlagged = isFlagged;
 			return cell;
 		} else {console.warn(x, y, "is already generated");}
+
 	}
 	restart(){// todo
 		this.pristine = true;
@@ -153,7 +200,8 @@ export default class Field extends EventEmitter{
 		for (var i = 0; i < rows.length; i++) {
 			let columns = Object.keys(this.field[rows[i]]);
 			for (var j = 0; j < columns.length; j++) {
-				let fromChunk =this.getChunk(rows[i],columns[j]).getAll();
+				let chunk = this.getChunk(rows[i],columns[j])
+				let fromChunk =chunk.getAll();
 				for(let k in fromChunk)
 					cells.push(fromChunk[k]);
 			}
@@ -185,6 +233,27 @@ export default class Field extends EventEmitter{
 		if(cell.isOpen)	return false;
 		return true;
 	}
+	setVisibleChunk(x,y){
+		this.visibleChunks.push({'x':x,'y':y});
+	}
+	loadVisibleChunks(){
+		for(let x in this.field){
+			for(let y in this.field[x]){
+				let remove = true;
+				for(let i = 0; i<this.visibleChunks.length;i++){
+					if(this.visibleChunks[i].x==x && this.visibleChunks[i].y==y)
+						remove = false;
+				}
+				if(remove){
+					this.unloadChunk(x,y);
+				}
+			}
+		}
+		for(let i = 0; i<this.visibleChunks.length;i++){
+			this.showChunk(this.visibleChunks[i].x,this.visibleChunks[i].y);
+		}
+		this.visibleChunks = [];
+	}
 	setSafeCells(x0, y0){// initiate the field with a circle of cells that aren't mines
 		this.pristine = false;
 		let r = this.safeRadius;
@@ -207,8 +276,8 @@ export default class Field extends EventEmitter{
 	}
 	toJSON() {
 		const fieldToStore = {};
-		Object.assign(fieldToStore, this)
-		delete fieldToStore._events;
+		fieldToStore.probability = this.probability;
+		fieldToStore.score = this.score;
 		return fieldToStore;
 	}
 }

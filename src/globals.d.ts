@@ -5,6 +5,7 @@ interface Window {
     FieldStorage: any;
     toggleMenu: any;
     restart: any;
+    fieldName: string;
 }
 
 interface Field extends Event {

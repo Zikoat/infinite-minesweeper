@@ -15,17 +15,13 @@ export default class FieldStorage {
 		return field;
 	}
 	static registerAutoSave(field, saveName) {
-		let timeSinceLastSave = 0;
-		let lastInteractionTime = Date.now();
-		FieldStorage.timerID = 0;
-
-		field.on("cellChanged", ()=>{
-			clearTimeout(FieldStorage.timerID);
-			FieldStorage.timerID = setTimeout(()=>{
-				FieldStorage.save(field, saveName);
-			}, 1000);
+		field.on("save", (chunks)=>{
+			//FieldStorage.save(field, saveName);
+			chunks.forEach((chunk)=>{
+				FieldStorage.saveChunk(chunk,saveName);
+			});
+			FieldStorage.save(field, saveName);
 		});
-
 	}
 	static compress(field) { // returns JSON string;
 		const stringifiedField = JSON.stringify(field);
@@ -33,36 +29,39 @@ export default class FieldStorage {
 
 		return stringifiedField;
 	}
+	static saveChunk(chunk,id){
+		localStorage.setItem(id+chunk.x+";"+chunk.y, JSON.stringify(chunk));
+	}
+	static loadChunk(id,x,y,field){
+		
+		var chunk = new Chunk(x,y,field);
+		if(localStorage.getItem(id+chunk.x+";"+chunk.y)){
+			var data = JSON.parse(localStorage.getItem(id+chunk.x+";"+chunk.y));
+			
+			for(let i = 0;i<CHUNK_SIZE;i++){
+				for(let j = 0;j<CHUNK_SIZE;j++){
+					let cell = new Cell(x*CHUNK_SIZE+i,y*CHUNK_SIZE+j,field);
+
+					let cellPointer = (i*CHUNK_SIZE+j)*3;
+					cell.isOpen = (data.charAt(cellPointer) == true);
+					const isMine = data.charAt(cellPointer+1);
+					cell.isMine = isMine == "2"?undefined:isMine == "1"?true:false;
+					cell.isFlagged = (data.charAt(cellPointer+2) == true);
+					chunk.cells[i][j] = cell;
+				}
+			}
+			return chunk;
+		}
+		
+		return undefined;
+	}
 	static decompress(compressedField) {
 		// when stringifying, we have changed the class into an object, and we 
 		// need to recreate the class from the data
 		let recoveredField = JSON.parse(compressedField);
 		let field = new Field();
-		
-		for (const property in recoveredField) {
-			field[property] = recoveredField[property];	
-		}
-		for (const row in recoveredField.field) {
-			for (const column in recoveredField.field[row]) {
-				const recoveredChunk = recoveredField.field[row][column];
-				let chunk = new Chunk(parseInt(row), parseInt(column), field);
-				for (const row1 in recoveredField.field[row][column].cells) {
-					for (const column1 in recoveredField.field[row][column].cells[row1]) {
-						const recoveredCell = recoveredField.field[row][column].cells[row1][column1];
-						let cell = new Cell(parseInt(row1)+parseInt(row)*CHUNK_SIZE, parseInt(column1)+parseInt(column)*CHUNK_SIZE, field);
-				
-
-						cell.isOpen = (recoveredCell.charAt(0) == true);
-						const isMine = recoveredCell.charAt(1);
-						cell.isMine = isMine == "2"?undefined:isMine == "1"?true:false;
-						cell.isFlagged = (recoveredCell.charAt(2) == true);
-						chunk.cells[row1][column1] = cell;
-					}
-				}
-				field.field[row][column] = chunk;
-			}
-		}
-
+		field.score = recoveredField.score;	
+		field.probability = recoveredField.probability;
 		return field;
 	}
 	static logStats(field, string) {
