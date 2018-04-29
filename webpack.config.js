@@ -3,10 +3,9 @@
  */
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-console.log(HtmlWebpackPlugin);
 
 module.exports = {
-	entry: "./src/index.js",
+	entry: "./src/index.ts",
 	mode:"development",
 	output: {
 		filename: "bundle-[hash].js",
@@ -50,5 +49,8 @@ module.exports = {
 				loader: 'file-loader?name=[name].[ext]'
 			}
 		]
+	},
+	resolve: {
+	  extensions: [".ts", ".tsx", ".js"]
 	}
 };
