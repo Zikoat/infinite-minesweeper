@@ -2,25 +2,28 @@ import Field from "./Field";
 import FieldRenderer from "./FieldRenderer";
 import FieldStorage from "./FieldStorage";
 import SimpleBot from "./bots/botSimple";
-import menubutton from "./assets/default/menubutton.png";
-
-import css from "./css/stylesheet.css";
+import "./css/stylesheet.css";
+const menubutton = require("./assets/default/menubutton.png");
 
 const fieldName = "defaultSavedFieldv2";
 
+var field: any;
+
 if (localStorage.getItem(fieldName)) {
-	self.field = FieldStorage.load(fieldName);
-	console.log(`loading previous field with ${self.field.getAll().filter((cell)=>cell.isOpen).length} mines opened`);
+	field = FieldStorage.load(fieldName);
+	console.log(`loading previous field with ${field.getAll().filter((cell)=>cell.isOpen).length} mines opened`);
 } else {
-	self.field = new Field(0.20, 3);
+	field = new Field(0.20, 3);
 	field.open(1,1);
 	FieldStorage.save(field, fieldName);
 }
 
-// make the variables available globally, like in index.html and the console
-self.renderer = new FieldRenderer(field);
-self.bot = new SimpleBot(field);
-self.FieldStorage = FieldStorage;
+window.field = field;
+
+// make the variables available globally, so we can access them in index.html and the console
+window.renderer = new FieldRenderer(field);
+window.bot = new SimpleBot(field);
+window.FieldStorage = FieldStorage;
 
 FieldStorage.registerAutoSave(field, fieldName);
 
@@ -28,7 +31,7 @@ field.on("cellChanged", ()=>{
 	document.getElementById("score").innerHTML = field.score;
 });
 
-let button = document.getElementById('menubutton');
+let button: HTMLImageElement = document.getElementById('menubutton') as HTMLImageElement;
 button.src = menubutton;
 
 self.toggleMenu = function () {
