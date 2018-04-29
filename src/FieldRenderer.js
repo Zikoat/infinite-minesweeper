@@ -14,13 +14,14 @@ export default class FieldRenderer /*extends PIXI.Application*/ {
 		defaultField = field;
 		
 		defaultField.on("cellChanged", (cell)=>{
-			updateCell(defaultField, cell.x, cell.y);
+			
+				updateCell(defaultField,cell);
 		});
 
 		Textures.load().then(setup);
 	}
-	updateCell(x,y){
-		updateCell(defaultField, x, y);
+	updateCell(cell){
+		updateCell(defaultField, cell);
 	}
 	updateAllCells(){
 		updateAllCells(defaultField);
@@ -49,10 +50,7 @@ var defaultField;
 var width;
 var counter = 0;
 var cursor;
-
-function updateCell(field, x, y){
-	let cell = field.getCell(x, y);
-	
+function updateCell(field,cell){
 	if(cell.sprite===undefined){
 		cell.sprite = new CellSprite(cell);
 		fieldContainer.addChild(cell.sprite);
@@ -64,14 +62,14 @@ function updateCell(field, x, y){
 
 function updateCells(array){
 	array.forEach(cell=>{
-		updateCell(defaultField, cell.x, cell.y);
+		updateCell(defaultField, cell);
 	});
 }
 
 function updateAllCells(field){
 	field.getAll()
 		.filter(cell=> cell.isOpen || cell.isFlagged)
-		.forEach(cell=>updateCell(field, cell.x, cell.y));
+		.forEach(cell=>updateCell(field, cell));
 }
 
 function setup(Tex){
@@ -91,16 +89,17 @@ function setup(Tex){
 	clickHandler.addChildAt(fieldContainer, 1);
 	
 	Controls.addControls(clickHandler, defaultField, Tex.cursor);
-	clickHandler
 	
 	// todo move to controls
 	// disable right click context menu
 	document.addEventListener('contextmenu', event => event.preventDefault());
 	updateAllCells(defaultField);
 	centerField(0,0);
+	Controls.setLoadedChunksAround(0,0,background.texture.width);
 	document.getElementById("score").innerHTML = field.score;
 	console.log("done setup");
 }
+
 
 /** center the field around a coordinate */
 function centerField (x = 0, y = 0) {
