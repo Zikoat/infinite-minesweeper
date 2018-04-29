@@ -7,8 +7,5 @@ interface Window {
     restart: any;
 }
 
-interface Field extends Event {
-
-}
 
 declare function require(string): string;

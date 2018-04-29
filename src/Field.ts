@@ -3,7 +3,9 @@
  */
 import Cell from "./Cell";
 import * as Layouts from "./Layouts";
-import EventEmitter from "eventemitter3"
+import * as PIXI from "pixi.js";
+
+const EventEmitter = PIXI.utils.EventEmitter;
 
 
 import {Chunk} from "./Chunk"
@@ -13,9 +15,18 @@ import {CHUNK_SIZE} from "./Chunk"
  * changedCells, if any cells have been changed, returns an array of the cells that have been changed
  * wrongMove, if a wrong cell has been pressed (open mine or flag non-mine), returns the cell that was pressed
  */
-export default class Field extends EventEmitter{
+export default class Field extends EventEmitter {
 	// do not call any of the cell's functions in the field class, to prevent
 	// infinite loops
+
+	private field: any;
+	public probability: number;
+	public safeRadius: number;
+	public pristine: boolean;
+	public gameOver:boolean;
+	public neighborPosition: any;
+	public score: number
+
 	constructor(probability=0.5, safeRadius=1){
 		super();
 
@@ -50,7 +61,8 @@ export default class Field extends EventEmitter{
 	}
 	open(x, y){
 		// returns an array of all the opened cells: [Cell, Cell, Cell, ...]
-		
+		// todo sanitize input
+
 		if(this.pristine) this.setSafeCells(x, y);
 		let cell = this.getCell(x,y);
 
@@ -206,8 +218,8 @@ export default class Field extends EventEmitter{
 		}
 	}
 	toJSON() {
-		const fieldToStore = {};
-		Object.assign(fieldToStore, this)
+		const fieldToStore: any = {};
+		Object.assign(fieldToStore, this);
 		delete fieldToStore._events;
 		return fieldToStore;
 	}

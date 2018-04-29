@@ -1,7 +1,6 @@
-import Field from "./Field.js";
-import Cell from "./Cell.js";
-import {Chunk} from "./Chunk.js";
-import {CHUNK_SIZE} from "./Chunk.js";
+import Field from "./Field";
+import Cell from "./Cell";
+import {Chunk, CHUNK_SIZE} from "./Chunk";
 
 export default class FieldStorage {
 	static save(field, id) { // saves a Field
