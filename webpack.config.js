@@ -7,6 +7,7 @@ console.log(HtmlWebpackPlugin);
 
 module.exports = {
 	entry: "./src/index.js",
+	mode:"development",
 	output: {
 		filename: "bundle-[hash].js",
 		path: path.resolve(__dirname, "dist"),
