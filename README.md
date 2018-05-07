@@ -5,12 +5,12 @@ An infinite, open source, Minesweeper. Based on borbit's mienfield.com
 and join our [Discord][discord]
 
 ## Getting started with development
-If you need help with using installation or using the source, message me on the [Discord server][discord]
+If you need help with using installation or using the source, message me on the [Discord server][discord] or [send me a mail][mail]
 ### Prerequisites
 Install [nodejs](https://nodejs.org/en/)
 
 ### Installing
-[clone the git repository](https://help.github.com/articles/cloning-a-repository/) to your computer, from a [git IDE](https://www.sourcetreeapp.com/), or with the console.
+[clone the git repository](https://help.github.com/articles/cloning-a-repository/) to your computer, from a [git GUI](https://www.sourcetreeapp.com/), or with the console.
 
 open your terminal, and change your directory to the cloned folder
 ```
@@ -33,8 +33,12 @@ npm run build
 ```
 The files will be built to the `./dist` directory. Copy these files to your hosting platform
 
-## Built With
+## Made With
 * Pixi.js
+* TypeScript
 * Webpack
- 
+* GreenSock
+* :heart:
+
 [discord]: https://discord.gg/UWWueDb
+[mail]:<mailto:sschoeler99@gmail.com>
