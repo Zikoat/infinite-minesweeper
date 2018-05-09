@@ -1,7 +1,6 @@
 /**
  * Created by sisc0606 on 19.08.2017.
  */
-import Cell from "./Cell";
 import * as Layouts from "./Layouts";
 import * as PIXI from "pixi.js";
 

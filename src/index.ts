@@ -1,6 +1,7 @@
 import Field from "./Field";
 import FieldRenderer from "./FieldRenderer";
 import FieldStorage from "./FieldStorage";
+import probability from "./Settings";
 import SimpleBot from "./bots/botSimple";
 import "./css/stylesheet.css";
 const menubutton = require("./assets/default/menubutton.png");
@@ -42,6 +43,7 @@ self.toggleMenu = function () {
 
 self.restart = function () {
 	localStorage.clear();
+	// todo save settings
 	console.log("removed: ", fieldName);
 	window.location.reload();
 }
