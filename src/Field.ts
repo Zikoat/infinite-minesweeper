@@ -3,6 +3,7 @@
  */
 import * as Layouts from "./Layouts";
 import * as PIXI from "pixi.js";
+import FieldData from "./FieldData";
 
 const EventEmitter = PIXI.utils.EventEmitter;
 
@@ -32,7 +33,7 @@ export default class Field extends EventEmitter {
 	constructor(probability=0.5, safeRadius=1){
 		super();
 
-		this.field = {};
+		this.field = new FieldData();
 		// this is the probability that a mine is a cell
 		this.probability = probability;
 		// the field is pristine if no cells are opened, set this to true again with
