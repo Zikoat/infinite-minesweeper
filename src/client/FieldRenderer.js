@@ -4,7 +4,7 @@
 
 import * as PIXI from "pixi.js";
 import * as Textures from "./Textures.js";
-import FieldStorage from "./FieldStorage";
+import FieldStorage from "../server/FieldStorage";
 import Controls from "./Controls"
 import CellSprite from "./CellSprite";
 import {TweenMax, Power2, TimelineLite} from "gsap";
@@ -91,7 +91,7 @@ function setup(Tex){
 	clickHandler.addChildAt(fieldContainer, 1);
 	
 	Controls.addControls(clickHandler, defaultField, Tex.cursor);
-	clickHandler
+	
 	
 	// todo move to controls
 	// disable right click context menu

@@ -5,20 +5,20 @@
 import * as PIXI from "pixi.js";
 
 // todo make loading multiple skins possible
-import mine from "./assets/default/mine.png";
-import closed from "./assets/default/closed.png";
-import flag from "./assets/default/flag.png";
-import mineWrong from "./assets/default/mineWrong.png";
-import open from "./assets/default/open.png";
-import cursor from "./assets/default/cursor.png";
-import one      from "./assets/default/1.png";
-import two      from "./assets/default/2.png";
-import three    from "./assets/default/3.png";
-import four     from "./assets/default/4.png";
-import five     from "./assets/default/5.png";
-import six      from "./assets/default/6.png";
-import seven    from "./assets/default/7.png";
-import eight    from "./assets/default/8.png";
+import mine from "../assets/default/mine.png";
+import closed from "../assets/default/closed.png";
+import flag from "../assets/default/flag.png";
+import mineWrong from "../assets/default/mineWrong.png";
+import open from "../assets/default/open.png";
+import cursor from "../assets/default/cursor.png";
+import one      from "../assets/default/1.png";
+import two      from "../assets/default/2.png";
+import three    from "../assets/default/3.png";
+import four     from "../assets/default/4.png";
+import five     from "../assets/default/5.png";
+import six      from "../assets/default/6.png";
+import seven    from "../assets/default/7.png";
+import eight    from "../assets/default/8.png";
 
 
 let loadingPromise;

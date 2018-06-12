@@ -6,7 +6,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 console.log(HtmlWebpackPlugin);
 
 module.exports = {
-	entry: "./src/index.js",
+	entry: "./src/client/index.js",
 	output: {
 		filename: "bundle-[hash].js",
 		path: path.resolve(__dirname, "dist"),
@@ -15,7 +15,7 @@ module.exports = {
 			title: "Minefield Resurrected",
 			filename: "index.html",
 			path: "./dist",
-			template: "./src/index.html",
+			template: "./src/client/index.html",
 			favicon: 'src/assets/favicon.ico'
 		})],
 	devtool: "inline-source-map",

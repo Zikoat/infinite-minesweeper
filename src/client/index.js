@@ -1,10 +1,23 @@
-import Field from "./Field";
+import Field from "../server/Field";
 import FieldRenderer from "./FieldRenderer";
-import FieldStorage from "./FieldStorage";
-import SimpleBot from "./bots/botSimple";
-import menubutton from "./assets/default/menubutton.png";
+import FieldStorage from "../server/FieldStorage";
+import SimpleBot from "../bots/botSimple";
+import menubutton from "../assets/default/menubutton.png";
+import firebase from "firebase";
+import css from "../css/stylesheet.css";
 
-import css from "./css/stylesheet.css";
+// Initialize Firebase
+const config = {
+	apiKey: "AIzaSyBP5owB_q-91IOAdUwcM55RpwwogYVaX9U",
+	authDomain: "minefieldresurrected.firebaseapp.com",
+	databaseURL: "https://minefieldresurrected.firebaseio.com",
+	projectId: "minefieldresurrected",
+	storageBucket: "minefieldresurrected.appspot.com",
+	messagingSenderId: "997317465565"
+};
+firebase.initializeApp(config);
+
+var database = firebase.database();
 
 const fieldName = "defaultSavedFieldv2";
 
