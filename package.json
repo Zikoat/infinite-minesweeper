@@ -39,6 +39,7 @@
   "dependencies": {
     "firebase": "^5.0.4",
     "gsap": "^1.20.4",
-    "pixi.js": "^4.7.3"
+    "pixi.js": "^4.7.3",
+    "seedrandom": "^2.4.3"
   }
 }

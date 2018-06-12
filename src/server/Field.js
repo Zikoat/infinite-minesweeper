@@ -3,11 +3,10 @@
  */
 import Cell from "./Cell";
 import * as Layouts from "../Layouts";
-import EventEmitter from "eventemitter3"
-
-
-import {Chunk} from "./Chunk"
-import {CHUNK_SIZE} from "./Chunk"
+import EventEmitter from "eventemitter3";
+import random from "seedrandom";
+import {Chunk} from "./Chunk";
+import {CHUNK_SIZE} from "./Chunk";
 /**
  * events:
  * changedCells, if any cells have been changed, returns an array of the cells that have been changed
@@ -28,6 +27,8 @@ export default class Field extends EventEmitter{
 		// makes the first click not press a mine, radius is a float and checks in a circle
 		this.safeRadius = safeRadius;
 		this.gameOver = false;
+		
+		this.seed = "75319032468";
 
 		this.neighborPosition = Layouts.normal;
 		this.score = 0;
@@ -76,6 +77,7 @@ export default class Field extends EventEmitter{
 		}
 		this.score++;
 
+		// todo remove this when we have created a ismine generator, which never has undefined minestate
 		// generating of neighbors. we generate the cells when a neighbor is opened
 		let neighbors = cell.getNeighbors();
 		for (var i = 0; i < neighbors.length; i++) {
@@ -85,7 +87,9 @@ export default class Field extends EventEmitter{
 				this.generateCell(neighbors[i].x, neighbors[i].y);
 			}
 		}
-
+		// todo save the cell
+		// this.data.save(cell)
+		
 		// we emit the event before doing the floodfill
 		this.emit("cellChanged", cell);
 		
@@ -104,6 +108,7 @@ export default class Field extends EventEmitter{
 		let cell = this.getCell(x, y);
 		if(!cell.isOpen){
 			cell.isFlagged = !cell.isFlagged;
+			// todo data.save(cell)
 			this.emit("cellChanged", cell);
 		}
 	}
@@ -168,6 +173,9 @@ export default class Field extends EventEmitter{
 			.filter(cell=>cell.isMine)
 			.length;
 	}
+	isMine(x, y) {
+		return random(this.seed + ":" + x + ":" + y)() < this.probability;
+	}
 	checkForErrors(){
 		// debugging
 		let cells = this.getAll();
@@ -199,6 +207,11 @@ export default class Field extends EventEmitter{
 					let y = y0+dy;
 					// we generate the cell, and overwrite the isMine state
 					this.generateCell(x, y, false, false);
+					// todo rewrite with save
+					// let cell = this.data.getCell(x, y);
+					// cell.isFlagged = false;
+					// cell.isMine = false;
+					// this.data.save(cell);
 				}
 				// one-lined version
 				// if(r**2>dx**2+dy**2) this.open(x0+dx, y0+dx);
