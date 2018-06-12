@@ -8,6 +8,7 @@ import FieldStorage from "../server/FieldStorage";
 import Controls from "./Controls"
 import CellSprite from "./CellSprite";
 import {TweenMax, Power2, TimelineLite} from "gsap";
+import {CHUNK_SIZE} from "../server/Chunk";
 
 export default class FieldRenderer /*extends PIXI.Application*/ {
 	constructor(field){
@@ -47,8 +48,6 @@ app.stage.addChild(clickHandler);
 var defaultField;
 
 var width;
-var counter = 0;
-var cursor;
 
 function updateCell(field, x, y){
 	let cell = field.getCell(x, y);
@@ -92,6 +91,7 @@ function setup(Tex){
 	
 	Controls.addControls(clickHandler, defaultField, Tex.cursor);
 	
+	// todo listen to field moved event, and subscribe to visible chunks, if they havent been subscribed to yet. also unsubscribe
 	
 	// todo move to controls
 	// disable right click context menu
@@ -112,4 +112,46 @@ function centerField (x = 0, y = 0) {
 	// newX and newY are pixel-coordinates
 	fieldContainer.position.set(newX,newY);
 	background.tilePosition.set(newX,newY);
+}
+
+function getVisibleChunks() {
+	// the naming of positions follows a pattern:
+	// the first word tells us where the entity is located. this can be in screen or world space, and may be omitted
+	// the second word is what unit the coordinates use. this can be pixel, tile or chunk.
+	// the third word is the name of the entity. e.g. "world" or "windowStart"
+	// the fourth word tells us what type the coordinates represent. this can be an offset, a coordinate or a size
+	
+	// in the case of globalChunkWindowEndCoordinates, it contains the coordinates of the chunk which is in
+	// the bottom-right corner of the window, in the global coordinate space.
+	
+	const pixelWorldOffset = fieldContainer.getGlobalPosition();
+	const globalPixelWindowStartCoordinates = {
+		x: -pixelWorldOffset.x,
+		y: -pixelWorldOffset.y
+	} ;
+	
+	const pixelTileSize = background.texture.width;
+	const tileChunkSize = CHUNK_SIZE;
+	const globalChunkWindowStartCoordinates = {
+		x: Math.floor(globalPixelWindowStartCoordinates.x / pixelTileSize / tileChunkSize),
+		y: Math.floor(globalPixelWindowStartCoordinates.y / pixelTileSize / tileChunkSize)
+	};
+	
+	const pixelWindowSize = {
+		width: window.innerWidth,
+		height: window.innerHeight
+	};
+	const globalChunkWindowEndCoordinates = {
+		x: Math.floor((globalPixelWindowStartCoordinates.x + pixelWindowSize.width) / pixelTileSize / tileChunkSize),
+		y: Math.floor((globalPixelWindowStartCoordinates.y + pixelWindowSize.height) / pixelTileSize / tileChunkSize)
+	};
+	
+	let visibleChunkCoordinates = [];
+	for (let x = globalChunkWindowStartCoordinates.x; x < globalChunkWindowEndCoordinates.x; x++) {
+		for (let y = globalChunkWindowStartCoordinates.y; y < globalChunkWindowEndCoordinates.y; y++) {
+			visibleChunkCoordinates.push({x: x, y: y});
+		}
+	}
+	console.log("visible chunks:", visibleChunkCoordinates);
+	return visibleChunkCoordinates;
 }

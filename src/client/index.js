@@ -22,6 +22,8 @@ var database = firebase.database();
 const fieldName = "defaultSavedFieldv2";
 
 if (localStorage.getItem(fieldName)) {
+	// todo FieldStorage.load(fieldName) should return an object that has inherited from FieldData
+	// this can easily be done by moving the functionality which sohuldnt be in Field to fieldstorage
 	self.field = FieldStorage.load(fieldName);
 	console.log(`loading previous field with ${self.field.getAll().filter((cell)=>cell.isOpen).length} mines opened`);
 } else {

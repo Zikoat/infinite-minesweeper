@@ -93,9 +93,10 @@ export default class Controls {
 	}
 	static _onDragMove(event) {
 		const width = this.getChildByName("bg").texture.width;
-		
 		if (this.dragging) {
-			var newPosition = event.data.getLocalPosition(this.parent);
+			// pixel coordinates
+			const newPosition = event.data.getLocalPosition(this.parent);
+			
 			let x = Math.floor( newPosition.x - this.dragPoint.x );
 			let y = Math.floor( newPosition.y - this.dragPoint.y );
 			
@@ -107,6 +108,7 @@ export default class Controls {
 			if(Math.pow(this.startPosition.x-x,2)+Math.pow(this.startPosition.y-y,2)>Math.pow(width,2)/9) {
 				this.hasDragged = true;
 			}
+			// fire event field moved
 		}
 		if(Controls.mouseInput){
 			let position = event.data.getLocalPosition(this.getChildByName("fg"));
@@ -116,9 +118,12 @@ export default class Controls {
 		}
 		Controls.mouseInput = true;
 		document.getElementsByTagName("BODY")[0].style.cursor = "default";
+		
+		// uncomment to see info about how the coordinates are used
+		// Controls.getEventCoordinates.bind(this, event)();
 	}
 
-	static _onRightClick(event){
+	static _onRightClick(){
 		Controls.flag();
 	}
 
@@ -136,7 +141,7 @@ export default class Controls {
 		} else if (flaggedNeighbors.length === cell.value()) {
 			closedNotFlaggedNeighbors.forEach(neighbor=>{
 				neighbor.open();
-			})
+			});
 			//console.log(`opened the neighbors of`, cell);
 		}
 	}
@@ -155,7 +160,7 @@ export default class Controls {
 		} else if (closedNeighbors.length === cell.value()) {
 			closedNotFlaggedNeighbors.forEach(neighbor=>{
 				neighbor.flag();
-			})
+			});
 			//console.log(`flagged the neighbors of`, cell);
 		}
 	}
@@ -174,5 +179,16 @@ export default class Controls {
 		// TweenMax.to(Controls.cursor.parent.getChildByName("fg").position, 0.2, {x:newPixelPositionX,y:newPixelPositionY})
 		// TweenMax.to(Controls.cursor.parent.getChildByName("bg").tilePosition, 0.2, {x:newPixelPositionX,y:newPixelPositionY});
 
+	}
+	
+	static getEventCoordinates(event) { // this function should be bound to one of the pointerevents
+		// a list of all the coordinates we can get
+		console.log("the root container:", this.parent);
+		console.log("the cursors position on the screen in pixels", event.data.getLocalPosition(this.parent));
+		console.log("the point on the screen where the drag was started in pixels:", this.dragPoint);
+		console.log("the cursors position in the world in pixels", event.data.getLocalPosition(this.getChildByName("fg")));
+		console.log("the worlds offset in pixels", this.getChildByName("fg").getGlobalPosition());
+		console.log("screen width and height in pixels", window.innerWidth, window.innerHeight);
+		console.log("x position", Math.floor(event.data.getLocalPosition(this.getChildByName("fg")).x/this.getChildByName("bg").texture.width));
 	}
 }
