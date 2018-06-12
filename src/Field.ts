@@ -7,8 +7,8 @@ import * as PIXI from "pixi.js";
 const EventEmitter = PIXI.utils.EventEmitter;
 
 
-import {Chunk} from "./Chunk"
-import {CHUNK_SIZE} from "./Chunk"
+import {Chunk} from "./Chunk";
+import {CHUNK_SIZE} from "./Chunk";
 /**
  * events:
  * changedCells, if any cells have been changed, returns an array of the cells that have been changed
@@ -163,13 +163,13 @@ export default class Field extends EventEmitter {
 		if(!(y in this.field[x])){
 			let chunk = window.FieldStorage.loadChunk(window.fieldName,x,y,this);
 			if(!(chunk===undefined)){
-			this.field[x][y]=chunk;
-			this.field[x][y].getAll().forEach((cell)=>{
-				if(cell.isOpen||cell.isFlagged){
-					this.emit("cellChanged", cell);
-				}
-			});
-		}
+				this.field[x][y]=chunk;
+				this.field[x][y].getAll().forEach((cell)=>{
+					if(cell.isOpen||cell.isFlagged){
+						this.emit("cellChanged", cell);
+					}
+				});
+			}
 		}
 	}
 	unloadChunk(x,y){

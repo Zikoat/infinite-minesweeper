@@ -32,9 +32,10 @@ export default class CellSprite extends PIXI.Container{ // class for creating an
 		let front = this.getChildByName("fg");
 		let back = this.getChildByName("bg");
 
-		TweenMax.from(front.scale, 0.2, {x:0, y:0});
-		TweenMax.from(front, 0.2, {x:"+=8", y:"+=8"});
-		TweenMax.from(back, 0.2, {alpha: 0});
+		// todo reenable when more optimized update call has been made
+		// TweenMax.from(front.scale, 0.2, {x:0, y:0});
+		// TweenMax.from(front, 0.2, {x:"+=8", y:"+=8"});
+		// TweenMax.from(back, 0.2, {alpha: 0});
 	}
 
 	getCellTexture(cell){

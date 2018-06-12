@@ -30,7 +30,8 @@ window.FieldStorage = FieldStorage;
 FieldStorage.registerAutoSave(field, fieldName);
 
 field.on("cellChanged", ()=>{
-	document.getElementById("score").innerHTML = field.score.toString();
+	// todo reenable when we have a more optimized cellchanged event
+	//document.getElementById("score").innerHTML = field.score.toString();
 });
 
 let button: HTMLImageElement = document.getElementById('menubutton') as HTMLImageElement;
