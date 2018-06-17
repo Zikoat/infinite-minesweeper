@@ -40,5 +40,5 @@ The files will be built to the `./dist` directory. Copy these files to your host
 * GreenSock
 * :heart:
 
-[discord]: https://discord.gg/UWWueDb
+[discord]: https://discord.gg/XzpSVxx
 [mail]:<mailto:sschoeler99@gmail.com>
