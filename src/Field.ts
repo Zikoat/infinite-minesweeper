@@ -88,6 +88,7 @@ export default class Field extends EventEmitter {
 			console.log("game over, you stepped on a mine:", cell);
 			this.score-=100;
 			this.emit("cellChanged", cell);
+			this.gameOver = true;
 			return false; 
 		}
 		this.score++;
@@ -242,7 +243,7 @@ export default class Field extends EventEmitter {
 		if(undefinedCells.length > 0) console.error("undefined cells", undefinedCells);
 	}
 	isEligibleToOpen(x, y){// returns a bool, whether this cell can be opened
-		//if(this.gameOver) return false;
+		if(this.gameOver) return false;
 		let cell = this.getCell(x, y);
 		if(cell.isFlagged) return false;
 		if(cell.isOpen)	return false;

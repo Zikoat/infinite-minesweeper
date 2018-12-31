@@ -5,7 +5,7 @@ import SimpleBot from "./bots/botSimple";
 import "./css/stylesheet.css";
 const menubutton = require("./assets/default/menubutton.png");
 
-var fieldName = window.fieldName = "defaultSavedFieldv3";
+var fieldName = window.fieldName = "ironmanv1";
 window.FieldStorage = FieldStorage;
 
 var field: Field;
@@ -14,8 +14,7 @@ if (localStorage.getItem(fieldName)) {
 	field = FieldStorage.load(fieldName);
 	console.log(`loading previous field with ${field.getAll().filter((cell)=>cell.isOpen).length} mines opened`);
 } else {
-	field = new Field(0.20, 3);
-	field.open(1,1);
+	field = new Field(0.25, 0);
 	FieldStorage.save(field, fieldName);
 }
 
