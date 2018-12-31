@@ -10,13 +10,13 @@ window.FieldStorage = FieldStorage;
 
 var field: Field;
 
-if (localStorage.getItem(fieldName)) {
-	field = FieldStorage.load(fieldName);
-	console.log(`loading previous field with ${field.getAll().filter((cell)=>cell.isOpen).length} mines opened`);
-} else {
+//if (localStorage.getItem(fieldName)) {
+	//field = FieldStorage.load(fieldName);
+//	console.log(`loading previous field with ${field.getAll().filter((cell)=>cell.isOpen).length} mines opened`);
+//} else {
 	field = new Field(0.25, 0);
 	FieldStorage.save(field, fieldName);
-}
+//}
 
 window.field = field;
 
