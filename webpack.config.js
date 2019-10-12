@@ -7,6 +7,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 module.exports = {
 	entry: "./src/index.ts",
 	mode:"development",
+	
 	output: {
 		filename: "bundle-[hash].js",
 		path: path.resolve(__dirname, "dist"),
@@ -20,13 +21,24 @@ module.exports = {
 		})],
 	devtool: "inline-source-map",
 	devServer: {
-		contentBase: "./dist"
+		contentBase: "./dist",
+		host: '0.0.0.0',
+		port: 8080
 	},
 	module: {
 		rules: [
 			{
 				test: /\.tsx?$/,
-				use: 'ts-loader',
+				use: [
+					{
+						loader: 'ts-loader',
+						// to fix out of memory error
+						options: {
+							transpileOnly: true
+						}				
+		
+					}
+				],
 				exclude: /node_modules/
 			},
 			{

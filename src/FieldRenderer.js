@@ -93,10 +93,12 @@ function setup(Tex){
 	// todo move to controls
 	// disable right click context menu
 	document.addEventListener('contextmenu', event => event.preventDefault());
+
 	updateAllCells(defaultField);
 	centerField(0,0);
 	Controls.setLoadedChunksAround(0,0,background.texture.width);
 	document.getElementById("score").innerHTML = field.score;
+	
 	console.log("done setup");
 }
 

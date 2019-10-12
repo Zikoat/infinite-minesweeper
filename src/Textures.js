@@ -11,6 +11,7 @@ import flag from "./assets/default/flag.png";
 import mineWrong from "./assets/default/mineWrong.png";
 import open from "./assets/default/open.png";
 import cursor from "./assets/default/cursor.png";
+
 import one      from "./assets/default/1.png";
 import two      from "./assets/default/2.png";
 import three    from "./assets/default/3.png";

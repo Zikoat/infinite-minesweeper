@@ -2,12 +2,14 @@ import Cursor from "./Cursor";
 import { TweenMax, Power4 } from "gsap";
 import FieldRenderer from "./FieldRenderer";
 import {CHUNK_SIZE} from "./Chunk";
+
 export default class Controls {
 	static addControls(rootObject, field, cursorTexture) {
 		Controls.field = field;
 		
 		Controls.addCursor(rootObject);
 		Controls.addMouseControls(rootObject);
+		Controls.addTouchControls(rootObject);
 		Controls.addKeyboardControls();
 		Controls.removeUIEventBubbling();
 		Controls.disableRightClick();
@@ -25,6 +27,19 @@ export default class Controls {
 			.on('pointerupoutside', Controls._onDragEnd)
 			.on('pointermove', Controls._onDragMove)
 			.on('rightclick', Controls._onRightClick);
+	}
+
+	static addTouchControls(rootObject) {
+		rootObject
+			.on('touchstart', Controls._onDragStart)
+			
+			.on('touchmove', Controls._onDragMove)
+			
+			.on('touchend', Controls._onDragEnd)
+			.on('touchendoutside', Controls._onDragEnd)
+			
+			// not decided how flagging works on mobile
+			// .on('rightclick', Controls._onRightClick);
 	}
 
 	static addKeyboardControls() {
@@ -120,6 +135,7 @@ export default class Controls {
 		Controls.mouseInput = true;
 		document.getElementsByTagName("BODY")[0].style.cursor = "default";
 	}
+
 	static setLoadedChunksAround(x,y,width){
 		let windowChunkWidth =  Math.ceil(window.innerWidth/width/CHUNK_SIZE);
 		let windowChunkHeight = Math.ceil(window.innerHeight/width/CHUNK_SIZE);
@@ -130,9 +146,11 @@ export default class Controls {
 		}
 		Controls.field.loadVisibleChunks();
 	}
+
 	static _onRightClick(event){
 		Controls.flag();
 	}
+
 	static open(){
 		const x = Controls.cursor.getX();
 		const y = Controls.cursor.getY();
