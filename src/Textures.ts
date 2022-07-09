@@ -24,18 +24,18 @@ import eight    from "./assets/default/8.png";
 
 let loadingPromise;
 export let textures = null;
-export let width = 2;	
+export let width = 2;
 
-function processTextures(){
+function processTextures():Promise<void>{
 	return new Promise((resolve, reject)=>{
-		PIXI.loader
+		const loader =  PIXI.Loader.shared;
+		loader
 			.add("closed",closed)
 			.add("flag",flag)
 			.add("mine",mine)
 			.add("mineWrong",mineWrong)
 			.add("open",open)
 			.add("cursor",cursor)
-
 			.add("1",one)
 			.add("2",two)
 			.add("3",three)

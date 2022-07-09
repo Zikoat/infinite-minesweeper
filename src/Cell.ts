@@ -1,12 +1,20 @@
+import Field from "./Field";
+
 /**
  * Created by sisc0606 on 19.08.2017.
  */
 export default class Cell {
+	x: number;
+	y: number;
+	parent: unknown;
+	isOpen: boolean;
+	isMine: boolean;
+	isFlagged: boolean;
 	// the cell class only holds the information of the cell, and also mirrors
 	// the functions in the field that take x/y arguments. this allows chaining,
 	// like this:
 	// f.getCell(10,10).open()
-	constructor(x, y, parent=undefined, isFlagged=false, isMine=undefined){
+	constructor(x:number, y:number, parent:Field|undefined=undefined, isFlagged=false, isMine:boolean = false){
 		this.x = x;
 		this.y = y;
 		this.parent = parent;

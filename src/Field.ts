@@ -52,10 +52,10 @@ export default class Field extends EventEmitter {
 		// overwrite mine state
 		// freeze mode
 	}
-	getChunk(x,y){
+	getChunk(x: number,y: number){
 		return this.field[x][y];
 	}
-	getCell(x, y){
+	getCell(x: number, y: number){
 		// if the row or cell is not created, we will get an error: cant read property of undefined
 		let chunkX = Math.floor(x/CHUNK_SIZE);
 		let chunkY = Math.floor(y/CHUNK_SIZE);
@@ -63,7 +63,7 @@ export default class Field extends EventEmitter {
 		
 		return this.field[chunkX][chunkY].getCellFromGlobalCoords(x,y);
 	}
-	open(x, y){
+	open(x: number, y: number){
 		// returns an array of all the opened cells: [Cell, Cell, Cell, ...]
 		// todo sanitize input
 

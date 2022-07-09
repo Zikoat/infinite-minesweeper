@@ -9,8 +9,9 @@ import Controls from "./Controls"
 import CellSprite from "./CellSprite";
 import {TweenMax, Power2, TimelineLite} from "gsap";
 
-export default class FieldRenderer /*extends PIXI.Application*/ {
+export default class FieldRenderer extends PIXI.Application {
 	constructor(field){
+		super()
 		defaultField = field;
 		
 		defaultField.on("cellChanged", (cell)=>{
@@ -34,6 +35,7 @@ document.body.appendChild(app.view);
 app.renderer.autoResize = true;
 app.renderer.resize(window.innerWidth, window.innerHeight);
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+var background;
 window.addEventListener('resize', function(event){
 	app.renderer.resize(window.innerWidth, window.innerHeight);
 	background.width = app.renderer.width;
@@ -41,7 +43,6 @@ window.addEventListener('resize', function(event){
 });
 
 var fieldContainer = new PIXI.Container();
-var background;
 var clickHandler = new PIXI.Container();
 clickHandler.interactive = true;
 app.stage.addChild(clickHandler);
@@ -73,9 +74,10 @@ function updateAllCells(field){
 }
 
 function setup(Tex){
+	console.log(Tex)
 	width = Tex.closed.width;
 	
-	background = new PIXI.extras.TilingSprite(
+	background = new PIXI.TilingSprite(
 		Tex.closed,
 		app.renderer.width,
 		app.renderer.height

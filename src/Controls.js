@@ -7,7 +7,7 @@ export default class Controls {
 	static addControls(rootObject, field, cursorTexture) {
 		Controls.field = field;
 		
-		Controls.addCursor(rootObject);
+		Controls.addCursor(rootObject, cursorTexture);
 		Controls.addMouseControls(rootObject);
 		Controls.addTouchControls(rootObject);
 		Controls.addKeyboardControls();
@@ -15,8 +15,8 @@ export default class Controls {
 		Controls.disableRightClick();
 	}
 
-	static addCursor(rootObject) {
-		Controls.cursor = new Cursor(0, 0);
+	static addCursor(rootObject,texture) {
+		Controls.cursor = new Cursor(0, 0, texture);
 		rootObject.addChildAt(Controls.cursor, 2);
 	}
 

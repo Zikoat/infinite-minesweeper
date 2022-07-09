@@ -1,14 +1,23 @@
 import Field from "./Field";
+/*
+*/
 import FieldRenderer from "./FieldRenderer";
 import FieldStorage from "./FieldStorage";
 import SimpleBot from "./bots/botSimple";
 import "./css/stylesheet.css";
-const menubutton = require("./assets/default/menubutton.png");
+
+// import * as PIXI from "pixi.js";
+// console.log(PIXI)
+/*
+*/
+import menubutton from "./assets/default/menubutton.png";
 
 var fieldName = window.fieldName = "defaultSavedFieldv3";
 window.FieldStorage = FieldStorage;
-
+console.log(fieldName)
 var field: Field;
+field = new Field(0.20, 3);
+
 
 if (localStorage.getItem(fieldName)) {
 	field = FieldStorage.load(fieldName);
@@ -45,3 +54,5 @@ self.restart = function () {
 	console.log("removed: ", fieldName);
 	window.location.reload();
 }
+/*
+*/

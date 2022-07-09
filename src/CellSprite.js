@@ -1,14 +1,16 @@
 import { textures, width } from "./Textures";
 import { TweenMax } from "gsap";
+import * as PIXI from "pixi.js"
 
 export default class CellSprite extends PIXI.Container{ // class for creating and updating sprites
 	constructor(cell){
 		super();
+		let cellTexture = this.getCellTexture(cell);
+		let back = new PIXI.Sprite(cellTexture.back.texture);
+		let front = new PIXI.Sprite(cellTexture.front.texture);
+		const width = back.width
 		this.x = cell.x * width;
 		this.y = cell.y * width;
-		let cellTexture = this.getCellTexture(cell);
-		let back = new PIXI.Sprite(cellTexture.back);
-		let front = new PIXI.Sprite(cellTexture.front);
 		back.name = "bg";
 		front.name = "fg";
 		this.addChildAt(back, 0);
@@ -38,6 +40,11 @@ export default class CellSprite extends PIXI.Container{ // class for creating an
 	}
 
 	getCellTexture(cell){
+
+		const textures = PIXI.Loader.shared.resources;
+		
+
+		// console.log(textures)
 		var texture = {};
 		
 		if(cell.isOpen) {
