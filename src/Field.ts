@@ -10,6 +10,7 @@ const EventEmitter = PIXI.utils.EventEmitter;
 
 import {Chunk} from "./Chunk"
 import {CHUNK_SIZE} from "./Chunk"
+import FieldStorage from "./FieldStorage";
 /**
  * events:
  * changedCells, if any cells have been changed, returns an array of the cells that have been changed
@@ -28,9 +29,11 @@ export default class Field extends EventEmitter {
 	public neighborPosition: any;
 	public score: number;
 	public visibleChunks: any;
+	private fieldStorage: FieldStorage;
+	private fieldName: string;
 
 
-	constructor(probability=0.5, safeRadius=1){
+	constructor(probability=0.5, safeRadius=1, fieldStorage:FieldStorage, fieldName:string){
 		super();
 
 		this.field = {};
@@ -47,6 +50,8 @@ export default class Field extends EventEmitter {
 		this.score = 0;
 		this.chunksToSave = [];
 		this.visibleChunks = [];
+		this.fieldStorage = fieldStorage;
+		this.fieldName = fieldName;
 		// todo someday: 
 		// be able to change the options through an object
 		// overwrite mine state
@@ -144,7 +149,7 @@ export default class Field extends EventEmitter {
 	generateChunk(x,y){
 		if(!(x in this.field)) this.field[x] = {};
 		if(!(y in this.field[x])){
-			this.field[x][y] = window.FieldStorage.loadChunk(window.fieldName,x,y,this);
+			this.field[x][y] = FieldStorage.loadChunk(this.fieldName,x,y,this);
 			if(this.field[x][y]===undefined)
 				this.field[x][y] = new Chunk(x,y,this);
 			else{

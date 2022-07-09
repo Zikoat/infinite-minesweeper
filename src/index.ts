@@ -23,7 +23,7 @@ if (localStorage.getItem(fieldName)) {
 	field = FieldStorage.load(fieldName);
 	console.log(`loading previous field with ${field.getAll().filter((cell)=>cell.isOpen).length} mines opened`);
 } else {
-	field = new Field(0.20, 3);
+	field = new Field(0.20, 3,window.fieldStorage,window.fieldName);
 	field.open(1,1);
 	FieldStorage.save(field, fieldName);
 }
