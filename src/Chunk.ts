@@ -1,8 +1,14 @@
 import Cell from "./Cell";
+import Field from "./Field";
 
 export const CHUNK_SIZE = 32;
 export class Chunk{
-    constructor(x,y,parent){
+    
+    x: number;
+    y: number;
+    cells: never[];
+
+    constructor(x: number,y: number,parent: Field | undefined){
         this.x = x;
         this.y = y;
         this.cells = [];
@@ -13,10 +19,10 @@ export class Chunk{
             }
         }
     }
-    getCell(x,y){
+    getCell(x: string | number,y: string | number){
         return this.cells[x][y];
     }
-    getCellFromGlobalCoords(x,y){
+    getCellFromGlobalCoords(x: number,y: number){
         return this.cells[x-this.x*CHUNK_SIZE][y-this.y*CHUNK_SIZE];
     }
     getAll(){

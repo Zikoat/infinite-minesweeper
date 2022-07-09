@@ -74,7 +74,6 @@ function updateAllCells(field){
 }
 
 function setup(Tex){
-	console.log(Tex)
 	width = Tex.closed.width;
 	
 	background = new PIXI.TilingSprite(

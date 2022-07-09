@@ -11,21 +11,25 @@ import "./css/stylesheet.css";
 /*
 */
 import menubutton from "./assets/default/menubutton.png";
+import { LocalStorage } from "node-localstorage";
 
 var fieldName = window.fieldName = "defaultSavedFieldv3";
-window.FieldStorage = FieldStorage;
-console.log(fieldName)
+const localStorage:LocalStorage = window.localStorage
+const fieldStorage = window.FieldStorage = new FieldStorage(localStorage);
+
+
 var field: Field;
-field = new Field(0.20, 3);
+
+field = new Field(0.20, 3,fieldStorage, fieldName);
 
 
 if (localStorage.getItem(fieldName)) {
-	field = FieldStorage.load(fieldName);
+	field = fieldStorage.load(fieldName);
 	console.log(`loading previous field with ${field.getAll().filter((cell)=>cell.isOpen).length} mines opened`);
 } else {
-	field = new Field(0.20, 3,window.fieldStorage,window.fieldName);
+	field = new Field(0.20, 3,fieldStorage,fieldName);
 	field.open(1,1);
-	FieldStorage.save(field, fieldName);
+	fieldStorage.save(field, fieldName);
 }
 
 window.field = field;
@@ -35,7 +39,7 @@ window.renderer = new FieldRenderer(field);
 window.bot = new SimpleBot(field);
 window.FieldStorage = FieldStorage;
 
-FieldStorage.registerAutoSave(field, fieldName);
+fieldStorage.registerAutoSave(field, fieldName);
 
 field.on("cellChanged", ()=>{
 	document.getElementById("score").innerHTML = field.score.toString();

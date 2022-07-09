@@ -4,7 +4,7 @@
   "description": "An infinite, open source, minesweeper implementation. Perfect for creating bots, and based on borbit's mienfield.com",
   "scripts": {
     "test": "bun run test-watch",
-    "test-watch": "uvu -r tsm && watchlist src -- uvu -r tsm",
+    "test-watch": "watchlist src -- uvu -r tsm",
     "test-single": "uvu -r tsm",
     "run": "bun dev",
     "build": "bun bun ./src/index.ts"

@@ -4,7 +4,7 @@ import { Chunk, CHUNK_SIZE } from "./Chunk";
 import { LocalStorage } from "node-localstorage";
 
 export default class FieldStorage {
-  private localStorage: LocalStorage;
+  public localStorage: LocalStorage;
 
   constructor(localStorage: LocalStorage) {
     this.localStorage = localStorage;
@@ -12,39 +12,40 @@ export default class FieldStorage {
 
   save(field: Field, id: string) {
     // saves a Field
-    const compressedField = FieldStorage.compress(field);
+    const compressedField =this.compress(field);
     this.localStorage.setItem(id, compressedField);
     // console.log(`saved: ${compressedField}`);
   }
-  static load(id: string) {
+  load(id: string) {
     // returns a Field
-    const compressedField = localStorage.getItem(id);
-    const field = FieldStorage.decompress(compressedField);
+    const compressedField = this.localStorage.getItem(id);
+    // console.log(compressedField)
+    const field = this.decompress(compressedField);
     return field;
   }
-  static registerAutoSave(field: Field, saveName: string) {
+  registerAutoSave(field: Field, saveName: string) {
     field.on("save", (chunks: any[]) => {
       //FieldStorage.save(field, saveName);
       chunks.forEach((chunk: any) => {
-        FieldStorage.saveChunk(chunk, saveName);
+        this.saveChunk(chunk, saveName);
       });
-      FieldStorage.save(field, saveName);
+      this.save(field, saveName);
     });
   }
-  static compress(field: any) {
+  compress(field: any) {
     // returns JSON string;
     const stringifiedField = JSON.stringify(field);
     // FieldStorage.logStats(field, stringifiedField);
 
     return stringifiedField;
   }
-  static saveChunk(chunk: { x: any; y: string }, id: any) {
-    localStorage.setItem(id + chunk.x + ";" + chunk.y, JSON.stringify(chunk));
+  saveChunk(chunk: { x: any; y: string }, id: any) {
+    this.localStorage.setItem(id + chunk.x + ";" + chunk.y, JSON.stringify(chunk));
   }
-  static loadChunk(id: string, x: number, y: number, field: Field | undefined) {
+  loadChunk(id: string, x: number, y: number, field: Field | undefined): Chunk | undefined {
     var chunk = new Chunk(x, y, field);
-    if (localStorage.getItem(id + chunk.x + ";" + chunk.y)) {
-      var data = JSON.parse(localStorage.getItem(id + chunk.x + ";" + chunk.y));
+    if (this.localStorage.getItem(id + chunk.x + ";" + chunk.y)) {
+      var data = JSON.parse(this.localStorage.getItem(id + chunk.x + ";" + chunk.y));
 
       for (let i = 0; i < CHUNK_SIZE; i++) {
         for (let j = 0; j < CHUNK_SIZE; j++) {
@@ -64,16 +65,17 @@ export default class FieldStorage {
 
     return undefined;
   }
-  static decompress(compressedField: string) {
+  decompress(compressedField: string) {
     // when stringifying, we have changed the class into an object, and we
     // need to recreate the class from the data
     let recoveredField = JSON.parse(compressedField);
-    let field = new Field();
-    field.score = recoveredField.score;
-    field.probability = recoveredField.probability;
+    let field = new Field(recoveredField.probability, recoveredField.score, this, "test" );
+    Object.assign(field, recoveredField)
+    // field.score = recoveredField.score;
+    // field.probability = recoveredField.probability;
     return field;
   }
-  static logStats(
+  logStats(
     field: { getAll: () => { (): any; new (): any; length: any } },
     string: string
   ) {

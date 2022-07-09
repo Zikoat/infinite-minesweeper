@@ -8,13 +8,13 @@ export default class Cell {
 	y: number;
 	parent: unknown;
 	isOpen: boolean;
-	isMine: boolean;
+	isMine?: boolean;
 	isFlagged: boolean;
 	// the cell class only holds the information of the cell, and also mirrors
 	// the functions in the field that take x/y arguments. this allows chaining,
 	// like this:
 	// f.getCell(10,10).open()
-	constructor(x:number, y:number, parent:Field|undefined=undefined, isFlagged=false, isMine:boolean = false){
+	constructor(x:number, y:number, parent:Field|undefined=undefined, isFlagged=false, isMine:boolean|undefined = undefined){
 		this.x = x;
 		this.y = y;
 		this.parent = parent;
