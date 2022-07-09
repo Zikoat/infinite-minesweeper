@@ -37,7 +37,7 @@ The files will be built to the `./dist` directory. Copy these files to your host
 ## Made With
 * Pixi.js
 * TypeScript
-* Webpack
+* ~~Webpack~~ [bun](https://bun.sh/)
 * GreenSock
 * :heart:
 
