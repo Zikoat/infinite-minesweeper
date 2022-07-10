@@ -7,7 +7,9 @@
     "test-watch": "watchlist -e src -- bun run test-single",
     "test-single": "uvu -r tsm",
     "run": "bun dev",
-    "build": "bun bun ./src/index.ts"
+    "build": "bun bun ./src/index.ts",
+    "lint-check":"prettier --check .",
+    "lint-write":"prettier --write ."
   },
   "repository": {
     "type": "git",
