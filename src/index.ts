@@ -32,6 +32,7 @@ if (localStorage.getItem(fieldName)) {
 	fieldStorage.save(field, fieldName);
 }
 
+console.log(field)
 window.field = field;
 
 // make the variables available globally, so we can access them in index.html and the console

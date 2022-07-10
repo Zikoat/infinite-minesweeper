@@ -13,6 +13,7 @@ export default class FieldStorage {
   save(field: Field, id: string) {
     // saves a Field
     const compressedField = this.compress(field);
+    // console.log(`saving field, ${compressedField}`)
     this.localStorage.setItem(id, compressedField);
     // console.log(`saved: ${compressedField}`);
   }
@@ -32,7 +33,7 @@ export default class FieldStorage {
       this.save(field, saveName);
     });
   }
-  compress(field: any) {
+  compress(field: Field) {
     // returns JSON string;
     const stringifiedField = JSON.stringify(field);
     // FieldStorage.logStats(field, stringifiedField);
@@ -73,9 +74,7 @@ export default class FieldStorage {
       console.log(`loaded chunk (${x},${y}): ${chunk}`);
       return chunk;
     }
-    console.log(
-      `loading chunk (${x},${y}) is not set in localstorage, returning undefined`
-    );
+    // console.log(`loading chunk (${x},${y}) is not set in localstorage, returning undefined`);
     return undefined;
   }
   decompress(compressedField: string) {
@@ -84,13 +83,13 @@ export default class FieldStorage {
     let recoveredField = JSON.parse(compressedField);
     let field = new Field(
       recoveredField.probability,
-      recoveredField.score,
+      recoveredField.safeRadius,
       this,
-      "test"
+      "defaultSavedFieldv3"
     );
     Object.assign(field, recoveredField);
     // field.score = recoveredField.score;
-    // field.probability = recoveredField.probability;
+    // field.probability = recoveredField.prhobability;
     return field;
   }
   logStats(

@@ -5,6 +5,9 @@ import * as assert from "uvu/assert";
 import Cell from "./Cell";
 import Field from "./Field";
 import FieldStorage from "./FieldStorage";
+import seedrandom, * as seedRandom from "seedrandom";
+import { isAssertClause } from "typescript";
+import { random } from "gsap";
 
 test("Math.sqrt()", () => {
   assert.is(Math.sqrt(4), 2);
@@ -102,15 +105,13 @@ fieldStorageSuite(
 
     delete field1.fieldStorage;
     delete field2.fieldStorage;
-;
-assert.equal({},{})
+    assert.equal({}, {});
     assert.is(
       JSON.stringify(field1),
       JSON.stringify(field2),
       "JSON stringified objects are not the same"
     );
     // assert.equal(field1, field2, "field objects are not equal");
-    
   }
 );
 
@@ -121,13 +122,13 @@ fieldStorageSuite(
     const fieldStorage = new FieldStorage(new LocalStorage("./localstorage"));
     const field1 = new Field(undefined, 1, fieldStorage, id);
     assert.is(field1.open(0, 0), true);
-    const scoreBefore = field1.score
+    const scoreBefore = field1.score;
     fieldStorage.save(field1, id);
     // field1.save()
     const field2 = fieldStorage.load(id);
     fieldStorage.registerAutoSave(field1, id);
-    const scoreAfter = field2.score
-    assert.is(scoreBefore, scoreAfter)
+    const scoreAfter = field2.score;
+    assert.is(scoreBefore, scoreAfter);
     // console.log(field2)
     const opened = field2.open(0, 0);
     assert.is(opened, true); // bug
@@ -138,6 +139,17 @@ fieldStorageSuite.after.each((fieldStorage) => {
   fieldStorage.localStorage.clear();
 });
 
+const quickCheckSuite = suite("QuickCheck");
+
+const randomSuite = suite("Seeded Random");
+randomSuite.only("should get the same random number every time", () => {
+  const wow = seedrandom("shit");
+  const randomNumber = wow();
+  assert.is(randomNumber, 0.4459846419098659);
+});
+
+randomSuite.run();
+quickCheckSuite.run();
 test.run();
 fieldSuite.run();
 localStorageSuite.run();

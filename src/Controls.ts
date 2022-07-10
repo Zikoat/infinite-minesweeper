@@ -2,9 +2,11 @@ import Cursor from "./Cursor";
 import { TweenMax, Power4 } from "gsap";
 import FieldRenderer from "./FieldRenderer";
 import {CHUNK_SIZE} from "./Chunk";
+import Field from "./Field";
 
 export default class Controls {
-	static addControls(rootObject, field, cursorTexture) {
+	static field: Field;
+	static addControls(rootObject, field:Field, cursorTexture) {
 		Controls.field = field;
 		
 		Controls.addCursor(rootObject, cursorTexture);
@@ -168,7 +170,8 @@ export default class Controls {
 			})
 			//console.log(`opened the neighbors of`, cell);
 		}
-		Controls.field.save();
+		Controls.field.fieldStorage?.save(Controls.field, Controls.field.fieldName);
+		
 	}
 
 	static flag(){

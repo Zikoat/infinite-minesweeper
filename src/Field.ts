@@ -31,7 +31,7 @@ export default class Field extends EventEmitter {
   public score: number;
   public visibleChunks: any;
   public fieldStorage?: FieldStorage;
-  private fieldName: string;
+  public fieldName: string;
 
   constructor(
     probability = 0.5,
@@ -78,7 +78,6 @@ export default class Field extends EventEmitter {
     return this.field[chunkX][chunkY].getCellFromGlobalCoords(x, y);
   }
   open(x: number, y: number) {
-	console.log(`opening ${x}, ${y}`)
     // returns an array of all the opened cells: [Cell, Cell, Cell, ...]
     // todo sanitize input
 
@@ -319,10 +318,10 @@ export default class Field extends EventEmitter {
       }
     }
   }
-  toJSON() {
-  	const fieldToStore: any = {};
-  	fieldToStore.probability = this.probability;
-  	fieldToStore.score = this.score;
-  	return fieldToStore;
-  }
+//   toJSON() {
+//   	const fieldToStore: any = {};
+//   	fieldToStore.probability = this.probability;
+//   	fieldToStore.score = this.score;
+//   	return fieldToStore;
+//   }
 }
