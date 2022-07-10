@@ -14,7 +14,7 @@ export default class Cell {
 	// the functions in the field that take x/y arguments. this allows chaining,
 	// like this:
 	// f.getCell(10,10).open()
-	constructor(x:number, y:number, parent:Field|undefined=undefined, isFlagged=false, isMine:boolean|undefined = undefined){
+	constructor(x:number, y:number, parent:Field|undefined, isFlagged:boolean|undefined, isMine:boolean|undefined){
 		this.x = x;
 		this.y = y;
 		this.parent = parent;

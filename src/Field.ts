@@ -78,6 +78,7 @@ export default class Field extends EventEmitter {
     return this.field[chunkX][chunkY].getCellFromGlobalCoords(x, y);
   }
   open(x: number, y: number) {
+	console.log(`opening ${x}, ${y}`)
     // returns an array of all the opened cells: [Cell, Cell, Cell, ...]
     // todo sanitize input
 
@@ -163,12 +164,13 @@ export default class Field extends EventEmitter {
         throw new Error(
           "FieldStorage is not defined, but generateChunk called."
         );
-      this.field[x][y] = this.fieldStorage.loadChunk(
-        this.fieldName,
-        x,
-        y,
-        this
-      );
+		const loadedChunk = this.fieldStorage.loadChunk(
+			this.fieldName,
+			x,
+			y,
+			this
+		  );
+      this.field[x][y] = loadedChunk;
       if (this.field[x][y] === undefined)
         this.field[x][y] = new Chunk(x, y, this);
       else {

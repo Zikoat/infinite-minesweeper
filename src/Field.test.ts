@@ -24,30 +24,31 @@ test("JSON", () => {
   assert.equal(JSON.parse(output), input, "matches original");
 });
 
-const field = suite("Field");
+const fieldSuite = suite("Field");
 
-field("should be able to be constructed", () => {
+fieldSuite("should be able to be constructed", () => {
   const field = new Field(undefined, undefined, undefined, undefined);
   assert.is(field.gameOver, false);
 });
 
-field("toJson should return the field as an object", () => {
+fieldSuite("toJson should return the field as an object", () => {
   const field = new Field(undefined, undefined, undefined, undefined);
   const json = JSON.stringify(field);
   assert.equal(
     json,
-    '{"_events":{},"_eventsCount":0,"field":{},"probability":0.5,"pristine":true,"safeRadius":1,"gameOver":false,"neighborPosition":[[-1,1],[0,1],[1,1],[-1,0],[1,0],[-1,-1],[0,-1],[1,-1]],"score":0,"chunksToSave":[],"visibleChunks":[]}'
+    '{"probability":0.5,"score":0}'
+    // '{"_events":{},"_eventsCount":0,"field":{},"probability":0.5,"pristine":true,"safeRadius":1,"gameOver":false,"neighborPosition":[[-1,1],[0,1],[1,1],[-1,0],[1,0],[-1,-1],[0,-1],[1,-1]],"score":0,"chunksToSave":[],"visibleChunks":[]}'
   );
 });
 
-field("should open a cell", () => {
+fieldSuite("should open a cell", () => {
   const fieldStorage = new FieldStorage(new LocalStorage("./localStorage"));
   const field = new Field(undefined, undefined, fieldStorage, "unitTest");
   const opened = field.open(0, 0);
   assert.is(opened, true);
 });
 
-field("should calculate score correctly", () => {
+fieldSuite("should calculate score correctly", () => {
   const id = "unitTest";
 
   const fieldStorage = new FieldStorage(new LocalStorage("./localStorage"));
@@ -118,11 +119,15 @@ fieldStorageSuite(
   () => {
     const id = "unitTest";
     const fieldStorage = new FieldStorage(new LocalStorage("./localstorage"));
-    const field1 = new Field(undefined, undefined, fieldStorage, id);
+    const field1 = new Field(undefined, 1, fieldStorage, id);
     assert.is(field1.open(0, 0), true);
+    const scoreBefore = field1.score
     fieldStorage.save(field1, id);
     // field1.save()
     const field2 = fieldStorage.load(id);
+    fieldStorage.registerAutoSave(field1, id);
+    const scoreAfter = field2.score
+    assert.is(scoreBefore, scoreAfter)
     // console.log(field2)
     const opened = field2.open(0, 0);
     assert.is(opened, true); // bug
@@ -134,7 +139,7 @@ fieldStorageSuite.after.each((fieldStorage) => {
 });
 
 test.run();
-field.run();
+fieldSuite.run();
 localStorageSuite.run();
 fieldStorageSuite.run();
 cell.run();
