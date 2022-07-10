@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2022",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     // "skipLibCheck": true,
     "checkJs": true,
@@ -22,16 +18,9 @@
     "paths": {},
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "types": [
-      "bun-types"
-    ],
+    "types": ["bun-types"],
     "sourceMap": true
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
 }

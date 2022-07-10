@@ -20,7 +20,8 @@ export default class FieldStorage {
   load(id: string) {
     // returns a Field
     const compressedField = this.localStorage.getItem(id);
-    if(compressedField===null) throw new Error(`Could not find field with id '${id}' in localStorage`)
+    if (compressedField === null)
+      throw new Error(`Could not find field with id '${id}' in localStorage`);
     // console.log(compressedField)
     const field = this.decompress(compressedField, id);
     return field;

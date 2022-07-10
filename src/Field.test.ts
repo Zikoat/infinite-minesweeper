@@ -259,9 +259,7 @@ test("Chunk should get cell", () => {
   );
 });
 
-function cellToObject(
-  cell: Cell
-): {
+function cellToObject(cell: Cell): {
   isFlagged: boolean;
   isOpen: boolean;
   parent: Field | undefined;

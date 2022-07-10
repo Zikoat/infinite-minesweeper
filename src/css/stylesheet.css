@@ -1,24 +1,27 @@
-html, body {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
-img, canvas {
-    image-rendering: pixelated;
-    image-rendering: -moz-crisp-edges;
-    image-rendering: -o-crisp-edges;
-    image-rendering: optimize-contrast;
-    -ms-interpolation-mode: nearest-neighbor;
+img,
+canvas {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -o-crisp-edges;
+  image-rendering: optimize-contrast;
+  -ms-interpolation-mode: nearest-neighbor;
 }
 
-canvas, .ui {
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
+canvas,
+.ui {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 @font-face {
@@ -27,63 +30,63 @@ canvas, .ui {
 }
 
 .ui {
-    font-family: "silkscreen";
-    font-size: 16px;
-    border: 2px solid #696969;
-    background-color: #292929;
-    padding: 2px;
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    color: lightgray;
+  font-family: "silkscreen";
+  font-size: 16px;
+  border: 2px solid #696969;
+  background-color: #292929;
+  padding: 2px;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  color: lightgray;
 }
 
 .menubutton {
-    width:2em;
+  width: 2em;
 }
 
 .menubutton > img {
-    image-rendering: pixelated;
-    width: 100%;
+  image-rendering: pixelated;
+  width: 100%;
 }
 
 .menu button {
-    font-family: "silkscreen";
-    font-size: 16px;
-    background-color: Transparent;
-    padding: 2px;
-    color: lightgray;
+  font-family: "silkscreen";
+  font-size: 16px;
+  background-color: Transparent;
+  padding: 2px;
+  color: lightgray;
 }
 
 .menu {
-    display:none;
-    position: absolute;
-    top: 32px;
-    left: 2px;
-    border: 2px solid #696969;
+  display: none;
+  position: absolute;
+  top: 32px;
+  left: 2px;
+  border: 2px solid #696969;
 }
 
 button {
-    border: 2px #696969;
-    padding: 4px;
-    border-style: dashed;
+  border: 2px #696969;
+  padding: 4px;
+  border-style: dashed;
 }
 a {
-	color:dodgerblue;
+  color: dodgerblue;
 }
 
 #score {
-	display: inline;
+  display: inline;
 }
 
 p {
-    display: ;
-    margin: 0.2em 0;
+  display: ;
+  margin: 0.2em 0;
 }
 
 hr {
-    border: 0;
-    height: 0;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  border: 0;
+  height: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 }

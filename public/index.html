@@ -1,24 +1,24 @@
 <html>
-<head>
-	<meta charset="utf-8">
-	<title>Minefield Resurrected</title>
-</head>
-<body>
-	<button onclick="toggleMenu()" class="menubutton ui"><img alt="menu button" id="menubutton"></button>
-	<div class="menu ui" id="menu" style="display:none;">
-		<div><a href="https://discord.gg/XzpSVxx">Discord</a></div>
-		<div><a href="https://github.com/Zikoat/infinite-minesweeper">Source code</a></div>
-		<!-- todo add settings -->
-		<div>
-			Score:<span id="score"></span>
-		</div>
-		<div>
-			<button onclick="restart()">restart</button><br>
-		</div>
-		<hr>
-		<div>Zoom: Ctrl +</div>
-		<div>Keyboard controls:<br>arrow keys and z/x</div>
-	</div>
-	<script src="../src/index.ts" async type="module"></script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <title>Minefield Resurrected</title>
+  </head>
+  <body>
+    <button onclick="toggleMenu()" class="menubutton ui">
+      <img alt="menu button" id="menubutton" />
+    </button>
+    <div class="menu ui" id="menu" style="display: none">
+      <div><a href="https://discord.gg/XzpSVxx">Discord</a></div>
+      <div>
+        <a href="https://github.com/Zikoat/infinite-minesweeper">Source code</a>
+      </div>
+      <!-- todo add settings -->
+      <div>Score:<span id="score"></span></div>
+      <div><button onclick="restart()">restart</button><br /></div>
+      <hr />
+      <div>Zoom: Ctrl +</div>
+      <div>Keyboard controls:<br />arrow keys and z/x</div>
+    </div>
+    <script src="../src/index.ts" async type="module"></script>
+  </body>
 </html>
