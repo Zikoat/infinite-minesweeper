@@ -31,7 +31,7 @@ test("Field should be able to be constructed", () => {
   assert.is(field.gameOver, false);
 });
 
-test("Field.toJson should return the field as an object", () => {
+test.skip("Field.toJson should return the field as an object", () => {
   const field = new Field(undefined, undefined, undefined, undefined);
   const json = JSON.stringify(field);
   assert.equal(
@@ -95,7 +95,20 @@ const fieldStorageSuite = suite(
 fieldStorageSuite.only(
   "should get an exact copy of the previous field",
   (fieldStorage) => {
-    const field1 = new Field(0.6, 2, fieldStorage, "test1");
+    const field1 = new Field(0.6, 2, fieldStorage, "test1", "testSeed");
+    assert.is(fieldStorage.localStorage.length,1, "localstorage length before open")
+    
+    field1.open(0,0)
+    
+    assert.is(fieldStorage.localStorage.length,1,"localstorage length after open")
+    assert.is(field1.fieldName, "test1")
+    assert.is(field1.score, 9,"field score to static")
+assert.is(field1.getAll().length, 4096)
+assert.is(field1.gameOver, false)
+assert.is(field1.neighborPosition.length, 8)
+assert.is(field1.pristine, false)
+assert.is(field1.fieldStorage?.localStorage.length, 1)
+    
     fieldStorage.save(field1, "test1");
     const field2 = fieldStorage.load("test1");
 
@@ -103,8 +116,12 @@ fieldStorageSuite.only(
     // delete field2.fieldStorage;
     
     assert.is(field1.fieldName, field2.fieldName)
-    
-
+    assert.is(field1.score, field2.score,"field scores")
+    assert.is(field1.getAll().length, field2.getAll().length)
+    assert.is(field1.gameOver, field2.gameOver)
+    assert.is(field1.neighborPosition, field2.neighborPosition)
+    assert.is(field1.pristine, field2.pristine)
+    assert.is(field1.fieldStorage?.localStorage.length, field2.fieldStorage?.localStorage.length)
   }
 );
 

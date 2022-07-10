@@ -20,8 +20,9 @@ export default class FieldStorage {
   load(id: string) {
     // returns a Field
     const compressedField = this.localStorage.getItem(id);
+    if(compressedField===null) throw new Error(`Could not find field with id '${id}' in localStorage`)
     // console.log(compressedField)
-    const field = this.decompress(compressedField);
+    const field = this.decompress(compressedField, id);
     return field;
   }
   registerAutoSave(field: Field, saveName: string) {
@@ -77,7 +78,7 @@ export default class FieldStorage {
     // console.log(`loading chunk (${x},${y}) is not set in localstorage, returning undefined`);
     return undefined;
   }
-  decompress(compressedField: string) {
+  decompress(compressedField: string, fieldName: string) {
     // when stringifying, we have changed the class into an object, and we
     // need to recreate the class from the data
     let recoveredField = JSON.parse(compressedField);
@@ -85,10 +86,10 @@ export default class FieldStorage {
       recoveredField.probability,
       recoveredField.safeRadius,
       this,
-      recoveredField.fieldName
+      fieldName
     );
     // Object.assign(field, recoveredField);
-    // field.score = recoveredField.score;
+    field.score = recoveredField.score;
     // field.probability = recoveredField.prhobability;
     return field;
   }

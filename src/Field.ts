@@ -34,7 +34,7 @@ export default class Field extends EventEmitter {
   public fieldStorage?: FieldStorage;
   public fieldName: string;
   private rng: seedrandom.PRNG;
-  private seed?: string
+  private seed?: string;
 
   constructor(
     probability = 0.5,
@@ -62,7 +62,7 @@ export default class Field extends EventEmitter {
     this.fieldStorage = fieldStorage;
     this.fieldName = fieldName;
     this.rng = seedrandom(seed);
-	this.seed = seed;
+    this.seed = seed;
 
     // todo someday:
     // be able to change the options through an object
@@ -210,7 +210,12 @@ export default class Field extends EventEmitter {
     });
     delete this.field[x][y];
   }
-  generateCell(x: number, y: number, isFlagged = false, isMine = undefined) {
+  generateCell(
+    x: number,
+    y: number,
+    isFlagged = false,
+    isMine: boolean | undefined = undefined
+  ) {
     //calculates coordinates of a chunk
     let chunkX = Math.floor(x / CHUNK_SIZE);
     let chunkY = Math.floor(y / CHUNK_SIZE);
@@ -225,7 +230,7 @@ export default class Field extends EventEmitter {
     //if isMine field of the cell is undefined we calculate it
     if (cell.isMine === undefined) {
       //todo: seed based generation
-      if (isMine === undefined) isMine = Math.random() < this.probability;
+      if (isMine === undefined) isMine = this.rng() < this.probability;
       cell.isMine = isMine;
       cell.isFlagged = isFlagged;
       return cell;
@@ -325,13 +330,14 @@ export default class Field extends EventEmitter {
       }
     }
   }
-    toJSON() {
-    	const fieldToStore: any = {};
-    	fieldToStore.probability = this.probability;
-    	fieldToStore.safeRadius = this.safeRadius;
-		fieldToStore.pristine = this.pristine;
-		
+  toJSON() {
+    const fieldToStore: any = {};
+    fieldToStore.probability = this.probability;
+    fieldToStore.safeRadius = this.safeRadius;
+    fieldToStore.pristine = this.pristine;
+    fieldToStore.fieldName = this.fieldName;
+    fieldToStore.score = this.score;
 
-    	return fieldToStore;
-    }
+    return fieldToStore;
+  }
 }
