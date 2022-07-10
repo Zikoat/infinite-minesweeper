@@ -96,34 +96,53 @@ fieldStorageSuite.only(
   "should get an exact copy of the previous field",
   (fieldStorage) => {
     const field1 = new Field(0.6, 2, fieldStorage, "test1", "testSeed");
-    assert.is(fieldStorage.localStorage.length,1, "localstorage length before open")
-    
-    field1.open(0,0)
-    
-    assert.is(fieldStorage.localStorage.length,1,"localstorage length after open")
-    assert.is(field1.fieldName, "test1")
-    assert.is(field1.score, 9,"field score to static")
-assert.is(field1.getAll().length, 4096)
-assert.is(field1.gameOver, false)
-assert.is(field1.neighborPosition.length, 8)
-assert.is(field1.pristine, false)
-assert.is(field1.fieldStorage?.localStorage.length, 1)
-    
+    assert.is(
+      fieldStorage.localStorage.length,
+      1,
+      "localstorage length before open"
+    );
+
+    field1.open(0, 0);
+
+    assert.is(
+      fieldStorage.localStorage.length,
+      1,
+      "localstorage length after open"
+    );
+    assert.is(field1.fieldName, "test1");
+    assert.is(field1.score, 9, "field score to static");
+    assert.is(field1.getAll().length, 4096);
+    assert.is(field1.gameOver, false);
+    assert.is(field1.neighborPosition.length, 8);
+    assert.is(field1.pristine, false);
+    assert.is(field1.fieldStorage.localStorage.length, 1);
+
     fieldStorage.save(field1, "test1");
     const field2 = fieldStorage.load("test1");
 
     // delete field1.fieldStorage;
     // delete field2.fieldStorage;
-    
-    assert.is(field1.fieldName, field2.fieldName)
-    assert.is(field1.score, field2.score,"field scores")
-    assert.is(field1.getAll().length, field2.getAll().length)
-    assert.is(field1.gameOver, field2.gameOver)
-    assert.is(field1.neighborPosition, field2.neighborPosition)
-    assert.is(field1.pristine, field2.pristine)
-    assert.is(field1.fieldStorage?.localStorage.length, field2.fieldStorage?.localStorage.length)
+
+    fieldsAreEqual(field1, field2);
   }
 );
+
+function fieldsAreEqual(field1: Field, field2: Field): void {
+  assert.is(field1.fieldName, field2.fieldName);
+  assert.is(field1.score, field2.score, "field scores");
+  assert.is(
+    field1.getAll().length,
+    field2.getAll().length,
+    "fieldsareequal getall.length"
+  );
+  assert.is(field1.gameOver, field2.gameOver);
+  assert.is(field1.neighborPosition, field2.neighborPosition);
+  assert.is(field1.pristine, field2.pristine);
+  assert.is(
+    field1.fieldStorage.localStorage.length,
+    field2.fieldStorage.localStorage.length
+  );
+}
 
 fieldStorageSuite.skip(
   "should not get call stack size exceeded when a loaded field opens a cell",
@@ -254,23 +273,29 @@ function cellToObject(
   return { isFlagged, isOpen, parent, x, y, isMine };
 }
 
-fieldStorageSuite.only("should be able to save and load a chunk", (fieldStorage) => {
-  const chunk = new Chunk(0, 0, undefined);
-  fieldStorage.saveChunk(chunk, "test");
-  const loadedChunk = fieldStorage.loadChunk("test", 0, 0);
-  assert.is(loadedChunk?.getAll().length,1024)
+fieldStorageSuite.only(
+  "should be able to save and load a chunk",
+  (fieldStorage) => {
+    const chunk = new Chunk(0, 0, undefined);
+    fieldStorage.saveChunk(chunk, "test");
+    const loadedChunk = fieldStorage.loadChunk("test", 0, 0);
+    assert.is(loadedChunk.getAll().length, 1024);
 
-  for (const cell of loadedChunk?.getAll()){
-    assert.is(cell.isFlagged, false)
-    assert.is(cell.isMine, undefined)
-    assert.is(cell.isOpen, false)
-    assert.is(cell.parent, undefined)
-    assert.ok(cell.x>=0,JSON.stringify( cellToObject(cell)) + " does not have x>=0")
-    assert.ok(cell.x<32,cellToObject(cell) + " does not have x<32")
-    assert.ok(cell.y>=0,cellToObject(cell) + " does not have y>=0")
-    assert.ok(cell.y<32,cellToObject(cell) + " does not have y<32")
+    for (const cell of loadedChunk.getAll()) {
+      assert.is(cell.isFlagged, false);
+      assert.is(cell.isMine, undefined);
+      assert.is(cell.isOpen, false);
+      assert.is(cell.parent, undefined);
+      assert.ok(
+        cell.x >= 0,
+        JSON.stringify(cellToObject(cell)) + " does not have x>=0"
+      );
+      assert.ok(cell.x < 32, cellToObject(cell) + " does not have x<32");
+      assert.ok(cell.y >= 0, cellToObject(cell) + " does not have y>=0");
+      assert.ok(cell.y < 32, cellToObject(cell) + " does not have y<32");
+    }
   }
-});
+);
 
 test.run();
 localStorageSuite.run();
