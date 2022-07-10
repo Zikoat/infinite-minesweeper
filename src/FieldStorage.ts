@@ -40,7 +40,7 @@ export default class FieldStorage {
 
     return stringifiedField;
   }
-  saveChunk(chunk: { x: any; y: string }, id: any) {
+  saveChunk(chunk: Chunk, id: any) {
     this.localStorage.setItem(
       id + chunk.x + ";" + chunk.y,
       JSON.stringify(chunk)
@@ -50,7 +50,7 @@ export default class FieldStorage {
     id: string,
     x: number,
     y: number,
-    field: Field | undefined
+    field?: Field | undefined
   ): Chunk | undefined {
     var chunk = new Chunk(x, y, field);
     if (this.localStorage.getItem(id + chunk.x + ";" + chunk.y)) {
@@ -71,7 +71,7 @@ export default class FieldStorage {
           chunk.cells[i][j] = cell;
         }
       }
-      console.log(`loaded chunk (${x},${y}): ${chunk}`);
+      // console.log(`loaded chunk (${x},${y}): ${chunk}`);
       return chunk;
     }
     // console.log(`loading chunk (${x},${y}) is not set in localstorage, returning undefined`);
@@ -85,9 +85,9 @@ export default class FieldStorage {
       recoveredField.probability,
       recoveredField.safeRadius,
       this,
-      "defaultSavedFieldv3"
+      recoveredField.fieldName
     );
-    Object.assign(field, recoveredField);
+    // Object.assign(field, recoveredField);
     // field.score = recoveredField.score;
     // field.probability = recoveredField.prhobability;
     return field;

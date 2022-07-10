@@ -6,7 +6,7 @@ import Field from "./Field";
 export default class Cell {
 	x: number;
 	y: number;
-	parent: unknown;
+	parent: Field|undefined;
 	isOpen: boolean;
 	isMine?: boolean;
 	isFlagged: boolean;
@@ -14,7 +14,7 @@ export default class Cell {
 	// the functions in the field that take x/y arguments. this allows chaining,
 	// like this:
 	// f.getCell(10,10).open()
-	constructor(x:number, y:number, parent:Field|undefined, isFlagged:boolean|undefined, isMine:boolean|undefined){
+	constructor(x:number, y:number, parent:Field|undefined, isFlagged?:boolean, isMine?:boolean){
 		this.x = x;
 		this.y = y;
 		this.parent = parent;

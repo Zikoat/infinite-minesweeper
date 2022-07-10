@@ -22,7 +22,6 @@ var field: Field;
 
 field = new Field(0.20, 3,fieldStorage, fieldName);
 
-
 if (localStorage.getItem(fieldName)) {
 	field = fieldStorage.load(fieldName);
 	console.log(`loading previous field with ${field.getAll().filter((cell)=>cell.isOpen).length} mines opened`);

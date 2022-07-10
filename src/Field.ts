@@ -12,6 +12,7 @@ type ChunkedField = Record<number, Record<number, Chunk>>;
 import { Chunk } from "./Chunk";
 import { CHUNK_SIZE } from "./Chunk";
 import FieldStorage from "./FieldStorage";
+import seedrandom from "seedrandom";
 /**
  * events:
  * changedCells, if any cells have been changed, returns an array of the cells that have been changed
@@ -32,12 +33,15 @@ export default class Field extends EventEmitter {
   public visibleChunks: any;
   public fieldStorage?: FieldStorage;
   public fieldName: string;
+  private rng: seedrandom.PRNG;
+  private seed?: string
 
   constructor(
     probability = 0.5,
     safeRadius = 1,
     fieldStorage: FieldStorage,
-    fieldName: string
+    fieldName: string,
+    seed: string | undefined = undefined
   ) {
     super();
 
@@ -57,6 +61,9 @@ export default class Field extends EventEmitter {
     this.visibleChunks = [];
     this.fieldStorage = fieldStorage;
     this.fieldName = fieldName;
+    this.rng = seedrandom(seed);
+	this.seed = seed;
+
     // todo someday:
     // be able to change the options through an object
     // overwrite mine state
@@ -70,10 +77,10 @@ export default class Field extends EventEmitter {
     let chunkX = Math.floor(x / CHUNK_SIZE);
     let chunkY = Math.floor(y / CHUNK_SIZE);
     this.generateChunk(chunkX, chunkY);
-	
-	if(this.field[chunkX][chunkY].getCellFromGlobalCoords === undefined){
-		console.log("fucky wucky is aboard")
-	}
+
+    if (this.field[chunkX][chunkY].getCellFromGlobalCoords === undefined) {
+      throw new Error("Failed to generate chunk");
+    }
 
     return this.field[chunkX][chunkY].getCellFromGlobalCoords(x, y);
   }
@@ -163,12 +170,12 @@ export default class Field extends EventEmitter {
         throw new Error(
           "FieldStorage is not defined, but generateChunk called."
         );
-		const loadedChunk = this.fieldStorage.loadChunk(
-			this.fieldName,
-			x,
-			y,
-			this
-		  );
+      const loadedChunk = this.fieldStorage.loadChunk(
+        this.fieldName,
+        x,
+        y,
+        this
+      );
       this.field[x][y] = loadedChunk;
       if (this.field[x][y] === undefined)
         this.field[x][y] = new Chunk(x, y, this);
@@ -318,10 +325,13 @@ export default class Field extends EventEmitter {
       }
     }
   }
-//   toJSON() {
-//   	const fieldToStore: any = {};
-//   	fieldToStore.probability = this.probability;
-//   	fieldToStore.score = this.score;
-//   	return fieldToStore;
-//   }
+    toJSON() {
+    	const fieldToStore: any = {};
+    	fieldToStore.probability = this.probability;
+    	fieldToStore.safeRadius = this.safeRadius;
+		fieldToStore.pristine = this.pristine;
+		
+
+    	return fieldToStore;
+    }
 }
