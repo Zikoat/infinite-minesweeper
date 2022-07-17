@@ -22,10 +22,29 @@ import seven from "./assets/default/7.png";
 import eight from "./assets/default/8.png";
 
 let loadingPromise;
-export let textures = null;
+export let textures: MinesTextures;
+type MinesTextures = {
+  mine: SingleTexture;
+  closed: SingleTexture;
+  flag: SingleTexture;
+  mineWrong: SingleTexture;
+  open: SingleTexture;
+  cursor: SingleTexture;
+
+  1: SingleTexture;
+  2: SingleTexture;
+  3: SingleTexture;
+  4: SingleTexture;
+  5: SingleTexture;
+  6: SingleTexture;
+  7: SingleTexture;
+  8: SingleTexture;
+};
 export let width = 2;
 
-function processTextures(): Promise<void> {
+type SingleTexture = PIXI.Texture<PIXI.Resource> | undefined;
+
+function processTextures(): Promise<PIXI.utils.Dict<PIXI.LoaderResource>> {
   return new Promise((resolve, reject) => {
     const loader = PIXI.Loader.shared;
     loader
@@ -57,20 +76,23 @@ export function load() {
       .then((resources) => {
         // extract the textures out from the resources we loaded
         textures = {
-          mine: resources.mine.texture,
-          closed: resources.closed.texture,
-          flag: resources.flag.texture,
-          mineWrong: resources.mineWrong.texture,
-          open: resources.open.texture,
-          cursor: resources.cursor.texture,
+          mine: resources!.mine!.texture,
+          closed: resources!.closed!.texture,
+          flag: resources!.flag!.texture,
+          mineWrong: resources!.mineWrong!.texture,
+          open: resources!.open!.texture,
+          cursor: resources!.cursor!.texture,
+          1: resources![1]!.texture,
+          2: resources![2]!.texture,
+          3: resources![3]!.texture,
+          4: resources![4]!.texture,
+          5: resources![5]!.texture,
+          6: resources![6]!.texture,
+          7: resources![7]!.texture,
+          8: resources![8]!.texture,
         };
-        for (let i = 1; i <= 8; i++) {
-          textures[i] = resources[i.toString()].texture;
-        }
 
-        width = textures.closed.width;
-        // debugging
-        // console.log("done loading");
+        width = textures!.closed!.width;
         return textures;
       })
       .catch((reason) => console.error(reason));

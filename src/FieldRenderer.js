@@ -9,6 +9,7 @@ import Controls from "./Controls";
 import CellSprite from "./CellSprite";
 import { TweenMax, Power2, TimelineLite } from "gsap";
 
+
 export default class FieldRenderer extends PIXI.Application {
   constructor(field) {
     super();
