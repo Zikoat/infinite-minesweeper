@@ -7,7 +7,7 @@ import * as PIXI from "pixi.js";
 
 const EventEmitter = PIXI.utils.EventEmitter;
 
-type ChunkedField = Record<number, Record<number, Chunk>>;
+export type ChunkedField = Record<number, Record<number, Chunk>>;
 
 import { Chunk } from "./Chunk";
 import { CHUNK_SIZE } from "./Chunk";
@@ -22,8 +22,8 @@ export default class Field extends EventEmitter {
   // do not call any of the cell's functions in the field class, to prevent
   // infinite loops
 
-  private field: ChunkedField;
-  private chunksToSave: any;
+  public field: ChunkedField;
+  public chunksToSave: any;
   public probability: number;
   public safeRadius: number;
   public pristine: boolean;

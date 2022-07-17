@@ -219,7 +219,9 @@ export default class Controls {
       });
       //console.log(`flagged the neighbors of`, cell);
     }
-    Controls.field.save();
+    if(Controls.field.fieldStorage === undefined ) throw new Error("tried to save, but fieldstorage is undefined")
+    console.log(" saving field")
+    Controls.field.fieldStorage.save(Controls.field, Controls.field.fieldName);
   }
 
   static moveViewTo(newx, newy) {

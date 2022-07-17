@@ -3,7 +3,7 @@ import { LocalStorage } from "node-localstorage";
 import { suite, test } from "uvu";
 import * as assert from "uvu/assert";
 import Cell from "./Cell";
-import Field from "./Field";
+import Field, { ChunkedField } from "./Field";
 import FieldStorage from "./FieldStorage";
 import seedrandom from "seedrandom";
 import { Chunk } from "./Chunk";
@@ -31,17 +31,8 @@ test("Field should be able to be constructed", () => {
   assert.is(field.gameOver, false);
 });
 
-test.skip("Field.toJson should return the field as an object", () => {
-  const field = new Field(undefined, undefined, undefined, undefined);
-  const json = JSON.stringify(field);
-  assert.equal(
-    json,
-    '{"probability":0.5,"score":0}'
-    // '{"_events":{},"_eventsCount":0,"field":{},"probability":0.5,"pristine":true,"safeRadius":1,"gameOver":false,"neighborPosition":[[-1,1],[0,1],[1,1],[-1,0],[1,0],[-1,-1],[0,-1],[1,-1]],"score":0,"chunksToSave":[],"visibleChunks":[]}'
-  );
-});
-
 test("Field should open a cell", () => {
+  // todo remove. fieldstorage doesnt get cleaned up, and this test should be in the fieldstorage suite
   const fieldStorage = new FieldStorage(new LocalStorage("./localStorage"));
   const field = new Field(undefined, undefined, fieldStorage, "unitTest");
   const opened = field.open(0, 0);
@@ -92,10 +83,11 @@ const fieldStorageSuite = suite(
   "FieldStorage",
   new FieldStorage(new LocalStorage("./localstorage"))
 );
-fieldStorageSuite.only(
+fieldStorageSuite(
   "should get an exact copy of the previous field",
   (fieldStorage) => {
     const field1 = new Field(0.6, 2, fieldStorage, "test1", "testSeed");
+
     assert.is(
       fieldStorage.localStorage.length,
       1,
@@ -117,17 +109,73 @@ fieldStorageSuite.only(
     assert.is(field1.pristine, false);
     assert.is(field1.fieldStorage.localStorage.length, 1);
 
+    field1.chunksToSave.slice(0).forEach((chunk: any) => {
+      fieldStorage.saveChunk(chunk, field1.fieldName);
+    });
+    field1.chunksToSave = [];
+
     fieldStorage.save(field1, "test1");
     const field2 = fieldStorage.load("test1");
 
     // delete field1.fieldStorage;
     // delete field2.fieldStorage;
+    // assert.equal(getAllKeys(field1.fieldStorage?.localStorage), ["test1"]);
+
+    const cell1 = field1.getCell(0, 1);
+    const cell2 = field2.getCell(0, 1);
+
+    assert.is(cell1.isOpen, true, "cell1 open");
+    assert.is(cell2.isOpen, true, "cell2 open");
+    assert.is(cell1.value(), cell2.value());
 
     fieldsAreEqual(field1, field2);
   }
 );
 
+export function getAllKeys(localStorage: LocalStorage): string[] {
+  const keys: string[] = [];
+  let i = 1;
+  let key: boolean | string = true;
+  while (key) {
+    key = localStorage.key(i);
+
+    if (key) keys.push(key);
+    console.log(key);
+    i++;
+    if (i > 100) throw new Error("i is more than 100");
+  }
+
+  return keys;
+}
+
 function fieldsAreEqual(field1: Field, field2: Field): void {
+  assert.equal(
+    fieldViewToString(field2, -3, -3, 3, 3),
+    `.......
+.xxx...
+..422x.
+.x202..
+.x324x.
+...xxx.
+.......
+`
+  );
+  assert.equal(
+    fieldViewToString(field1, -3, -3, 3, 3),
+    fieldViewToString(field2, -3, -3, 3, 3)
+  );
+
+  assert.equal(
+    getChunksInField(field2.field),
+    [
+      [0, 0],
+      [0, -1],
+      [-1, 0],
+      [-1, -1],
+    ],
+    "getchunksfield 1"
+  );
+  // assert.is(field1.field, field2.field)
   assert.is(field1.fieldName, field2.fieldName);
   assert.is(field1.score, field2.score, "field scores");
   assert.is(
@@ -135,13 +183,23 @@ function fieldsAreEqual(field1: Field, field2: Field): void {
     field2.getAll().length,
     "fieldsareequal getall.length"
   );
-  assert.is(field1.gameOver, field2.gameOver);
-  assert.is(field1.neighborPosition, field2.neighborPosition);
-  assert.is(field1.pristine, field2.pristine);
+  assert.is(field1.gameOver, field2.gameOver, "field gameover");
+  assert.is(field1.neighborPosition, field2.neighborPosition, "field neighborpositions");
+  assert.is(field1.pristine, field2.pristine,"field pristine");
   assert.is(
     field1.fieldStorage.localStorage.length,
     field2.fieldStorage.localStorage.length
   );
+}
+
+function getChunksInField(chunkedField: ChunkedField): number[][] {
+  const chunkCoords = [];
+  for (const xChunks of Object.keys(chunkedField)) {
+    for (const yChunks of Object.keys(chunkedField[parseInt(xChunks)])) {
+      chunkCoords.push([parseInt(xChunks), parseInt(yChunks)]);
+    }
+  }
+  return chunkCoords;
 }
 
 fieldStorageSuite.skip(
@@ -271,29 +329,79 @@ function cellToObject(cell: Cell): {
   return { isFlagged, isOpen, parent, x, y, isMine };
 }
 
-fieldStorageSuite.only(
-  "should be able to save and load a chunk",
-  (fieldStorage) => {
-    const chunk = new Chunk(0, 0, undefined);
-    fieldStorage.saveChunk(chunk, "test");
-    const loadedChunk = fieldStorage.loadChunk("test", 0, 0);
-    assert.is(loadedChunk.getAll().length, 1024);
+fieldStorageSuite("should be able to save and load a chunk", (fieldStorage) => {
+  const chunk = new Chunk(0, 0, undefined);
+  fieldStorage.saveChunk(chunk, "test");
+  const loadedChunk = fieldStorage.loadChunk("test", 0, 0);
+  assert.is(loadedChunk.getAll().length, 1024);
 
-    for (const cell of loadedChunk.getAll()) {
-      assert.is(cell.isFlagged, false);
-      assert.is(cell.isMine, undefined);
-      assert.is(cell.isOpen, false);
-      assert.is(cell.parent, undefined);
-      assert.ok(
-        cell.x >= 0,
-        JSON.stringify(cellToObject(cell)) + " does not have x>=0"
-      );
-      assert.ok(cell.x < 32, cellToObject(cell) + " does not have x<32");
-      assert.ok(cell.y >= 0, cellToObject(cell) + " does not have y>=0");
-      assert.ok(cell.y < 32, cellToObject(cell) + " does not have y<32");
-    }
+  for (const cell of loadedChunk.getAll()) {
+    assert.is(cell.isFlagged, false);
+    assert.is(cell.isMine, undefined);
+    assert.is(cell.isOpen, false);
+    assert.is(cell.parent, undefined);
+    assert.ok(
+      cell.x >= 0,
+      JSON.stringify(cellToObject(cell)) + " does not have x>=0"
+    );
+    assert.ok(cell.x < 32, cellToObject(cell) + " does not have x<32");
+    assert.ok(cell.y >= 0, cellToObject(cell) + " does not have y>=0");
+    assert.ok(cell.y < 32, cellToObject(cell) + " does not have y<32");
   }
-);
+});
+
+fieldStorageSuite("Field should draw a view", (fieldStorage) => {
+  const field1 = new Field(0.6, 2, fieldStorage, "test1", "testSeed");
+  field1.open(0, 0);
+
+  const map = fieldViewToString(field1, -3, -3, 3, 3);
+
+  assert.equal(
+    map,
+    `.......
+.xxx...
+..422x.
+.x202..
+.x324x.
+...xxx.
+.......
+`
+  );
+});
+
+function fieldViewToString(
+  field: Field,
+  x0: number,
+  y0: number,
+  x1: number,
+  y1: number
+): string {
+  let map = "";
+
+  for (let x = x0; x <= x1; x++) {
+    for (let y = y0; y <= y1; y++) {
+      const cell = field.getCell(x, y);
+      let character = "";
+      if (cell.isMine && cell.isOpen && !cell.isFlagged) character = "X";
+      else if (cell.isMine && !cell.isOpen && cell.isFlagged) character = "F";
+      else if (!cell.isMine && cell.isOpen && !cell.isFlagged) {
+        const value = cell.value();
+        if (value === null) throw Error("the cell's value is null");
+        character = value.toString();
+      } else if (cell.isMine && !cell.isOpen && !cell.isFlagged)
+        character = "x";
+      else if (!cell.isMine && !cell.isOpen && !cell.isFlagged) character = ".";
+      else
+        throw new Error(
+          `don't know what cell ${cell} on coordinate ${x},${y} is supposed to be`
+        );
+
+      map += character;
+    }
+    map += "\n";
+  }
+  return map;
+}
 
 test.run();
 localStorageSuite.run();

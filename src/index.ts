@@ -26,7 +26,7 @@ if (localStorage.getItem(fieldName)) {
   console.log(
     `loading previous field with ${
       field.getAll().filter((cell) => cell.isOpen).length
-    } mines opened`
+    } fields opened`
   );
 } else {
   field = new Field(0.2, 3, fieldStorage, fieldName);
@@ -42,7 +42,7 @@ window.renderer = new FieldRenderer(field);
 window.bot = new SimpleBot(field);
 window.FieldStorage = FieldStorage;
 
-fieldStorage.registerAutoSave(field, fieldName);
+fieldStorage.registerAutoSave(field);
 
 field.on("cellChanged", () => {
   document.getElementById("score").innerHTML = field.score.toString();

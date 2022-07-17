@@ -26,13 +26,14 @@ export default class FieldStorage {
     const field = this.decompress(compressedField, id);
     return field;
   }
-  registerAutoSave(field: Field, saveName: string) {
+  registerAutoSave(field: Field) {
     field.on("save", (chunks: any[]) => {
+      console.log("saving field")
       //FieldStorage.save(field, saveName);
       chunks.forEach((chunk: any) => {
-        this.saveChunk(chunk, saveName);
+        this.saveChunk(chunk, field.fieldName);
       });
-      this.save(field, saveName);
+      this.save(field, field.fieldName);
     });
   }
   compress(field: Field) {
@@ -91,6 +92,8 @@ export default class FieldStorage {
     );
     // Object.assign(field, recoveredField);
     field.score = recoveredField.score;
+    if(recoveredField.pristine) throw new Error("trying to load pristine field. create a new instead")
+    field.pristine = false;
     // field.probability = recoveredField.prhobability;
     return field;
   }

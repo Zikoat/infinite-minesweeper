@@ -25,9 +25,11 @@ export class Chunk {
   getCell(x: number, y: number) {
     return this.cells[x][y];
   }
+  
   getCellFromGlobalCoords(x: number, y: number) {
     return this.cells[x - this.x * CHUNK_SIZE][y - this.y * CHUNK_SIZE];
   }
+
   getAll() {
     let ans = [];
     var i, j;
