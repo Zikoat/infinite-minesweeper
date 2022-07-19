@@ -7,25 +7,21 @@ export class Chunk {
   y: number;
   cells: Cell[][];
 
-  constructor(x: number, y: number, parent: Field | undefined) {
+  constructor(x: number, y: number) {
     this.x = x;
     this.y = y;
     this.cells = [];
     for (let i = 0; i < CHUNK_SIZE; i++) {
       this.cells[i] = [];
       for (let j = 0; j < CHUNK_SIZE; j++) {
-        this.cells[i][j] = new Cell(
-          x * CHUNK_SIZE + i,
-          y * CHUNK_SIZE + j,
-        
-        );
+        this.cells[i][j] = new Cell(x * CHUNK_SIZE + i, y * CHUNK_SIZE + j);
       }
     }
   }
   getCell(x: number, y: number) {
     return this.cells[x][y];
   }
-  
+
   getCellFromGlobalCoords(x: number, y: number) {
     return this.cells[x - this.x * CHUNK_SIZE][y - this.y * CHUNK_SIZE];
   }

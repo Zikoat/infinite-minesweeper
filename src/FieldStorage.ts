@@ -43,13 +43,8 @@ export default class FieldStorage {
       JSON.stringify(chunk)
     );
   }
-  loadChunk(
-    id: string,
-    x: number,
-    y: number,
-    field?: Field | undefined
-  ): Chunk | undefined {
-    var chunk = new Chunk(x, y, field);
+  loadChunk(id: string, x: number, y: number): Chunk | undefined {
+    var chunk = new Chunk(x, y);
     const chunkFromLocalStorage = this.localStorage.getItem(
       id + chunk.x + ";" + chunk.y
     );

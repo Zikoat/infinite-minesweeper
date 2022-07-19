@@ -161,12 +161,12 @@ export default class Field extends EventEmitter {
       const loadedChunk = this.fieldStorage.loadChunk(
         this.fieldName,
         x,
-        y,
-        this
+        y
+        
       );
       this.fieldData[x][y] = loadedChunk;
       if (this.fieldData[x][y] === undefined)
-        this.fieldData[x][y] = new Chunk(x, y, this);
+        this.fieldData[x][y] = new Chunk(x, y);
       else {
         this.fieldData[x][y].getAll().forEach((cell) => {
           if (cell.isOpen || cell.isFlagged) {
@@ -179,7 +179,7 @@ export default class Field extends EventEmitter {
   showChunk(x: number, y: number) {
     if (!(x in this.fieldData)) this.fieldData[x] = {};
     if (!(y in this.fieldData[x])) {
-      let chunk = this.fieldStorage.loadChunk(this.fieldName, x, y, this);
+      let chunk = this.fieldStorage.loadChunk(this.fieldName, x, y);
       if (!(chunk === undefined)) {
         this.fieldData[x][y] = chunk;
         this.fieldData[x][y].getAll().forEach((cell) => {

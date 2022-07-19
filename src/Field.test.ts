@@ -286,7 +286,7 @@ test("SeddedRandom should get the same random number every time", () => {
 });
 
 test("Chunk should be instantiated", () => {
-  const chunk = new Chunk(0, 0, undefined);
+  const chunk = new Chunk(0, 0);
   const chunkJsonFunction = chunk.toJSON();
   const chunkJsonStringified = JSON.stringify(chunk);
   assert.type(chunkJsonFunction, "string");
@@ -299,7 +299,7 @@ test("Chunk should be instantiated", () => {
 });
 
 test("Chunk should get cell", () => {
-  const chunk = new Chunk(0, 0, undefined);
+  const chunk = new Chunk(0, 0);
 
   const cell: Cell = chunk.getCell(0, 0);
   assert.equal(cell.toJSON(), "020", "tojson cell");
@@ -331,7 +331,7 @@ function cellToObject(cell: Cell): {
 }
 
 fieldStorageSuite("should be able to save and load a chunk", (fieldStorage) => {
-  const chunk = new Chunk(0, 0, undefined);
+  const chunk = new Chunk(0, 0);
   fieldStorage.saveChunk(chunk, "test");
   const loadedChunk = fieldStorage.loadChunk("test", 0, 0);
   assert.is(loadedChunk.getAll().length, 1024);
