@@ -51,7 +51,7 @@ test("Field should calculate score correctly", () => {
 });
 
 test("Cell should be able to be instantiated", () => {
-  const cell = new Cell(0, 0, undefined, false, false);
+  const cell = new Cell(0, 0, false, false);
   assert.is(cell.isOpen, false);
 });
 

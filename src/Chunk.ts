@@ -17,7 +17,7 @@ export class Chunk {
         this.cells[i][j] = new Cell(
           x * CHUNK_SIZE + i,
           y * CHUNK_SIZE + j,
-          parent
+        
         );
       }
     }

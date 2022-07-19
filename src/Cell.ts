@@ -13,13 +13,7 @@ export default class Cell {
   // the functions in the field that take x/y arguments. this allows chaining,
   // like this:
   // f.getCell(10,10).open()
-  constructor(
-    x: number,
-    y: number,
-    parent: Field | undefined,
-    isFlagged?: boolean,
-    isMine?: boolean
-  ) {
+  constructor(x: number, y: number, isFlagged?: boolean, isMine?: boolean) {
     this.x = x;
     this.y = y;
     this.isOpen = false;

@@ -58,7 +58,7 @@ export default class FieldStorage {
 
       for (let i = 0; i < CHUNK_SIZE; i++) {
         for (let j = 0; j < CHUNK_SIZE; j++) {
-          let cell = new Cell(x * CHUNK_SIZE + i, y * CHUNK_SIZE + j, field);
+          let cell = new Cell(x * CHUNK_SIZE + i, y * CHUNK_SIZE + j);
 
           let cellPointer = (i * CHUNK_SIZE + j) * 3;
           cell.isOpen = data.charAt(cellPointer) == true;
