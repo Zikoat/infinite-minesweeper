@@ -1,47 +1,49 @@
-import { test, suite } from "uvu";
-import * as assert from "uvu/assert";
 import * as fc from "fast-check";
-import { expect } from "bun:test";
-import { string } from "fast-check";
+import { SimpleNumberStorage } from "../SimpleNumberStorage";
+import { suite } from "uvu";
+import * as assert from "uvu/assert";
 
-interface Storage extends NumberStorage {
-  get(x: number, y: number): number|null;
-  set(x: number, y: number, value: unknown): void;
+interface CompressibleNumberStorage extends NumberStorage {
+  get(x: number, y: number): number | null;
+  set(x: number, y: number, value: number | null): void;
   compress(): string;
-  decompress(compressed: string): Storage;
+  decompress(compressed: string): CompressibleNumberStorage;
 }
 
-type COOFormat = Record<number, Record<number, unknown>>;
+type COOFormat = Record<number, Record<number, number>>;
 
-class COO implements Storage {
+class COO implements CompressibleNumberStorage {
   protected data: COOFormat = {};
 
-  stringify(): string {
+  compress(): string {
     return JSON.stringify(this.data);
   }
-  parse(compressed: string): COO {
+  decompress(compressed: string): COO {
     const parsedJson = JSON.parse(compressed) as COOFormat;
     const instance = new COO();
     instance.data = parsedJson;
     return instance;
   }
 
-  set(x: number, y: number, value: unknown): void {
+  set(x: number, y: number, value: number): void {
     if (this.data[x] !== undefined) this.data[x]![y] = value;
     else {
       this.data[x] = {};
       this.data[x]![y] = value;
     }
   }
-  get(x: number, y: number):number|null {
+  get(x: number, y: number): number | null {
     return this.data[x]?.[y] ?? null;
   }
 }
 
+testStorage(SimpleNumberStorage);
 testStorage(COO);
 
-function testStorage<T extends Storage>(storageConstructor: new () => T): void {
-  const storageSuite = suite("COOrdinate format");
+function testStorage<T extends CompressibleNumberStorage>(
+  storageConstructor: new () => T
+): void {
+  const storageSuite = suite(storageConstructor.name);
 
   storageSuite("should get a setted value", () => {
     const storage = new storageConstructor();
@@ -70,24 +72,18 @@ function testStorage<T extends Storage>(storageConstructor: new () => T): void {
   storageSuite("should return the same after stringification", () => {
     let storage = new storageConstructor();
     storage.set(0, 0, 1);
-    storage.set(0, 1, undefined);
-    storage.set(0, 2, null);
-    storage.set(0, 3, []);
-    storage.set(0, 4, {});
-    storage.set(0, 5, 0);
-    storage.set(0, 6, false);
+    storage.set(0, 1, 0);
+    storage.set(1, 1, 1);
+    storage.set(1, 1, null);
 
-    const stringifiedStorage = storage.stringify();
+    const stringifiedStorage = storage.compress();
     assert.type(stringifiedStorage, "string");
-    const newStorage = storage.parse(stringifiedStorage);
+    const newStorage = storage.decompress(stringifiedStorage);
 
     assert.equal(newStorage.get(0, 0), 1);
-    // assert.equal(newStorage.get(0, 1), undefined); // this case is not handled properly, it changes undefined to null
+    assert.equal(newStorage.get(0, 1), 0);
     assert.equal(newStorage.get(0, 2), null);
-    assert.equal(newStorage.get(0, 3), []);
-    assert.equal(newStorage.get(0, 4), {});
-    assert.equal(newStorage.get(0, 5), 0);
-    assert.equal(newStorage.get(0, 6), false);
+    assert.equal(newStorage.get(1, 1), null);
   });
 
   storageSuite.skip(
@@ -98,9 +94,9 @@ function testStorage<T extends Storage>(storageConstructor: new () => T): void {
           let storage = new storageConstructor();
           storage.set(0, 0, a);
 
-          const stringifiedStorage = storage.stringify();
+          const stringifiedStorage = storage.compress();
           assert.type(stringifiedStorage, "string");
-          const newStorage = storage.parse(stringifiedStorage);
+          const newStorage = storage.decompress(stringifiedStorage);
 
           assert.equal(newStorage.get(0, 0), a);
           assert.not.instance(storage, newStorage);
@@ -115,65 +111,76 @@ function testStorage<T extends Storage>(storageConstructor: new () => T): void {
         .tuple(fc.integer(), fc.integer())
         .map((tuple) => new GetCommand(tuple[0], tuple[1])),
       fc
-        .tuple(fc.integer(), fc.integer(), fc.anything())
+        .tuple(fc.integer(), fc.integer(), fc.integer())
         .map((tuple) => new SetCommand(tuple[0], tuple[1], tuple[2])),
       fc.anything().map(() => new StringifyCommand()),
     ];
 
     fc.assert(
       fc.property(fc.commands(allCommands), (cmds) => {
-        const s = () => ({ model: {}, real: new storageConstructor() });
+        const s = () => ({
+          model: new SimpleNumberStorage(),
+          real: new storageConstructor(),
+        });
         fc.modelRun(s, cmds);
       })
     );
   });
-  storageSuite("should ", () => {});
-  storageSuite("should ", () => {});
-  storageSuite("should ", () => {});
 
   storageSuite.run();
 }
 
 type Model = {};
 
-class SetCommand<T extends Storage> implements fc.Command<Model, T> {
+class SetCommand<T extends NumberStorage> implements fc.Command<Model, T> {
   constructor(
     readonly x: number,
     readonly y: number,
-    readonly insertValue: any
+    readonly insertValue: number
   ) {}
 
   check = () => true;
 
-  run(m: Model, r: T): void {
+  run(m: SimpleNumberStorage, r: T): void {
     r.set(this.x, this.y, this.insertValue);
+    m.set(this.x, this.y, this.insertValue);
   }
 
-  toString = () => `set(${this.x},${this.y},${this.insertValue})`;
+  toString = () => `set(${this.x},${this.y},${JSON.stringify(this.insertValue)})`;
 }
 
-class GetCommand<T extends Storage> implements fc.Command<Model, T> {
+class GetCommand<T extends NumberStorage> implements fc.Command<Model, T> {
   constructor(readonly x: number, readonly y: number) {}
 
   check = () => true;
 
-  run(m: Model, r: T): void {
+  run(m: SimpleNumberStorage, r: T): void {
     const outputValue = r.get(this.x, this.y);
     if (outputValue !== null) {
       assert.type(outputValue, "number");
     }
+    const modelOutputValue = m.get(this.x, this.y);
+    assert.equal(outputValue, modelOutputValue);
   }
 
   toString = () => `get(${this.x},${this.y})`;
 }
-class StringifyCommand implements fc.Command<Model, Storage> {
+class StringifyCommand implements fc.Command<Model, CompressibleNumberStorage> {
   constructor() {}
 
   check = () => true;
 
-  run(m: Model, r: Storage): void {
-    r = r.parse(r.stringify());
-  }
+  run(m: SimpleNumberStorage, r: CompressibleNumberStorage): void {
+    const afterCompression = r.decompress(r.compress());
 
+    assert.equal(typeof r, typeof afterCompression, "typeof check");
+    assert.equal(
+      r.constructor.name,
+      afterCompression.constructor.name,
+      "constructor name check"
+    );
+
+    r = afterCompression;
+  }
   toString = () => `compress`;
 }

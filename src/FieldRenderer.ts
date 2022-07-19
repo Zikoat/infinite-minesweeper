@@ -8,7 +8,8 @@ import FieldStorage from "./FieldStorage";
 import Controls from "./Controls";
 import CellSprite from "./CellSprite";
 import { TweenMax, Power2, TimelineLite } from "gsap";
-
+import Cell from "./Cell.js";
+import Field from "./Field.js";
 
 export default class FieldRenderer extends PIXI.Application {
   constructor(field) {
@@ -51,9 +52,10 @@ var defaultField;
 var width;
 var counter = 0;
 var cursor;
-function updateCell(field, cell) {
+function updateCell(field: Field, cell: Cell) {
   if (cell.sprite === undefined) {
-    cell.sprite = new CellSprite(cell);
+    const value = field.value(cell.x, cell.y);
+    cell.sprite = new CellSprite(cell, value);
     fieldContainer.addChild(cell.sprite);
   } else {
     cell.sprite.update(cell);

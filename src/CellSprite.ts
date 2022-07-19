@@ -1,11 +1,15 @@
 import { textures, width } from "./Textures";
 import { TweenMax } from "gsap";
 import * as PIXI from "pixi.js";
+import Cell from "./Cell";
+import { LoaderResource } from "pixi.js";
 
 export default class CellSprite extends PIXI.Container {
+  private value: number | null;
   // class for creating and updating sprites
-  constructor(cell) {
+  constructor(cell: Cell, value: number | null) {
     super();
+    this.value = value;
     let cellTexture = this.getCellTexture(cell);
     let back = new PIXI.Sprite(cellTexture.back.texture);
     let front = new PIXI.Sprite(cellTexture.front.texture);
@@ -19,7 +23,7 @@ export default class CellSprite extends PIXI.Container {
     this.playUpdateAnimation();
   }
 
-  update(cell) {
+  update(cell: Cell) {
     let back = this.getChildAt(0);
     let front = this.getChildAt(1);
 
@@ -29,9 +33,7 @@ export default class CellSprite extends PIXI.Container {
     this.playUpdateAnimation();
   }
 
-  playUpdateAnimation(cell) {
-    let currentY = this.position.y;
-    let currentX = this.position.x;
+  playUpdateAnimation() {
     let front = this.getChildByName("fg");
     let back = this.getChildByName("bg");
 
@@ -40,20 +42,28 @@ export default class CellSprite extends PIXI.Container {
     TweenMax.from(back, 0.2, { alpha: 0 });
   }
 
-  getCellTexture(cell) {
+  getCellTexture(cell: Cell): { back: LoaderResource; front: LoaderResource } {
     const textures = PIXI.Loader.shared.resources;
 
-    var texture = {};
+    let back: LoaderResource | undefined = undefined;
+    let front: LoaderResource | undefined = undefined;
 
     if (cell.isOpen) {
-      texture.back = textures.open;
-      if (cell.isMine) texture.front = textures.mineWrong;
-      else if (cell.value() > 0) texture.front = textures[cell.value()];
-      else texture.front = textures.open;
+      back = textures.open;
+      if (cell.isMine) front = textures.mineWrong;
+      else if (this.value !== null && this.value > 0) front = textures[this.value];
+      else front = textures.open;
     } else {
-      texture.back = textures.closed;
-      texture.front = cell.isFlagged ? textures.flag : PIXI.Texture.EMPTY;
+      back = textures.closed;
+      front = cell.isFlagged
+        ? textures.flag
+        : (PIXI.Texture.EMPTY as LoaderResource);
     }
+    let texture: { back: LoaderResource; front: LoaderResource } = {
+      back,
+      front,
+    };
+
     return texture;
   }
 }

@@ -1,28 +1,24 @@
 /**
  * Created by sisc0606 on 19.08.2017.
  */
-import Cell from "./Cell";
 import * as Layouts from "./Layouts";
 import * as PIXI from "pixi.js";
+import { Chunk } from "./Chunk";
+import { CHUNK_SIZE } from "./Chunk";
+import FieldStorage from "./FieldStorage";
+import seedrandom from "seedrandom";
+import Cell from "./Cell";
+import { close } from "fs";
 
 const EventEmitter = PIXI.utils.EventEmitter;
 
 export type ChunkedField = Record<number, Record<number, Chunk>>;
 
-import { Chunk } from "./Chunk";
-import { CHUNK_SIZE } from "./Chunk";
-import FieldStorage from "./FieldStorage";
-import seedrandom from "seedrandom";
-/**
- * events:
- * changedCells, if any cells have been changed, returns an array of the cells that have been changed
- * wrongMove, if a wrong cell has been pressed (open mine or flag non-mine), returns the cell that was pressed
- */
 export default class Field extends EventEmitter {
   // do not call any of the cell's functions in the field class, to prevent
   // infinite loops
 
-  public field: ChunkedField;
+  public fieldData: ChunkedField;
   public chunksToSave: any;
   public probability: number;
   public safeRadius: number;
@@ -39,13 +35,13 @@ export default class Field extends EventEmitter {
   constructor(
     probability = 0.5,
     safeRadius = 1,
-    fieldStorage: FieldStorage,
+    fieldStorage: FieldStorage | undefined,
     fieldName: string,
     seed: string | undefined = undefined
   ) {
     super();
 
-    this.field = {};
+    this.fieldData = {};
     // this is the probability that a mine is a cell
     this.probability = probability;
     // the field is pristine if no cells are opened, set this to true again with
@@ -70,19 +66,18 @@ export default class Field extends EventEmitter {
     // freeze mode
   }
   getChunk(x: number, y: number) {
-    return this.field[x][y];
+    return this.fieldData[x][y];
   }
   getCell(x: number, y: number) {
-    // if the row or cell is not created, we will get an error: cant read property of undefined
     let chunkX = Math.floor(x / CHUNK_SIZE);
     let chunkY = Math.floor(y / CHUNK_SIZE);
     this.generateChunk(chunkX, chunkY);
 
-    if (this.field[chunkX][chunkY].getCellFromGlobalCoords === undefined) {
+    if (this.fieldData[chunkX][chunkY].getCellFromGlobalCoords === undefined) {
       throw new Error("Failed to generate chunk");
     }
 
-    return this.field[chunkX][chunkY].getCellFromGlobalCoords(x, y);
+    return this.fieldData[chunkX][chunkY].getCellFromGlobalCoords(x, y);
   }
   open(x: number, y: number) {
     // returns an array of all the opened cells: [Cell, Cell, Cell, ...]
@@ -113,7 +108,7 @@ export default class Field extends EventEmitter {
     this.score++;
 
     // generating of neighbors. we generate the cells when a neighbor is opened
-    let neighbors = cell.getNeighbors();
+    let neighbors = this.getNeighbors(cell.x, cell.y);
     for (var i = 0; i < neighbors.length; i++) {
       if (neighbors[i].isMine === undefined) {
         this.generateCell(neighbors[i].x, neighbors[i].y);
@@ -124,18 +119,17 @@ export default class Field extends EventEmitter {
     this.emit("cellChanged", cell);
 
     // floodfill
-    if (cell.value() === 0) {
-      cell
-        .getNeighbors() // get all the neighbors
+    if (this.value(cell.x, cell.y) === 0) {
+      this.getNeighbors(cell.x, cell.y) // get all the neighbors
         .filter((neighbor: { isOpen: any }) => !neighbor.isOpen) // filter the array, so only the closed neighbors are in it
-        .forEach((closedNeighbor: { open: () => void }) => {
-          closedNeighbor.open();
+        .forEach((closedNeighbor: { x: number; y: number }) => {
+          this.open(closedNeighbor.x, closedNeighbor.y);
         });
     }
 
     return openedCells.length >= 1;
   }
-  
+
   flag(x: number, y: number) {
     let cell = this.getCell(x, y);
     if (!cell.isOpen) {
@@ -158,8 +152,8 @@ export default class Field extends EventEmitter {
     return neighbors;
   }
   generateChunk(x: number, y: number) {
-    if (!(x in this.field)) this.field[x] = {};
-    if (!(y in this.field[x])) {
+    if (!(x in this.fieldData)) this.fieldData[x] = {};
+    if (!(y in this.fieldData[x])) {
       if (!this.fieldStorage)
         throw new Error(
           "FieldStorage is not defined, but generateChunk called."
@@ -170,11 +164,11 @@ export default class Field extends EventEmitter {
         y,
         this
       );
-      this.field[x][y] = loadedChunk;
-      if (this.field[x][y] === undefined)
-        this.field[x][y] = new Chunk(x, y, this);
+      this.fieldData[x][y] = loadedChunk;
+      if (this.fieldData[x][y] === undefined)
+        this.fieldData[x][y] = new Chunk(x, y, this);
       else {
-        this.field[x][y].getAll().forEach((cell) => {
+        this.fieldData[x][y].getAll().forEach((cell) => {
           if (cell.isOpen || cell.isFlagged) {
             this.emit("cellChanged", cell);
           }
@@ -183,12 +177,12 @@ export default class Field extends EventEmitter {
     }
   }
   showChunk(x: number, y: number) {
-    if (!(x in this.field)) this.field[x] = {};
-    if (!(y in this.field[x])) {
+    if (!(x in this.fieldData)) this.fieldData[x] = {};
+    if (!(y in this.fieldData[x])) {
       let chunk = this.fieldStorage.loadChunk(this.fieldName, x, y, this);
       if (!(chunk === undefined)) {
-        this.field[x][y] = chunk;
-        this.field[x][y].getAll().forEach((cell) => {
+        this.fieldData[x][y] = chunk;
+        this.fieldData[x][y].getAll().forEach((cell) => {
           if (cell.isOpen || cell.isFlagged) {
             this.emit("cellChanged", cell);
           }
@@ -197,19 +191,19 @@ export default class Field extends EventEmitter {
     }
   }
   unloadChunk(x: string, y: string) {
-    this.field[x][y].getAll().forEach((cell) => {
+    this.fieldData[x][y].getAll().forEach((cell) => {
       if (!(cell.sprite === undefined)) {
         cell.sprite.parent.removeChild(cell.sprite);
       }
     });
-    delete this.field[x][y];
+    delete this.fieldData[x][y];
   }
   generateCell(
     x: number,
     y: number,
     isFlagged = false,
     isMine: boolean | undefined = undefined
-  ) {
+  ): Cell {
     //calculates coordinates of a chunk
     let chunkX = Math.floor(x / CHUNK_SIZE);
     let chunkY = Math.floor(y / CHUNK_SIZE);
@@ -230,6 +224,7 @@ export default class Field extends EventEmitter {
       return cell;
     } else {
       console.warn(x, y, "is already generated");
+      return cell;
     }
   }
   restart() {
@@ -241,9 +236,9 @@ export default class Field extends EventEmitter {
     // returns all the cells, in a 1-dimensonal array, for easy iteration
     // includes all af the open cells, and their neighbors(the border)
     let cells = [];
-    let rows = Object.keys(this.field);
+    let rows = Object.keys(this.fieldData);
     for (var i = 0; i < rows.length; i++) {
-      let columns = Object.keys(this.field[rows[i]]);
+      let columns = Object.keys(this.fieldData[rows[i]]);
       for (var j = 0; j < columns.length; j++) {
         let chunk = this.getChunk(rows[i], columns[j]);
         let fromChunk = chunk.getAll();
@@ -252,7 +247,7 @@ export default class Field extends EventEmitter {
     }
     return cells;
   }
-  value(x: number, y: number) {
+  value(x: number, y: number): number | null {
     // returns the amount of surrounding mines
     let cell = this.getCell(x, y);
     // it does not make sense to request the value of a closed cell
@@ -286,8 +281,8 @@ export default class Field extends EventEmitter {
     this.visibleChunks.push({ x: x, y: y });
   }
   loadVisibleChunks() {
-    for (let x in this.field) {
-      for (let y in this.field[x]) {
+    for (let x in this.fieldData) {
+      for (let y in this.fieldData[x]) {
         let remove = true;
         for (let i = 0; i < this.visibleChunks.length; i++) {
           if (this.visibleChunks[i].x == x && this.visibleChunks[i].y == y)

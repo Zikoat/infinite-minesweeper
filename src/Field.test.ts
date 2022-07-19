@@ -126,13 +126,11 @@ fieldStorageSuite(
 
     assert.is(cell1.isOpen, true, "cell1 open");
     assert.is(cell2.isOpen, true, "cell2 open");
-    assert.is(cell1.value(), cell2.value());
+    assert.is(field1.value(cell1.x, cell1.y), field2.value(cell2.x, cell2.y));
 
     fieldsAreEqual(field1, field2);
   }
 );
-
-
 
 export function getAllKeys(localStorage: LocalStorage): string[] {
   const keys: string[] = [];
@@ -167,7 +165,7 @@ function fieldsAreEqual(field1: Field, field2: Field): void {
   );
 
   assert.equal(
-    getChunksInField(field2.field),
+    getChunksInField(field2.fieldData),
     [
       [0, 0],
       [0, -1],
@@ -185,8 +183,12 @@ function fieldsAreEqual(field1: Field, field2: Field): void {
     "fieldsareequal getall.length"
   );
   assert.is(field1.gameOver, field2.gameOver, "field gameover");
-  assert.is(field1.neighborPosition, field2.neighborPosition, "field neighborpositions");
-  assert.is(field1.pristine, field2.pristine,"field pristine");
+  assert.is(
+    field1.neighborPosition,
+    field2.neighborPosition,
+    "field neighborpositions"
+  );
+  assert.is(field1.pristine, field2.pristine, "field pristine");
   assert.is(
     field1.fieldStorage.localStorage.length,
     field2.fieldStorage.localStorage.length
@@ -384,7 +386,7 @@ function fieldViewToString(
       if (cell.isMine && cell.isOpen && !cell.isFlagged) character = "X";
       else if (cell.isMine && !cell.isOpen && cell.isFlagged) character = "F";
       else if (!cell.isMine && cell.isOpen && !cell.isFlagged) {
-        const value = cell.value();
+        const value = field.value(cell.x, cell.y);
         if (value === null) throw Error("the cell's value is null");
         character = value.toString();
       } else if (cell.isMine && !cell.isOpen && !cell.isFlagged)

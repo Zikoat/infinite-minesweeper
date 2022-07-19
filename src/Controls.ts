@@ -187,10 +187,10 @@ export default class Controls {
     );
 
     if ((!cell.isOpen && !cell.isFlagged) || (cell.isOpen && cell.isMine)) {
-      cell.open();
-    } else if (flaggedNeighbors.length === cell.value()) {
+      this.field.open(cell.x, cell.y);
+    } else if (flaggedNeighbors.length === this.field.value(cell.x, cell.y)) {
       closedNotFlaggedNeighbors.forEach((neighbor) => {
-        neighbor.open();
+        this.field.open(neighbor.x, neighbor.y);
       });
     }
     Controls.field.fieldStorage?.save(Controls.field, Controls.field.fieldName);
@@ -209,17 +209,18 @@ export default class Controls {
     );
 
     if (!cell.isOpen) {
-      cell.flag();
-    } else if (closedNeighbors.length === cell.value()) {
+      this.field.flag(cell.x, cell.y);
+    } else if (closedNeighbors.length === this.field.value(cell.x, cell.y)) {
       closedNotFlaggedNeighbors.forEach((neighbor) => {
-        neighbor.flag();
+        this.field.flag(neighbor.x, neighbor.y);
       });
     }
-    if(Controls.field.fieldStorage === undefined ) throw new Error("tried to save, but fieldstorage is undefined")
+    if (Controls.field.fieldStorage === undefined)
+      throw new Error("tried to save, but fieldstorage is undefined");
     Controls.field.fieldStorage.save(Controls.field, Controls.field.fieldName);
   }
 
-  static moveViewTo(newx, newy) {
+  static moveViewTo(newx:number, newy:number) {
     const width = Controls.cursor.parent.getChildByName("bg").texture.width;
     const x = newx * width;
     const y = newy * width;
