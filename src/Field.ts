@@ -106,7 +106,6 @@ export default class Field extends EventEmitter {
     openedCells.push(cell);
 
     if (cell.isMine) {
-      // console.log("game over, you stepped on a mine:", cell);
       this.score -= 100;
       this.emit("cellChanged", cell);
       return false;
@@ -117,8 +116,6 @@ export default class Field extends EventEmitter {
     let neighbors = cell.getNeighbors();
     for (var i = 0; i < neighbors.length; i++) {
       if (neighbors[i].isMine === undefined) {
-        // debugging
-        // console.log("opened neighbor is undefined, generating", neighbors[i].x, neighbors[i].y);
         this.generateCell(neighbors[i].x, neighbors[i].y);
       }
     }
@@ -138,10 +135,7 @@ export default class Field extends EventEmitter {
 
     return openedCells.length >= 1;
   }
-  // save(){
-  // this.emit("save",this.chunksToSave.slice(0));
-  // this.chunksToSave = [];
-  // }
+  
   flag(x: number, y: number) {
     let cell = this.getCell(x, y);
     if (!cell.isOpen) {
@@ -314,8 +308,6 @@ export default class Field extends EventEmitter {
     this.pristine = false;
     let r = this.safeRadius;
 
-    // console.log("safeRadius", this.safeRadius);
-
     for (let dy = Math.floor(-r); dy < Math.ceil(r); dy++) {
       for (let dx = Math.floor(-r); dx < Math.ceil(r); dx++) {
         // if the cell is in a circle with radius r
@@ -325,8 +317,6 @@ export default class Field extends EventEmitter {
           // we generate the cell, and overwrite the isMine state
           this.generateCell(x, y, false, false);
         }
-        // one-lined version
-        // if(r**2>dx**2+dy**2) this.open(x0+dx, y0+dx);
       }
     }
   }

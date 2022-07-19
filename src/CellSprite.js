@@ -43,7 +43,6 @@ export default class CellSprite extends PIXI.Container {
   getCellTexture(cell) {
     const textures = PIXI.Loader.shared.resources;
 
-    // console.log(textures)
     var texture = {};
 
     if (cell.isOpen) {

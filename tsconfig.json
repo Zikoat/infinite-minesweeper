@@ -20,7 +20,6 @@
     "noUnusedParameters": true,
     "types": ["bun-types"],
     "sourceMap": true
-  ,"noUncheckedIndexedAccess": true
   },
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]

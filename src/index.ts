@@ -7,7 +7,6 @@ import SimpleBot from "./bots/botSimple";
 import "./css/stylesheet.css";
 
 // import * as PIXI from "pixi.js";
-// console.log(PIXI)
 /*
  */
 import menubutton from "./assets/default/menubutton.png";
@@ -41,8 +40,6 @@ window.field = field;
 window.renderer = new FieldRenderer(field);
 window.bot = new SimpleBot(field);
 window.FieldStorage = FieldStorage;
-
-fieldStorage.registerAutoSave(field);
 
 field.on("cellChanged", () => {
   document.getElementById("score").innerHTML = field.score.toString();

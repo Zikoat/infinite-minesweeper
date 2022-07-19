@@ -2,6 +2,10 @@ import { textures } from "./Textures";
 import { TweenMax, Power4 } from "gsap";
 import * as PIXI from "pixi.js";
 
+/**
+ * bug: cursor jitters when dragging field
+ */
+
 export default class Cursor extends PIXI.Sprite {
   pointX;
   pointY;

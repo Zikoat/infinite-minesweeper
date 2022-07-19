@@ -4,11 +4,11 @@ import * as fc from "fast-check";
 import { expect } from "bun:test";
 import { string } from "fast-check";
 
-interface Storage {
-  get(x: number, y: number): unknown;
+interface Storage extends NumberStorage {
+  get(x: number, y: number): number|null;
   set(x: number, y: number, value: unknown): void;
-  stringify(): string;
-  parse(stringified: string): Storage;
+  compress(): string;
+  decompress(compressed: string): Storage;
 }
 
 type COOFormat = Record<number, Record<number, unknown>>;
@@ -33,7 +33,7 @@ class COO implements Storage {
       this.data[x]![y] = value;
     }
   }
-  get(x: number, y: number) {
+  get(x: number, y: number):number|null {
     return this.data[x]?.[y] ?? null;
   }
 }

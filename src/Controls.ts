@@ -188,12 +188,10 @@ export default class Controls {
 
     if ((!cell.isOpen && !cell.isFlagged) || (cell.isOpen && cell.isMine)) {
       cell.open();
-      //console.log(`opened`, cell);
     } else if (flaggedNeighbors.length === cell.value()) {
       closedNotFlaggedNeighbors.forEach((neighbor) => {
         neighbor.open();
       });
-      //console.log(`opened the neighbors of`, cell);
     }
     Controls.field.fieldStorage?.save(Controls.field, Controls.field.fieldName);
   }
@@ -212,15 +210,12 @@ export default class Controls {
 
     if (!cell.isOpen) {
       cell.flag();
-      //console.log(`flagged`, cell);
     } else if (closedNeighbors.length === cell.value()) {
       closedNotFlaggedNeighbors.forEach((neighbor) => {
         neighbor.flag();
       });
-      //console.log(`flagged the neighbors of`, cell);
     }
     if(Controls.field.fieldStorage === undefined ) throw new Error("tried to save, but fieldstorage is undefined")
-    console.log(" saving field")
     Controls.field.fieldStorage.save(Controls.field, Controls.field.fieldName);
   }
 

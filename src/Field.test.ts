@@ -132,6 +132,8 @@ fieldStorageSuite(
   }
 );
 
+
+
 export function getAllKeys(localStorage: LocalStorage): string[] {
   const keys: string[] = [];
   let i = 1;
@@ -140,7 +142,6 @@ export function getAllKeys(localStorage: LocalStorage): string[] {
     key = localStorage.key(i);
 
     if (key) keys.push(key);
-    console.log(key);
     i++;
     if (i > 100) throw new Error("i is more than 100");
   }
@@ -262,15 +263,13 @@ fieldStorageSuite.skip(
     );
     const scoreBefore = field1.score;
     fieldStorage.save(field1, id);
-    // field1.save()
     const field2 = fieldStorage.load(id);
 
     fieldStorage.registerAutoSave(field1, id);
     const scoreAfter = field2.score;
     assert.is(scoreBefore, scoreAfter);
-    // console.log(field2)
     const opened = field2.open(0, 0);
-    assert.is(opened, true); // bug
+    assert.is(opened, true);
   }
 );
 
