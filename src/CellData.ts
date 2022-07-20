@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import Cell from "./Cell";
+import { Cell } from "./Cell";
 import { SimpleNumberStorage } from "./SimpleNumberStorage";
 import "reflect-metadata";
 

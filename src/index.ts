@@ -1,7 +1,6 @@
-import Field from "./Field";
-import FieldRenderer from "./FieldRenderer";
-import FieldPersistence from "./FieldPersistence";
-import SimpleBot from "./bots/botSimple";
+import { Field } from "./Field";
+import { FieldRenderer } from "./FieldRenderer";
+import { FieldPersistence } from "./FieldPersistence";
 import "./css/stylesheet.css";
 import menubutton from "./assets/default/menubutton.png";
 import { LocalStorage } from "node-localstorage";
@@ -12,7 +11,7 @@ const fieldStorage = (window.FieldStorage = new FieldPersistence(localStorage));
 
 var field: Field;
 
-field = new Field(0.2, 3, fieldStorage, fieldName);
+field = new Field(0.2, 3, fieldName);
 
 if (localStorage.getItem(fieldName)) {
   field = fieldStorage.load(fieldName);
@@ -22,23 +21,18 @@ if (localStorage.getItem(fieldName)) {
     } fields opened`
   );
 } else {
-  field = new Field(0.2, 3, fieldStorage, fieldName);
+  field = new Field(0.2, 3, fieldName);
   field.open(1, 1);
   fieldStorage.save(field, fieldName);
 }
 
 console.log(field);
-window.field = field;
 
-// make the variables available globally, so we can access them in index.html and the console
-const renderer = new FieldRenderer(field);
-window.renderer = renderer
-window.bot = new SimpleBot(field);
-window.FieldStorage = FieldPersistence;
+function updateScore(localField: Field) {
+  document.getElementById("score").innerHTML = localField.score.toString();
+}
 
-field.on("cellChanged", () => {
-  document.getElementById("score").innerHTML = field.score.toString();
-});
+new FieldRenderer(field, updateScore, fieldStorage);
 
 let button: HTMLImageElement = document.getElementById(
   "menubutton"
@@ -55,5 +49,3 @@ self.restart = function () {
   console.log("removed: ", fieldName);
   window.location.reload();
 };
-/*
- */

@@ -1,6 +1,6 @@
 import { test } from "uvu";
 import * as assert from "uvu/assert";
-import Cell from "./Cell";
+import { Cell } from "./Cell";
 import { SimpleCellData } from "./CellData";
 
 test("SimpleCellData should be able to store all type of cells", () => {
@@ -21,7 +21,7 @@ test("SimpleCellData should be able to store all type of cells", () => {
   cell.isMine = true;
   assertCellCanBeSaved(cell);
 });
-const shit: number = " wow";
+
 test("SimpleCellData should return a cell with correct properties if the cell has not been set yet", () => {
   const cellData = new SimpleCellData();
   const cell = cellData.get(0, 0);

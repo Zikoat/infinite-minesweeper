@@ -2,12 +2,20 @@ import Cursor from "./Cursor";
 import { CHUNK_SIZE } from "./Chunk";
 import Field from "./Field";
 import * as PIXI from "pixi.js";
+import { FieldPersistence } from "./FieldPersistence";
 
-export default class Controls {
+export class Controls {
   static cursor: Cursor;
   static field: Field;
-  static addControls(rootObject:PIXI.Container, field: Field, cursorTexture) {
+  static fieldStorage: FieldPersistence;
+  static addControls(
+    rootObject: PIXI.Container,
+    field: Field,
+    cursorTexture,
+    fieldStorage: FieldPersistence
+  ) {
     Controls.field = field;
+    Controls.fieldStorage = fieldStorage;
 
     Controls.addCursor(rootObject, cursorTexture);
     Controls.addMouseControls(rootObject);
@@ -186,15 +194,12 @@ export default class Controls {
       (cell) => !cell.isOpen && !cell.isFlagged
     );
 
-    if (Controls.field.fieldStorage === undefined)
+    if (Controls.fieldStorage === undefined)
       throw new Error("tried to save, but fieldstorage is undefined");
 
     if ((!cell.isOpen && !cell.isFlagged) || (cell.isOpen && cell.isMine)) {
       this.field.open(cell.x, cell.y);
-      Controls.field.fieldStorage.save(
-        Controls.field,
-        Controls.field.fieldName
-      );
+      Controls.fieldStorage.save(Controls.field, Controls.field.fieldName);
     } else if (
       flaggedNeighbors.length === this.field.value(cell.x, cell.y) &&
       closedNotFlaggedNeighbors.length > 0
@@ -202,10 +207,7 @@ export default class Controls {
       closedNotFlaggedNeighbors.forEach((neighbor) => {
         this.field.open(neighbor.x, neighbor.y);
       });
-      Controls.field.fieldStorage.save(
-        Controls.field,
-        Controls.field.fieldName
-      );
+      Controls.fieldStorage.save(Controls.field, Controls.field.fieldName);
     }
   }
 
@@ -221,15 +223,12 @@ export default class Controls {
       (cell) => !cell.isOpen && !cell.isFlagged
     );
 
-    if (Controls.field.fieldStorage === undefined)
+    if (Controls.fieldStorage === undefined)
       throw new Error("tried to save, but fieldstorage is undefined");
 
     if (!cell.isOpen) {
       this.field.flag(cell.x, cell.y);
-      Controls.field.fieldStorage.save(
-        Controls.field,
-        Controls.field.fieldName
-      );
+      Controls.fieldStorage.save(Controls.field, Controls.field.fieldName);
     } else if (
       closedNeighbors.length === this.field.value(cell.x, cell.y) &&
       closedNotFlaggedNeighbors.length > 0
@@ -237,10 +236,7 @@ export default class Controls {
       closedNotFlaggedNeighbors.forEach((neighbor) => {
         this.field.flag(neighbor.x, neighbor.y);
       });
-      Controls.field.fieldStorage.save(
-        Controls.field,
-        Controls.field.fieldName
-      );
+      Controls.fieldStorage.save(Controls.field, Controls.field.fieldName);
     }
   }
 

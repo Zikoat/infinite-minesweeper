@@ -1,10 +1,9 @@
-import { textures, width } from "./Textures";
 import { TweenMax } from "gsap";
 import * as PIXI from "pixi.js";
-import Cell from "./Cell";
+import { Cell } from "./Cell";
 import { LoaderResource } from "pixi.js";
 
-export default class CellSprite extends PIXI.Container {
+export class CellSprite extends PIXI.Container {
   private value: number | null;
   // class for creating and updating sprites
   constructor(cell: Cell, value: number | null) {
@@ -51,7 +50,8 @@ export default class CellSprite extends PIXI.Container {
     if (cell.isOpen) {
       back = textures.open;
       if (cell.isMine) front = textures.mineWrong;
-      else if (this.value !== null && this.value > 0) front = textures[this.value];
+      else if (this.value !== null && this.value > 0)
+        front = textures[this.value];
       else front = textures.open;
     } else {
       back = textures.closed;

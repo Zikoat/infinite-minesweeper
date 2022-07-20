@@ -1,4 +1,4 @@
-import Cell from "./Cell";
+import { Cell } from "./Cell";
 import Field from "./Field";
 
 export const CHUNK_SIZE = 32;
@@ -8,6 +8,7 @@ export class Chunk {
   cells: Cell[][];
 
   constructor(x: number, y: number) {
+    console.log(" creating new chunkS");
     this.x = x;
     this.y = y;
     this.cells = [];

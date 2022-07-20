@@ -22,7 +22,7 @@ import seven from "./assets/default/7.png";
 import eight from "./assets/default/8.png";
 
 export let textures: MinesTextures;
-type MinesTextures = {
+export type MinesTextures = {
   mine: SingleTexture;
   closed: SingleTexture;
   flag: SingleTexture;
@@ -68,33 +68,33 @@ function processTextures(): Promise<PIXI.utils.Dict<PIXI.LoaderResource>> {
   });
 }
 
-let loadingPromise:MinesTextures;
+let loadingPromise: MinesTextures;
 
 export async function load() {
   // if the loading has already started, return the same promise
   if (!loadingPromise) {
-    const resources = await processTextures()
-        // extract the textures out from the resources we loaded
-        textures = {
-          mine: resources!.mine!.texture,
-          closed: resources!.closed!.texture,
-          flag: resources!.flag!.texture,
-          mineWrong: resources!.mineWrong!.texture,
-          open: resources!.open!.texture,
-          cursor: resources!.cursor!.texture,
-          1: resources![1]!.texture,
-          2: resources![2]!.texture,
-          3: resources![3]!.texture,
-          4: resources![4]!.texture,
-          5: resources![5]!.texture,
-          6: resources![6]!.texture,
-          7: resources![7]!.texture,
-          8: resources![8]!.texture,
-        };
+    const resources = await processTextures();
+    // extract the textures out from the resources we loaded
+    textures = {
+      mine: resources!.mine!.texture,
+      closed: resources!.closed!.texture,
+      flag: resources!.flag!.texture,
+      mineWrong: resources!.mineWrong!.texture,
+      open: resources!.open!.texture,
+      cursor: resources!.cursor!.texture,
+      1: resources![1]!.texture,
+      2: resources![2]!.texture,
+      3: resources![3]!.texture,
+      4: resources![4]!.texture,
+      5: resources![5]!.texture,
+      6: resources![6]!.texture,
+      7: resources![7]!.texture,
+      8: resources![8]!.texture,
+    };
 
-        width = textures!.closed!.width;
-        return textures;
-F  }
+    width = textures!.closed!.width;
+    return textures;
+  }
 
   return loadingPromise;
 }

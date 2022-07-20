@@ -1,7 +1,7 @@
 /**
  * Created by sisc0606 on 19.08.2017.
  */
-export default class Cell {
+export class Cell {
   x: number;
   y: number;
   isOpen: boolean;

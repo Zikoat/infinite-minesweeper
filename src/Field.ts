@@ -5,9 +5,9 @@ import * as Layouts from "./Layouts";
 import * as PIXI from "pixi.js";
 import { Chunk } from "./Chunk";
 import { CHUNK_SIZE } from "./Chunk";
-import FieldPersistence from "./FieldPersistence";
+import { FieldPersistence } from "./FieldPersistence";
 import seedrandom from "seedrandom";
-import Cell from "./Cell";
+import { Cell } from "./Cell";
 import { SimpleCellData } from "./CellData";
 import { Type } from "class-transformer";
 
@@ -16,7 +16,7 @@ const EventEmitter = PIXI.utils.EventEmitter;
 
 export type ChunkedField = Record<number, Record<number, Chunk>>;
 
-export default class Field extends EventEmitter {
+export class Field extends EventEmitter {
   public fieldData: ChunkedField;
   public probability: number;
   public safeRadius: number;
@@ -26,8 +26,6 @@ export default class Field extends EventEmitter {
   public score: number;
   public visibleChunks: any;
 
-  @Type(() => FieldPersistence)
-  public fieldStorage?: FieldPersistence;
   public fieldName: string;
   private rng: seedrandom.PRNG;
   private seed?: string;
@@ -38,7 +36,6 @@ export default class Field extends EventEmitter {
   constructor(
     probability = 0.5,
     safeRadius = 1,
-    fieldStorage: FieldPersistence | undefined,
     fieldName: string,
     seed: string | undefined = undefined
   ) {
@@ -57,7 +54,6 @@ export default class Field extends EventEmitter {
     this.neighborPosition = Layouts.normal;
     this.score = 0;
     this.visibleChunks = [];
-    this.fieldStorage = fieldStorage;
     this.fieldName = fieldName;
     this.rng = seedrandom(seed);
     this.seed = seed;
@@ -73,16 +69,6 @@ export default class Field extends EventEmitter {
   getCell(x: number, y: number) {
     const cell = this.cellData.get(x, y);
     return cell;
-
-    let chunkX = Math.floor(x / CHUNK_SIZE);
-    let chunkY = Math.floor(y / CHUNK_SIZE);
-    this.generateChunk(chunkX, chunkY);
-
-    if (this.fieldData[chunkX][chunkY].getCellFromGlobalCoords === undefined) {
-      throw new Error("Failed to generate chunk");
-    }
-
-    return this.fieldData[chunkX][chunkY].getCellFromGlobalCoords(x, y);
   }
   open(x: number, y: number): Cell[] {
     if (!Number.isSafeInteger(x) || !Number.isSafeInteger(y))
@@ -111,7 +97,7 @@ export default class Field extends EventEmitter {
     if (cell.isMine) {
       this.score -= 100;
       this.emit("cellChanged", cell);
-      return false;
+      return [];
     }
     this.score++;
 
@@ -163,26 +149,7 @@ export default class Field extends EventEmitter {
     }
     return neighbors;
   }
-  generateChunk(x: number, y: number) {
-    if (!(x in this.fieldData)) this.fieldData[x] = {};
-    if (!(y in this.fieldData[x])) {
-      if (!this.fieldStorage)
-        throw new Error(
-          "FieldStorage is not defined, but generateChunk called."
-        );
-      const loadedChunk = this.fieldStorage.loadChunk(this.fieldName, x, y);
-      this.fieldData[x][y] = loadedChunk;
-      if (this.fieldData[x][y] === undefined)
-        this.fieldData[x][y] = new Chunk(x, y);
-      else {
-        this.fieldData[x][y].getAll().forEach((cell) => {
-          if (cell.isOpen || cell.isFlagged) {
-            this.emit("cellChanged", cell);
-          }
-        });
-      }
-    }
-  }
+
   showChunk(x: number, y: number) {
     const showChunk = this.getCoordinatesInChunk(x, y);
     for (const cellCoords of showChunk) {
@@ -208,6 +175,7 @@ export default class Field extends EventEmitter {
     }
     return output;
   }
+
   unloadChunk(x: string, y: string) {
     this.fieldData[x][y].getAll().forEach((cell) => {
       if (!(cell.sprite === undefined)) {
@@ -220,7 +188,7 @@ export default class Field extends EventEmitter {
     // todo
     this.pristine = true;
     // todo: delete all of the rows, update all of the cells
-    throw Error("not implemented")
+    throw Error("not implemented");
   }
   getAll(): Cell[] {
     return this.cellData.getAll();

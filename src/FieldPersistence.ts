@@ -1,13 +1,12 @@
-import Field from "./Field";
-import Cell from "./Cell";
+import { Field } from "./Field";
+import { Cell } from "./Cell";
 import { Chunk, CHUNK_SIZE } from "./Chunk";
 // import { LocalStorage } from "node-localstorage";
-import { plainToInstance, Type } from "class-transformer";
+import { plainToInstance } from "class-transformer";
 import { SimpleCellData } from "./CellData";
 import { SimpleNumberStorage } from "./SimpleNumberStorage";
-import { LocalStorage } from "node-localstorage";
 
-export default class FieldPersistence {
+export class FieldPersistence {
   public localStorage: any;
 
   constructor(localStorage: any) {
@@ -16,10 +15,11 @@ export default class FieldPersistence {
 
   save(field: Field, id: string) {
     // saves a Field
+    console.log("saving field with id " + id);
     const compressedField = this.compress(field);
+
     this.localStorage.setItem(id, compressedField);
 
-    console.log("saved field");
     return;
   }
   load(id: string): Field {
@@ -80,7 +80,7 @@ export default class FieldPersistence {
       SimpleNumberStorage,
       recoveredField.cellData.numberStorage
     );
-    field.fieldStorage = new FieldPersistence(this.localStorage);
+    // field.fieldStorage = new FieldPersistence(this.localStorage);
     return field;
   }
   logStats(

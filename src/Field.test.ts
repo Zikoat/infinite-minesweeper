@@ -2,9 +2,9 @@
 import { LocalStorage } from "node-localstorage";
 import { suite, test } from "uvu";
 import * as assert from "uvu/assert";
-import Cell from "./Cell";
-import Field, { ChunkedField } from "./Field";
-import FieldPersistence from "./FieldPersistence";
+import { Cell } from "./Cell";
+import { Field, ChunkedField } from "./Field";
+import { FieldPersistence } from "./FieldPersistence";
 import seedrandom from "seedrandom";
 import { Chunk } from "./Chunk";
 import { SimpleCellData } from "./CellData";
@@ -29,14 +29,14 @@ test("JSON", () => {
 });
 
 test("Field should be able to be constructed", () => {
-  const field = new Field(undefined, undefined, undefined, undefined);
+  const field = new Field(undefined, undefined, undefined);
   assert.is(field.gameOver, false);
 });
 
 test("Field should open a cell", () => {
   // todo remove. fieldstorage doesnt get cleaned up, and this test should be in the fieldstorage suite
   const fieldStorage = new FieldPersistence(new LocalStorage("./localStorage"));
-  const field = new Field(undefined, undefined, fieldStorage, "unitTest");
+  const field = new Field(undefined, undefined, "unitTest");
   const opened = field.open(0, 0);
   assert.is(opened.length, 1);
   assert.is(opened[0].isOpen, true);
@@ -46,7 +46,7 @@ test("Field should calculate score correctly", () => {
   const id = "unitTest";
 
   const fieldStorage = new FieldPersistence(new LocalStorage("./localStorage"));
-  const field = new Field(undefined, undefined, fieldStorage, id);
+  const field = new Field(undefined, undefined, id);
   assert.is(field.score, 0);
   const opened = field.open(0, 0);
   assert.is(opened.length, 1);
@@ -90,7 +90,7 @@ const fieldStorageSuite = suite(
 fieldStorageSuite(
   "should get an exact copy of the previous field",
   (fieldStorage) => {
-    const field1 = new Field(0.6, 2, fieldStorage, "test1", "testSeed");
+    const field1 = new Field(0.6, 2, "test1", "testSeed");
 
     // assert.is(      fieldStorage.localStorage.length,      1,      "localstorage length before open"    );
 
@@ -100,9 +100,9 @@ fieldStorageSuite(
     assert.is(field1.getCell(0, 0).isOpen, true, "opened cell should be open");
     if (!(flaggedCell1 instanceof Cell))
       throw Error("flag does not return cell");
-      assert.is(openedCells.length, 9);
-      assert.is(flaggedCell1.isFlagged, true);
-      assertCellsAreSame(flaggedCell1, field1.getCell(3, 3));
+    assert.is(openedCells.length, 9);
+    assert.is(flaggedCell1.isFlagged, true);
+    assertCellsAreSame(flaggedCell1, field1.getCell(3, 3));
 
     assert.is(
       fieldStorage.localStorage.length,
@@ -115,12 +115,12 @@ fieldStorageSuite(
     assert.is(field1.gameOver, false);
     assert.is(field1.neighborPosition.length, 8);
     assert.is(field1.pristine, false);
-    assert.is(field1.fieldStorage.localStorage.length, 1);
-    assert.instance(
-      field1.fieldStorage,
-      FieldPersistence,
-      "field1 instance of fieldpersistenc"
-    );
+    // assert.is(field1.fieldStorage.localStorage.length, 1);
+    // assert.instance(
+    //   field1.fieldStorage,
+    //   FieldPersistence,
+    //   "field1 instance of fieldpersistenc"
+    // );
     assert.instance(
       field1.cellData,
       SimpleCellData,
@@ -133,11 +133,11 @@ fieldStorageSuite(
     // delete field1.fieldStorage;
     // delete field2.fieldStorage;
     // assert.equal(getAllKeys(field1.fieldStorage?.localStorage), ["test1"]);
-    assert.instance(
-      field2.fieldStorage,
-      FieldPersistence,
-      "field1 instance of fieldpersistenc"
-    );
+    // assert.instance(
+    //   field2.fieldStorage,
+    //   FieldPersistence,
+    //   "field2 instance of fieldpersistenc"
+    // );
 
     const cell1 = field1.getCell(0, 1);
     const cell2 = field2.getCell(0, 1);
@@ -216,7 +216,7 @@ fieldStorageSuite.skip(
   "should not get call stack size exceeded when a loaded field opens a cell",
   (fieldStorage) => {
     const id = "unitTest";
-    const field1 = new Field(undefined, 1, fieldStorage, id, "test");
+    const field1 = new Field(undefined, 1, id, "test");
     assert.is(field1.open(0, 0), true);
     field1.fieldStorage.__test__ = "";
     field1.fieldStorage.localStorage._eventUrl = "1";
@@ -359,7 +359,7 @@ fieldStorageSuite("should be able to save and load a chunk", (fieldStorage) => {
 });
 
 fieldStorageSuite("Field should draw a view", (fieldStorage) => {
-  const field1 = new Field(0.6, 2, fieldStorage, "test1", "testSeed");
+  const field1 = new Field(0.6, 2, "test1", "testSeed");
   field1.open(0, 0);
 
   const map = fieldViewToString(field1, -3, -3, 3, 3);
