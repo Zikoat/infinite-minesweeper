@@ -1,11 +1,12 @@
 import Cursor from "./Cursor";
 import { CHUNK_SIZE } from "./Chunk";
 import Field from "./Field";
+import * as PIXI from "pixi.js";
 
 export default class Controls {
   static cursor: Cursor;
   static field: Field;
-  static addControls(rootObject, field: Field, cursorTexture) {
+  static addControls(rootObject:PIXI.Container, field: Field, cursorTexture) {
     Controls.field = field;
 
     Controls.addCursor(rootObject, cursorTexture);

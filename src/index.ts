@@ -31,7 +31,8 @@ console.log(field);
 window.field = field;
 
 // make the variables available globally, so we can access them in index.html and the console
-window.renderer = new FieldRenderer(field);
+const renderer = new FieldRenderer(field);
+window.renderer = renderer
 window.bot = new SimpleBot(field);
 window.FieldStorage = FieldPersistence;
 

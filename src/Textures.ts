@@ -21,7 +21,6 @@ import six from "./assets/default/6.png";
 import seven from "./assets/default/7.png";
 import eight from "./assets/default/8.png";
 
-let loadingPromise;
 export let textures: MinesTextures;
 type MinesTextures = {
   mine: SingleTexture;
@@ -42,7 +41,7 @@ type MinesTextures = {
 };
 export let width = 2;
 
-type SingleTexture = PIXI.Texture<PIXI.Resource> | undefined;
+type SingleTexture = PIXI.Texture<PIXI.Resource>;
 
 function processTextures(): Promise<PIXI.utils.Dict<PIXI.LoaderResource>> {
   return new Promise((resolve, reject) => {
@@ -69,11 +68,12 @@ function processTextures(): Promise<PIXI.utils.Dict<PIXI.LoaderResource>> {
   });
 }
 
-export function load() {
+let loadingPromise:MinesTextures;
+
+export async function load() {
   // if the loading has already started, return the same promise
   if (!loadingPromise) {
-    loadingPromise = processTextures()
-      .then((resources) => {
+    const resources = await processTextures()
         // extract the textures out from the resources we loaded
         textures = {
           mine: resources!.mine!.texture,
@@ -94,9 +94,7 @@ export function load() {
 
         width = textures!.closed!.width;
         return textures;
-      })
-      .catch((reason) => console.error(reason));
-  }
+F  }
 
   return loadingPromise;
 }
