@@ -5,7 +5,7 @@ import * as Layouts from "./Layouts";
 import * as PIXI from "pixi.js";
 import { Chunk } from "./Chunk";
 import { CHUNK_SIZE } from "./Chunk";
-import FieldStorage from "./FieldStorage";
+import FieldPersistence from "./FieldStorage";
 import seedrandom from "seedrandom";
 import Cell from "./Cell";
 import { close } from "fs";
@@ -19,7 +19,7 @@ export default class Field extends EventEmitter {
   // infinite loops
 
   public fieldData: ChunkedField;
-  public chunksToSave: any;
+  public chunksToSave: Chunk[];
   public probability: number;
   public safeRadius: number;
   public pristine: boolean;
@@ -27,7 +27,7 @@ export default class Field extends EventEmitter {
   public neighborPosition: any;
   public score: number;
   public visibleChunks: any;
-  public fieldStorage?: FieldStorage;
+  public fieldStorage?: FieldPersistence;
   public fieldName: string;
   private rng: seedrandom.PRNG;
   private seed?: string;
@@ -35,7 +35,7 @@ export default class Field extends EventEmitter {
   constructor(
     probability = 0.5,
     safeRadius = 1,
-    fieldStorage: FieldStorage | undefined,
+    fieldStorage: FieldPersistence | undefined,
     fieldName: string,
     seed: string | undefined = undefined
   ) {
@@ -138,6 +138,7 @@ export default class Field extends EventEmitter {
     }
     let chunkX = Math.floor(x / CHUNK_SIZE);
     let chunkY = Math.floor(y / CHUNK_SIZE);
+    console.log("adding chunks to saving")
     if (!this.chunksToSave.includes(this.getChunk(chunkX, chunkY))) {
       this.chunksToSave.push(this.getChunk(chunkX, chunkY));
     }
@@ -324,5 +325,9 @@ export default class Field extends EventEmitter {
     fieldToStore.score = this.score;
 
     return fieldToStore;
+  }
+
+  compress(){
+    
   }
 }

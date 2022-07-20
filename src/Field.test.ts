@@ -4,7 +4,7 @@ import { suite, test } from "uvu";
 import * as assert from "uvu/assert";
 import Cell from "./Cell";
 import Field, { ChunkedField } from "./Field";
-import FieldStorage from "./FieldStorage";
+import FieldPersistence from "./FieldStorage";
 import seedrandom from "seedrandom";
 import { Chunk } from "./Chunk";
 
@@ -33,7 +33,7 @@ test("Field should be able to be constructed", () => {
 
 test("Field should open a cell", () => {
   // todo remove. fieldstorage doesnt get cleaned up, and this test should be in the fieldstorage suite
-  const fieldStorage = new FieldStorage(new LocalStorage("./localStorage"));
+  const fieldStorage = new FieldPersistence(new LocalStorage("./localStorage"));
   const field = new Field(undefined, undefined, fieldStorage, "unitTest");
   const opened = field.open(0, 0);
   assert.is(opened, true);
@@ -42,7 +42,7 @@ test("Field should open a cell", () => {
 test("Field should calculate score correctly", () => {
   const id = "unitTest";
 
-  const fieldStorage = new FieldStorage(new LocalStorage("./localStorage"));
+  const fieldStorage = new FieldPersistence(new LocalStorage("./localStorage"));
   const field = new Field(undefined, undefined, fieldStorage, id);
   assert.is(field.score, 0);
   const opened = field.open(0, 0);
@@ -81,7 +81,7 @@ localStorageSuite.after.each((localStorage) => {
 
 const fieldStorageSuite = suite(
   "FieldStorage",
-  new FieldStorage(new LocalStorage("./localstorage"))
+  new FieldPersistence(new LocalStorage("./localstorage"))
 );
 fieldStorageSuite(
   "should get an exact copy of the previous field",

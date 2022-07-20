@@ -1,20 +1,14 @@
 import Field from "./Field";
-/*
- */
 import FieldRenderer from "./FieldRenderer";
-import FieldStorage from "./FieldStorage";
+import FieldPersistence from "./FieldStorage";
 import SimpleBot from "./bots/botSimple";
 import "./css/stylesheet.css";
-
-// import * as PIXI from "pixi.js";
-/*
- */
 import menubutton from "./assets/default/menubutton.png";
 import { LocalStorage } from "node-localstorage";
 
 var fieldName = (window.fieldName = "defaultSavedFieldv3");
 const localStorage: LocalStorage = window.localStorage;
-const fieldStorage = (window.FieldStorage = new FieldStorage(localStorage));
+const fieldStorage = (window.FieldStorage = new FieldPersistence(localStorage));
 
 var field: Field;
 
@@ -39,7 +33,7 @@ window.field = field;
 // make the variables available globally, so we can access them in index.html and the console
 window.renderer = new FieldRenderer(field);
 window.bot = new SimpleBot(field);
-window.FieldStorage = FieldStorage;
+window.FieldStorage = FieldPersistence;
 
 field.on("cellChanged", () => {
   document.getElementById("score").innerHTML = field.score.toString();

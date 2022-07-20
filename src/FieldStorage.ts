@@ -3,7 +3,7 @@ import Cell from "./Cell";
 import { Chunk, CHUNK_SIZE } from "./Chunk";
 import { LocalStorage } from "node-localstorage";
 
-export default class FieldStorage {
+export default class FieldPersistence {
   public localStorage: LocalStorage;
 
   constructor(localStorage: LocalStorage) {
@@ -11,14 +11,17 @@ export default class FieldStorage {
   }
 
   save(field: Field, id: string) {
+    
     // saves a Field
     const compressedField = this.compress(field);
     this.localStorage.setItem(id, compressedField);
     const chunks = field.chunksToSave.slice(0);
+    if(chunks.length === 0) console.warn("tried to save field, but there have not been any changes to any chunks to save")
     chunks.forEach((chunk: any) => {
       this.saveChunk(chunk, field.fieldName);
     });
     field.chunksToSave = [];
+    console.log("saved field")
   }
   load(id: string) {
     // returns a Field

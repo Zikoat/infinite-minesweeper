@@ -4,7 +4,7 @@
 
 import * as PIXI from "pixi.js";
 import * as Textures from "./Textures.js";
-import FieldStorage from "./FieldStorage";
+import FieldPersistence from "./FieldStorage";
 import Controls from "./Controls";
 import CellSprite from "./CellSprite";
 import { TweenMax, Power2, TimelineLite } from "gsap";
@@ -50,8 +50,6 @@ app.stage.addChild(clickHandler);
 var defaultField;
 
 var width;
-var counter = 0;
-var cursor;
 function updateCell(field: Field, cell: Cell) {
   if (cell.sprite === undefined) {
     const value = field.value(cell.x, cell.y);
@@ -60,12 +58,6 @@ function updateCell(field: Field, cell: Cell) {
   } else {
     cell.sprite.update(cell);
   }
-}
-
-function updateCells(array) {
-  array.forEach((cell) => {
-    updateCell(defaultField, cell);
-  });
 }
 
 function updateAllCells(field) {
