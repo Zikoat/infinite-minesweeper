@@ -1,6 +1,6 @@
 import Field from "./Field";
 import FieldRenderer from "./FieldRenderer";
-import FieldPersistence from "./FieldStorage";
+import FieldPersistence from "./FieldPersistence";
 import SimpleBot from "./bots/botSimple";
 import "./css/stylesheet.css";
 import menubutton from "./assets/default/menubutton.png";

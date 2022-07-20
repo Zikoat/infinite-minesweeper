@@ -4,9 +4,11 @@ import { suite, test } from "uvu";
 import * as assert from "uvu/assert";
 import Cell from "./Cell";
 import Field, { ChunkedField } from "./Field";
-import FieldPersistence from "./FieldStorage";
+import FieldPersistence from "./FieldPersistence";
 import seedrandom from "seedrandom";
 import { Chunk } from "./Chunk";
+import { SimpleCellData } from "./CellData";
+import { assertCellsAreSame } from "./CellData.test";
 
 test("Math.sqrt()", () => {
   assert.is(Math.sqrt(4), 2);
@@ -36,7 +38,8 @@ test("Field should open a cell", () => {
   const fieldStorage = new FieldPersistence(new LocalStorage("./localStorage"));
   const field = new Field(undefined, undefined, fieldStorage, "unitTest");
   const opened = field.open(0, 0);
-  assert.is(opened, true);
+  assert.is(opened.length, 1);
+  assert.is(opened[0].isOpen, true);
 });
 
 test("Field should calculate score correctly", () => {
@@ -46,7 +49,8 @@ test("Field should calculate score correctly", () => {
   const field = new Field(undefined, undefined, fieldStorage, id);
   assert.is(field.score, 0);
   const opened = field.open(0, 0);
-  assert.is(opened, true);
+  assert.is(opened.length, 1);
+  assert.is(opened[0].isOpen, true);
   assert.is(field.score, 1);
 });
 
@@ -88,13 +92,17 @@ fieldStorageSuite(
   (fieldStorage) => {
     const field1 = new Field(0.6, 2, fieldStorage, "test1", "testSeed");
 
-    assert.is(
-      fieldStorage.localStorage.length,
-      1,
-      "localstorage length before open"
-    );
+    // assert.is(      fieldStorage.localStorage.length,      1,      "localstorage length before open"    );
 
-    field1.open(0, 0);
+    const openedCells = field1.open(0, 0);
+    const flaggedCell1 = field1.flag(3, 3);
+
+    assert.is(field1.getCell(0, 0).isOpen, true, "opened cell should be open");
+    if (!(flaggedCell1 instanceof Cell))
+      throw Error("flag does not return cell");
+      assert.is(openedCells.length, 9);
+      assert.is(flaggedCell1.isFlagged, true);
+      assertCellsAreSame(flaggedCell1, field1.getCell(3, 3));
 
     assert.is(
       fieldStorage.localStorage.length,
@@ -103,16 +111,21 @@ fieldStorageSuite(
     );
     assert.is(field1.fieldName, "test1");
     assert.is(field1.score, 9, "field score to static");
-    assert.is(field1.getAll().length, 4096);
+    assert.is(field1.getAll().length, 26);
     assert.is(field1.gameOver, false);
     assert.is(field1.neighborPosition.length, 8);
     assert.is(field1.pristine, false);
     assert.is(field1.fieldStorage.localStorage.length, 1);
-
-    field1.chunksToSave.slice(0).forEach((chunk: any) => {
-      fieldStorage.saveChunk(chunk, field1.fieldName);
-    });
-    field1.chunksToSave = [];
+    assert.instance(
+      field1.fieldStorage,
+      FieldPersistence,
+      "field1 instance of fieldpersistenc"
+    );
+    assert.instance(
+      field1.cellData,
+      SimpleCellData,
+      "field1 instance of simpleCellData"
+    );
 
     fieldStorage.save(field1, "test1");
     const field2 = fieldStorage.load("test1");
@@ -120,6 +133,11 @@ fieldStorageSuite(
     // delete field1.fieldStorage;
     // delete field2.fieldStorage;
     // assert.equal(getAllKeys(field1.fieldStorage?.localStorage), ["test1"]);
+    assert.instance(
+      field2.fieldStorage,
+      FieldPersistence,
+      "field1 instance of fieldpersistenc"
+    );
 
     const cell1 = field1.getCell(0, 1);
     const cell2 = field2.getCell(0, 1);
@@ -156,7 +174,7 @@ function fieldsAreEqual(field1: Field, field2: Field): void {
 .x202..
 .x324x.
 ...xxx.
-.......
+......F
 `
   );
   assert.equal(
@@ -164,17 +182,6 @@ function fieldsAreEqual(field1: Field, field2: Field): void {
     fieldViewToString(field2, -3, -3, 3, 3)
   );
 
-  assert.equal(
-    getChunksInField(field2.fieldData),
-    [
-      [0, 0],
-      [0, -1],
-      [-1, 0],
-      [-1, -1],
-    ],
-    "getchunksfield 1"
-  );
-  // assert.is(field1.field, field2.field)
   assert.is(field1.fieldName, field2.fieldName);
   assert.is(field1.score, field2.score, "field scores");
   assert.is(
@@ -183,16 +190,16 @@ function fieldsAreEqual(field1: Field, field2: Field): void {
     "fieldsareequal getall.length"
   );
   assert.is(field1.gameOver, field2.gameOver, "field gameover");
-  assert.is(
+  assert.equal(
     field1.neighborPosition,
     field2.neighborPosition,
     "field neighborpositions"
   );
   assert.is(field1.pristine, field2.pristine, "field pristine");
-  assert.is(
-    field1.fieldStorage.localStorage.length,
-    field2.fieldStorage.localStorage.length
-  );
+  // assert.is(
+  //   field1.fieldStorage.localStorage.length,
+  //   field2.fieldStorage.localStorage.length
+  // );
 }
 
 function getChunksInField(chunkedField: ChunkedField): number[][] {
@@ -307,7 +314,7 @@ test("Chunk should get cell", () => {
   assert.equal(
     cellToObject(cell),
     {
-      isFlagged: undefined,
+      isFlagged: false,
       isOpen: false,
       parent: undefined,
       x: 0,
@@ -384,7 +391,7 @@ function fieldViewToString(
       const cell = field.getCell(x, y);
       let character = "";
       if (cell.isMine && cell.isOpen && !cell.isFlagged) character = "X";
-      else if (cell.isMine && !cell.isOpen && cell.isFlagged) character = "F";
+      else if (!cell.isOpen && cell.isFlagged) character = "F";
       else if (!cell.isMine && cell.isOpen && !cell.isFlagged) {
         const value = field.value(cell.x, cell.y);
         if (value === null) throw Error("the cell's value is null");

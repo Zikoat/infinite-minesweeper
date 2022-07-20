@@ -1,40 +1,41 @@
 import Field from "./Field";
 import Cell from "./Cell";
 import { Chunk, CHUNK_SIZE } from "./Chunk";
+// import { LocalStorage } from "node-localstorage";
+import { plainToInstance, Type } from "class-transformer";
+import { SimpleCellData } from "./CellData";
+import { SimpleNumberStorage } from "./SimpleNumberStorage";
 import { LocalStorage } from "node-localstorage";
 
 export default class FieldPersistence {
-  public localStorage: LocalStorage;
+  public localStorage: any;
 
-  constructor(localStorage: LocalStorage) {
+  constructor(localStorage: any) {
     this.localStorage = localStorage;
   }
 
   save(field: Field, id: string) {
-    
     // saves a Field
     const compressedField = this.compress(field);
     this.localStorage.setItem(id, compressedField);
-    const chunks = field.chunksToSave.slice(0);
-    if(chunks.length === 0) console.warn("tried to save field, but there have not been any changes to any chunks to save")
-    chunks.forEach((chunk: any) => {
-      this.saveChunk(chunk, field.fieldName);
-    });
-    field.chunksToSave = [];
-    console.log("saved field")
+
+    console.log("saved field");
+    return;
   }
-  load(id: string) {
+  load(id: string): Field {
     // returns a Field
     const compressedField = this.localStorage.getItem(id);
     if (compressedField === null)
       throw new Error(`Could not find field with id '${id}' in localStorage`);
-    const field = this.decompress(compressedField, id);
+    const field = this.decompress(compressedField);
     return field;
   }
 
   compress(field: Field) {
-    // returns JSON string;
-    const stringifiedField = JSON.stringify(field);
+    const stringifiedField = JSON.stringify(field, (key, value) => {
+      if (key === "_events" || key === "localStorage") return undefined;
+      else return value;
+    });
     // FieldStorage.logStats(field, stringifiedField);
 
     return stringifiedField;
@@ -71,22 +72,15 @@ export default class FieldPersistence {
     }
     return undefined;
   }
-  decompress(compressedField: string, fieldName: string) {
-    // when stringifying, we have changed the class into an object, and we
-    // need to recreate the class from the data
+  decompress(compressedField: string) {
     let recoveredField = JSON.parse(compressedField);
-    let field = new Field(
-      recoveredField.probability,
-      recoveredField.safeRadius,
-      this,
-      fieldName
+    let field = plainToInstance(Field, recoveredField as Field);
+    field.cellData = plainToInstance(SimpleCellData, recoveredField.cellData);
+    field.cellData.numberStorage = plainToInstance(
+      SimpleNumberStorage,
+      recoveredField.cellData.numberStorage
     );
-    // Object.assign(field, recoveredField);
-    field.score = recoveredField.score;
-    if (recoveredField.pristine)
-      throw new Error("trying to load pristine field. create a new instead");
-    field.pristine = false;
-    // field.probability = recoveredField.prhobability;
+    field.fieldStorage = new FieldPersistence(this.localStorage);
     return field;
   }
   logStats(

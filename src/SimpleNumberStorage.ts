@@ -16,11 +16,22 @@ export class SimpleNumberStorage implements NumberStorage {
   compress(): string {
     return JSON.stringify(this.data);
   }
-  
+
   decompress(input: string): SimpleNumberStorage {
     const instance = new SimpleNumberStorage();
     instance.data = JSON.parse(input);
     return instance;
+  }
+  
+  getAll(): { x: number; y: number; value: number }[] {
+    const output: { x: number; y: number; value: number }[] = [];
+    for (const x in this.data) {
+      for (const y in this.data[x]) {
+        const value = this.data[x][y];
+        output.push({ x: parseInt(x), y: parseInt(y), value });
+      }
+    }
+    return output;
   }
 }
 

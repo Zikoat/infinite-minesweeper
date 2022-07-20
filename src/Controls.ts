@@ -1,10 +1,9 @@
 import Cursor from "./Cursor";
-import { TweenMax, Power4 } from "gsap";
-import FieldRenderer from "./FieldRenderer";
 import { CHUNK_SIZE } from "./Chunk";
 import Field from "./Field";
 
 export default class Controls {
+  static cursor: Cursor;
   static field: Field;
   static addControls(rootObject, field: Field, cursorTexture) {
     Controls.field = field;
@@ -186,14 +185,27 @@ export default class Controls {
       (cell) => !cell.isOpen && !cell.isFlagged
     );
 
+    if (Controls.field.fieldStorage === undefined)
+      throw new Error("tried to save, but fieldstorage is undefined");
+
     if ((!cell.isOpen && !cell.isFlagged) || (cell.isOpen && cell.isMine)) {
       this.field.open(cell.x, cell.y);
-    } else if (flaggedNeighbors.length === this.field.value(cell.x, cell.y)) {
+      Controls.field.fieldStorage.save(
+        Controls.field,
+        Controls.field.fieldName
+      );
+    } else if (
+      flaggedNeighbors.length === this.field.value(cell.x, cell.y) &&
+      closedNotFlaggedNeighbors.length > 0
+    ) {
       closedNotFlaggedNeighbors.forEach((neighbor) => {
         this.field.open(neighbor.x, neighbor.y);
       });
+      Controls.field.fieldStorage.save(
+        Controls.field,
+        Controls.field.fieldName
+      );
     }
-    Controls.field.fieldStorage?.save(Controls.field, Controls.field.fieldName);
   }
 
   static flag() {
@@ -208,19 +220,30 @@ export default class Controls {
       (cell) => !cell.isOpen && !cell.isFlagged
     );
 
+    if (Controls.field.fieldStorage === undefined)
+      throw new Error("tried to save, but fieldstorage is undefined");
+
     if (!cell.isOpen) {
       this.field.flag(cell.x, cell.y);
-    } else if (closedNeighbors.length === this.field.value(cell.x, cell.y)) {
+      Controls.field.fieldStorage.save(
+        Controls.field,
+        Controls.field.fieldName
+      );
+    } else if (
+      closedNeighbors.length === this.field.value(cell.x, cell.y) &&
+      closedNotFlaggedNeighbors.length > 0
+    ) {
       closedNotFlaggedNeighbors.forEach((neighbor) => {
         this.field.flag(neighbor.x, neighbor.y);
       });
+      Controls.field.fieldStorage.save(
+        Controls.field,
+        Controls.field.fieldName
+      );
     }
-    if (Controls.field.fieldStorage === undefined)
-      throw new Error("tried to save, but fieldstorage is undefined");
-    Controls.field.fieldStorage.save(Controls.field, Controls.field.fieldName);
   }
 
-  static moveViewTo(newx:number, newy:number) {
+  static moveViewTo(newx: number, newy: number) {
     const width = Controls.cursor.parent.getChildByName("bg").texture.width;
     const x = newx * width;
     const y = newy * width;

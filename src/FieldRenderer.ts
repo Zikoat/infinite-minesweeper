@@ -4,15 +4,13 @@
 
 import * as PIXI from "pixi.js";
 import * as Textures from "./Textures.js";
-import FieldPersistence from "./FieldStorage";
 import Controls from "./Controls";
 import CellSprite from "./CellSprite";
-import { TweenMax, Power2, TimelineLite } from "gsap";
 import Cell from "./Cell.js";
 import Field from "./Field.js";
 
 export default class FieldRenderer extends PIXI.Application {
-  constructor(field) {
+  constructor(field:Field) {
     super();
     defaultField = field;
 
@@ -47,7 +45,7 @@ var fieldContainer = new PIXI.Container();
 var clickHandler = new PIXI.Container();
 clickHandler.interactive = true;
 app.stage.addChild(clickHandler);
-var defaultField;
+var defaultField:Field;
 
 var width;
 function updateCell(field: Field, cell: Cell) {
@@ -60,7 +58,8 @@ function updateCell(field: Field, cell: Cell) {
   }
 }
 
-function updateAllCells(field) {
+function updateAllCells(field:Field) {
+  console.log("updating all cells");
   field
     .getAll()
     .filter((cell) => cell.isOpen || cell.isFlagged)
