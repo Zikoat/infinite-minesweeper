@@ -10,14 +10,14 @@ export default class Cursor extends PIXI.Sprite {
   pointX;
   pointY;
 
-  constructor(x = 0, y = 0, texture) {
+  constructor(x = 0, y = 0, texture: PIXI.Texture<PIXI.Resource>) {
     super(texture);
     this.pointX = x;
     this.pointY = y;
 
     this.moveTo(x, y);
   }
-  moveTo(x, y) {
+  moveTo(x: number, y: number) {
     const foreground = this.parent?.getChildByName("fg")?.getGlobalPosition();
     if (!foreground) {
       console.warn("Tried to move cursor, but foreground is not defined");
@@ -35,7 +35,7 @@ export default class Cursor extends PIXI.Sprite {
 
     TweenMax.to(this, 0.1, { x: newX, y: newY, ease: Power4.easeOut });
   }
-  move(dx, dy) {
+  move(dx: number, dy: number) {
     this.moveTo(this.pointX + dx, this.pointY + dy);
   }
   getX() {

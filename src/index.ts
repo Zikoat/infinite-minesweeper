@@ -7,7 +7,7 @@ import { LocalStorage } from "node-localstorage";
 
 var fieldName = (window.fieldName = "defaultSavedFieldv3");
 const localStorage: LocalStorage = window.localStorage;
-const fieldStorage = (window.FieldStorage = new FieldPersistence(localStorage));
+const fieldStorage = new FieldPersistence(localStorage);
 
 var field: Field;
 

@@ -5,65 +5,64 @@ import * as PIXI from "pixi.js";
 import { FieldPersistence } from "./FieldPersistence";
 
 export class Controls {
-  static cursor: Cursor;
-  static field: Field;
-  static fieldStorage: FieldPersistence;
-  static addControls(
+  cursor: Cursor;
+  field: Field;
+  fieldStorage: FieldPersistence;
+  dragging: boolean = false;
+  hasDragged: boolean = false;
+  constructor(
     rootObject: PIXI.Container,
     field: Field,
-    cursorTexture,
+    cursorTexture: PIXI.Texture<PIXI.Resource>,
     fieldStorage: FieldPersistence
   ) {
-    Controls.field = field;
-    Controls.fieldStorage = fieldStorage;
+    this.field = field;
+    this.fieldStorage = fieldStorage;
 
-    Controls.addCursor(rootObject, cursorTexture);
-    Controls.addMouseControls(rootObject);
-    Controls.addTouchControls(rootObject);
-    Controls.addKeyboardControls();
-    Controls.removeUIEventBubbling();
-    Controls.disableRightClick();
+    this.cursor = new Cursor(0, 0, cursorTexture);
+    rootObject.addChildAt(this.cursor, 2);
+
+    this.addMouseControls(rootObject);
+    this.addTouchControls(rootObject);
+    this.addKeyboardControls();
+    this.removeUIEventBubbling();
+    this.disableRightClick();
   }
 
-  static addCursor(rootObject, texture) {
-    Controls.cursor = new Cursor(0, 0, texture);
-    rootObject.addChildAt(Controls.cursor, 2);
-  }
-
-  static addMouseControls(rootObject) {
+  addMouseControls(rootObject: PIXI.Container) {
     rootObject
-      .on("mousedown", Controls._onDragStart)
-      .on("mouseup", Controls._onDragEnd)
-      .on("pointerupoutside", Controls._onDragEnd)
-      .on("pointermove", Controls._onDragMove)
-      .on("rightclick", Controls._onRightClick);
+      .on("mousedown", this._onDragStart)
+      .on("mouseup", this._onDragEnd)
+      .on("pointerupoutside", this._onDragEnd)
+      .on("pointermove", this._onDragMove)
+      .on("rightclick", this._onRightClick);
   }
 
-  static addTouchControls(rootObject) {
+  addTouchControls(rootObject: PIXI.Container) {
     rootObject
-      .on("touchstart", Controls._onDragStart)
+      .on("touchstart", this._onDragStart)
 
-      .on("touchmove", Controls._onDragMove)
+      .on("touchmove", this._onDragMove)
 
-      .on("touchend", Controls._onDragEnd)
-      .on("touchendoutside", Controls._onDragEnd);
+      .on("touchend", this._onDragEnd)
+      .on("touchendoutside", this._onDragEnd);
 
     // not decided how flagging works on mobile
-    // .on('rightclick', Controls._onRightClick);
+    // .on('rightclick', this._onRightClick);
   }
 
-  static addKeyboardControls() {
+  addKeyboardControls() {
     window.addEventListener(
       "keydown",
       (event) => {
-        Controls.mouseInput = false;
+        this.mouseInput = false;
 
         switch (event.keyCode) {
           case 88:
-            Controls.open();
+            this.open();
             break;
           case 90:
-            Controls.flag();
+            this.flag();
             break;
           case 37:
             move(-1, 0);
@@ -79,12 +78,12 @@ export class Controls {
             break;
         }
 
-        function move(deltaX, deltaY) {
-          Controls.moveViewTo(
-            Controls.cursor.getX() + deltaX,
-            Controls.cursor.getY() + deltaY
+        function move(deltaX: number, deltaY: number) {
+          this.moveViewTo(
+            this.cursor.getX() + deltaX,
+            this.cursor.getY() + deltaY
           );
-          Controls.cursor.move(deltaX, deltaY);
+          this.cursor.move(deltaX, deltaY);
           // disable mouse cursor
           document.getElementsByTagName("BODY")[0].style.cursor = "none";
         }
@@ -93,7 +92,7 @@ export class Controls {
     );
   }
 
-  static removeUIEventBubbling() {
+  removeUIEventBubbling() {
     let uiElements = document.getElementsByClassName("ui");
     for (let element of uiElements) {
       element.addEventListener(
@@ -106,12 +105,12 @@ export class Controls {
     }
   }
 
-  static disableRightClick() {
+  disableRightClick() {
     // disable right click context menu
     document.addEventListener("contextmenu", (event) => event.preventDefault());
   }
 
-  static _onDragStart(event) {
+  _onDragStart(event) {
     const foreground = this.getChildByName("fg");
 
     this.dragging = true;
@@ -121,16 +120,16 @@ export class Controls {
     this.startPosition = { x: foreground.position.x, y: foreground.position.y };
   }
 
-  static _onDragEnd() {
+  _onDragEnd() {
     if (this.hasDragged) {
       this.dragging = false;
     } else {
       // if the mousebutton didnt move, it means the user clicked
       this.dragging = false;
-      Controls.open();
+      this.open();
     }
   }
-  static _onDragMove(event) {
+  _onDragMove(event) {
     const width = this.getChildByName("bg").texture.width;
 
     if (this.dragging) {
@@ -151,42 +150,42 @@ export class Controls {
         this.hasDragged = true;
       }
 
-      Controls.setLoadedChunksAround(
+      this.setLoadedChunksAround(
         -Math.floor(x / width / CHUNK_SIZE),
         -Math.floor(y / width / CHUNK_SIZE),
         width
       );
     }
-    if (Controls.mouseInput) {
+    if (this.mouseInput) {
       let position = event.data.getLocalPosition(this.getChildByName("fg"));
       let x = Math.floor(position.x / width);
       let y = Math.floor(position.y / width);
-      Controls.cursor.moveTo(x, y);
+      this.cursor.moveTo(x, y);
     }
-    Controls.mouseInput = true;
+    this.mouseInput = true;
     document.getElementsByTagName("BODY")[0].style.cursor = "default";
   }
 
-  static setLoadedChunksAround(x, y, width) {
+  setLoadedChunksAround(x, y, width) {
     let windowChunkWidth = Math.ceil(window.innerWidth / width / CHUNK_SIZE);
     let windowChunkHeight = Math.ceil(window.innerHeight / width / CHUNK_SIZE);
     for (let i = x - 1; i < x + windowChunkWidth; i++) {
       for (let j = y - 1; j < y + windowChunkHeight; j++) {
-        Controls.field.setVisibleChunk(i, j);
+        this.field.setVisibleChunk(i, j);
       }
     }
-    Controls.field.loadVisibleChunks();
+    this.field.loadVisibleChunks();
   }
 
-  static _onRightClick(event) {
-    Controls.flag();
+  _onRightClick(event) {
+    this.flag();
   }
 
-  static open() {
-    const x = Controls.cursor.getX();
-    const y = Controls.cursor.getY();
-    const cell = Controls.field.getCell(x, y);
-    const neighbors = Controls.field.getNeighbors(x, y);
+  open() {
+    const x = this.cursor.getX();
+    const y = this.cursor.getY();
+    const cell = this.field.getCell(x, y);
+    const neighbors = this.field.getNeighbors(x, y);
     const flaggedNeighbors = neighbors.filter(
       (cell) => cell.isFlagged || (cell.isOpen && cell.isMine)
     );
@@ -194,12 +193,12 @@ export class Controls {
       (cell) => !cell.isOpen && !cell.isFlagged
     );
 
-    if (Controls.fieldStorage === undefined)
+    if (this.fieldStorage === undefined)
       throw new Error("tried to save, but fieldstorage is undefined");
 
     if ((!cell.isOpen && !cell.isFlagged) || (cell.isOpen && cell.isMine)) {
       this.field.open(cell.x, cell.y);
-      Controls.fieldStorage.save(Controls.field, Controls.field.fieldName);
+      this.fieldStorage.save(this.field, this.field.fieldName);
     } else if (
       flaggedNeighbors.length === this.field.value(cell.x, cell.y) &&
       closedNotFlaggedNeighbors.length > 0
@@ -207,15 +206,15 @@ export class Controls {
       closedNotFlaggedNeighbors.forEach((neighbor) => {
         this.field.open(neighbor.x, neighbor.y);
       });
-      Controls.fieldStorage.save(Controls.field, Controls.field.fieldName);
+      this.fieldStorage.save(this.field, this.field.fieldName);
     }
   }
 
-  static flag() {
-    const x = Controls.cursor.getX();
-    const y = Controls.cursor.getY();
-    const cell = Controls.field.getCell(x, y);
-    const neighbors = Controls.field.getNeighbors(x, y);
+  flag() {
+    const x = this.cursor.getX();
+    const y = this.cursor.getY();
+    const cell = this.field.getCell(x, y);
+    const neighbors = this.field.getNeighbors(x, y);
     const closedNeighbors = neighbors.filter(
       (cell) => !cell.isOpen || (cell.isOpen && cell.isMine)
     );
@@ -223,12 +222,12 @@ export class Controls {
       (cell) => !cell.isOpen && !cell.isFlagged
     );
 
-    if (Controls.fieldStorage === undefined)
+    if (this.fieldStorage === undefined)
       throw new Error("tried to save, but fieldstorage is undefined");
 
     if (!cell.isOpen) {
       this.field.flag(cell.x, cell.y);
-      Controls.fieldStorage.save(Controls.field, Controls.field.fieldName);
+      this.fieldStorage.save(this.field, this.field.fieldName);
     } else if (
       closedNeighbors.length === this.field.value(cell.x, cell.y) &&
       closedNotFlaggedNeighbors.length > 0
@@ -236,12 +235,12 @@ export class Controls {
       closedNotFlaggedNeighbors.forEach((neighbor) => {
         this.field.flag(neighbor.x, neighbor.y);
       });
-      Controls.fieldStorage.save(Controls.field, Controls.field.fieldName);
+      this.fieldStorage.save(this.field, this.field.fieldName);
     }
   }
 
-  static moveViewTo(newx: number, newy: number) {
-    const width = Controls.cursor.parent.getChildByName("bg").texture.width;
+  moveViewTo(newx: number, newy: number) {
+    const width = this.cursor.parent.getChildByName("bg").texture.width;
     const x = newx * width;
     const y = newy * width;
     const newPixelPositionX =
@@ -249,21 +248,21 @@ export class Controls {
     const newPixelPositionY =
       -y + Math.floor(window.innerHeight / width / 2) * width;
 
-    Controls.cursor.parent
+    this.cursor.parent
       .getChildByName("fg")
       .position.set(newPixelPositionX, newPixelPositionY);
-    Controls.cursor.parent
+    this.cursor.parent
       .getChildByName("bg")
       .tilePosition.set(newPixelPositionX, newPixelPositionY);
 
-    Controls.setLoadedChunksAround(
+    this.setLoadedChunksAround(
       Math.floor(newx / CHUNK_SIZE),
       Math.floor(newy / CHUNK_SIZE),
       width
     );
 
     // didnt work as expected
-    // TweenMax.to(Controls.cursor.parent.getChildByName("fg").position, 0.2, {x:newPixelPositionX,y:newPixelPositionY})
-    // TweenMax.to(Controls.cursor.parent.getChildByName("bg").tilePosition, 0.2, {x:newPixelPositionX,y:newPixelPositionY});
+    // TweenMax.to(this.cursor.parent.getChildByName("fg").position, 0.2, {x:newPixelPositionX,y:newPixelPositionY})
+    // TweenMax.to(this.cursor.parent.getChildByName("bg").tilePosition, 0.2, {x:newPixelPositionX,y:newPixelPositionY});
   }
 }
