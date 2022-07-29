@@ -19,7 +19,7 @@
     "paths": {},
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "types": ["bun-types"],
+    // "types": ["bun-types"],
     "sourceMap": true
   },
   "include": ["**/*.ts", "**/*.tsx"],
