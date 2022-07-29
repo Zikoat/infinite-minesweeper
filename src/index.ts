@@ -11,7 +11,9 @@ const fieldStorage = (window.FieldStorage = new FieldPersistence(localStorage));
 
 var field: Field;
 
-field = new Field(0.2, 3, fieldName);
+const probability = 0.20
+
+field = new Field(probability, 3, fieldName);
 
 if (localStorage.getItem(fieldName)) {
   field = fieldStorage.load(fieldName);
@@ -21,7 +23,7 @@ if (localStorage.getItem(fieldName)) {
     } fields opened`
   );
 } else {
-  field = new Field(0.2, 3, fieldName);
+  field = new Field(probability, 3, fieldName);
   field.open(1, 1);
   fieldStorage.save(field, fieldName);
 }
