@@ -9,6 +9,13 @@ var fieldName = (window.fieldName = "defaultSavedFieldv3");
 const localStorage: LocalStorage = window.localStorage;
 const fieldStorage = (window.FieldStorage = new FieldPersistence(localStorage));
 
+function updateScore(localField: Field) {
+  const scoreElement = document.getElementById("score");
+  if (scoreElement === null)
+    throw Error("Could not find score element when updating score");
+  scoreElement.innerHTML = localField.score.toString();
+}
+
 var field: Field;
 
 const probability = 0.20
@@ -29,10 +36,6 @@ if (localStorage.getItem(fieldName)) {
 }
 
 console.log(field);
-
-function updateScore(localField: Field) {
-  document.getElementById("score").innerHTML = localField.score.toString();
-}
 
 new FieldRenderer(field, updateScore, fieldStorage);
 
