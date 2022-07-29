@@ -103,7 +103,7 @@ function testStorage<T extends CompressibleNumberStorage>(
     "should return the same after stringification, quickcheck",
     () => {
       fc.assert(
-        fc.property(fc.anything(), (a) => {
+        fc.property(fc.integer(), (a) => {
           let storage = new storageConstructor();
           storage.set(0, 0, a);
 

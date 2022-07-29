@@ -8,4 +8,7 @@ interface Window {
   fieldName: string;
 }
 
-declare function require(string): string;
+declare module "*.png" {
+  const value: any;
+  export = value;
+}

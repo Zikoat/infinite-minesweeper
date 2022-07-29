@@ -3,10 +3,9 @@ import { FieldRenderer } from "./FieldRenderer";
 import { FieldPersistence } from "./FieldPersistence";
 import "./css/stylesheet.css";
 import menubutton from "./assets/default/menubutton.png";
-import { LocalStorage } from "node-localstorage";
 
 var fieldName = (window.fieldName = "defaultSavedFieldv3");
-const localStorage: LocalStorage = window.localStorage;
+const localStorage = window.localStorage;
 const fieldStorage = (window.FieldStorage = new FieldPersistence(localStorage));
 
 function updateScore(localField: Field) {
@@ -46,6 +45,7 @@ button.src = menubutton;
 
 self.toggleMenu = function () {
   let menu = document.getElementById("menu");
+  if(menu === null) throw new Error("Tried to toggle menu, but element is null")
   menu.style.display = menu.style.display == "none" ? "block" : "none";
 };
 

@@ -4,14 +4,13 @@
 import * as Layouts from "./Layouts";
 import * as PIXI from "pixi.js";
 import { Chunk } from "./Chunk";
-import { CHUNK_SIZE } from "./Chunk";
-import { FieldPersistence } from "./FieldPersistence";
 import seedrandom from "seedrandom";
 import { Cell } from "./Cell";
 import { SimpleCellData } from "./CellData";
 import { Type } from "class-transformer";
 
 import "reflect-metadata";
+import { CellSprite } from "./CellSprite";
 const EventEmitter = PIXI.utils.EventEmitter;
 
 export type ChunkedField = Record<number, Record<number, Chunk>>;
@@ -176,23 +175,29 @@ export class Field extends EventEmitter {
     return output;
   }
 
-  unloadChunk(x: string, y: string) {
-    this.fieldData[x][y].getAll().forEach((cell) => {
-      if (!(cell.sprite === undefined)) {
-        cell.sprite.parent.removeChild(cell.sprite);
-      }
-    });
+  unloadChunk(x: number, y: number) {
+    this.fieldData;
+    this.fieldData[x][y]
+      .getAll()
+      .forEach((cell: Cell & { sprite?: CellSprite }) => {
+        if (!(cell.sprite === undefined)) {
+          cell.sprite.parent.removeChild(cell.sprite);
+        }
+      });
     delete this.fieldData[x][y];
   }
+
   restart() {
     // todo
     this.pristine = true;
     // todo: delete all of the rows, update all of the cells
     throw Error("not implemented");
   }
+
   getAll(): Cell[] {
     return this.cellData.getAll();
   }
+  
   value(x: number, y: number): number | null {
     // returns the amount of surrounding mines
     let cell = this.getCell(x, y);
@@ -200,6 +205,7 @@ export class Field extends EventEmitter {
     if (cell.isOpen === false) return null;
     else return this.getNeighbors(x, y).filter((cell) => cell.isMine).length;
   }
+  
   checkForErrors() {
     // debugging
     let cells = this.getAll();
@@ -215,6 +221,7 @@ export class Field extends EventEmitter {
     if (undefinedCells.length > 0)
       console.error("undefined cells", undefinedCells);
   }
+
   isEligibleToOpen(x: number, y: number) {
     // returns a bool, whether this cell can be opened
     //if(this.gameOver) return false;
@@ -223,9 +230,11 @@ export class Field extends EventEmitter {
     if (cell.isOpen) return false;
     return true;
   }
+
   setVisibleChunk(x: any, y: any) {
     this.visibleChunks.push({ x: x, y: y });
   }
+  
   loadVisibleChunks() {
     for (let x in this.fieldData) {
       for (let y in this.fieldData[x]) {
@@ -244,6 +253,7 @@ export class Field extends EventEmitter {
     }
     this.visibleChunks = [];
   }
+
   setSafeCells(x0: number, y0: number) {
     // initiate the field with a circle of cells that aren't mines
     this.pristine = false;

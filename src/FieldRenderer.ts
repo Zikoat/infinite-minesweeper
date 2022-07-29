@@ -10,6 +10,7 @@ import { Cell } from "./Cell.js";
 import { Field } from "./Field.js";
 import { MinesTextures } from "./Textures.js";
 import { FieldPersistence } from "./FieldPersistence.js";
+import { Texture } from "pixi.js";
 
 export class FieldRenderer extends PIXI.Application {
   field: Field;
@@ -52,7 +53,7 @@ var clickHandler = new PIXI.Container();
 clickHandler.interactive = true;
 app.stage.addChild(clickHandler);
 
-function updateCell(field: Field, cell: Cell) {
+function updateCell(field: Field, cell: Cell & {sprite?: CellSprite}) {
   if (cell.sprite === undefined) {
     const value = field.value(cell.x, cell.y);
     cell.sprite = new CellSprite(cell, value);
