@@ -20,7 +20,7 @@ export class FieldPersistence {
 
     this.localStorage.setItem(id, compressedField);
 
-    this.getLocalStorageSize();
+    // this.getLocalStorageSize();
     return;
   }
   load(id: string): Field {
