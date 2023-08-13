@@ -1,5 +1,5 @@
 import { Cell } from "./Cell";
-import Field from "./Field";
+
 
 export const CHUNK_SIZE = 32;
 export class Chunk {
