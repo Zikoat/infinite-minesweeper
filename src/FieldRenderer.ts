@@ -101,7 +101,12 @@ function setup(
   clickHandler.addChildAt(background, 0);
   clickHandler.addChildAt(fieldContainer, 1);
 
-  Controls.addControls(clickHandler, field, tex.cursor, fieldPersistence);
+  const controls = new Controls(
+    clickHandler,
+    field,
+    tex.cursor,
+    fieldPersistence
+  );
 
   // todo move to controls
   // disable right click context menu
@@ -121,7 +126,7 @@ function setup(
   }
 
   centerField(0, 0);
-  Controls.setLoadedChunksAround(0, 0, background.texture.width);
+  controls.setLoadedChunksAround(0, 0, background.texture.width);
 
   console.log("done setup");
 }
