@@ -53,7 +53,7 @@ var clickHandler = new PIXI.Container();
 clickHandler.interactive = true;
 app.stage.addChild(clickHandler);
 
-function updateCell(field: Field, cell: Cell & {sprite?: CellSprite}) {
+function updateCell(field: Field, cell: Cell & { sprite?: CellSprite }) {
   if (cell.sprite === undefined) {
     const value = field.value(cell.x, cell.y);
     cell.sprite = new CellSprite(cell, value);
@@ -101,12 +101,7 @@ function setup(
   clickHandler.addChildAt(background, 0);
   clickHandler.addChildAt(fieldContainer, 1);
 
-  const controls = new Controls(
-    clickHandler,
-    field,
-    tex.cursor,
-    fieldPersistence
-  );
+  new Controls(clickHandler, field, tex.cursor, fieldPersistence);
 
   // todo move to controls
   // disable right click context menu
@@ -126,7 +121,7 @@ function setup(
   }
 
   centerField(0, 0);
-  controls.setLoadedChunksAround(0, 0, background.texture.width);
+  Controls.setLoadedChunksAround(0, 0, background.texture.width);
 
   console.log("done setup");
 }
