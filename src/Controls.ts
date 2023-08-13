@@ -1,17 +1,20 @@
 import Cursor from "./Cursor";
 import { CHUNK_SIZE } from "./Chunk";
-import Field from "./Field";
+import { Field } from "./Field";
 import * as PIXI from "pixi.js";
 import { FieldPersistence } from "./FieldPersistence";
+import { InteractionEvent, Resource, Texture } from "pixi.js";
 
 export class Controls {
   static cursor: Cursor;
   static field: Field;
   static fieldStorage: FieldPersistence;
+  static mouseInput: false;
+
   static addControls(
     rootObject: PIXI.Container,
     field: Field,
-    cursorTexture,
+    cursorTexture: Texture<Resource>,
     fieldStorage: FieldPersistence
   ) {
     Controls.field = field;
@@ -25,12 +28,12 @@ export class Controls {
     Controls.disableRightClick();
   }
 
-  static addCursor(rootObject, texture) {
+  static addCursor(rootObject: PIXI.Container, texture: Texture<Resource>) {
     Controls.cursor = new Cursor(0, 0, texture);
     rootObject.addChildAt(Controls.cursor, 2);
   }
 
-  static addMouseControls(rootObject) {
+  static addMouseControls(rootObject: PIXI.Container) {
     rootObject
       .on("mousedown", Controls._onDragStart)
       .on("mouseup", Controls._onDragEnd)
@@ -39,7 +42,7 @@ export class Controls {
       .on("rightclick", Controls._onRightClick);
   }
 
-  static addTouchControls(rootObject) {
+  static addTouchControls(rootObject: PIXI.Container) {
     rootObject
       .on("touchstart", Controls._onDragStart)
 
@@ -79,14 +82,17 @@ export class Controls {
             break;
         }
 
-        function move(deltaX, deltaY) {
+        function move(deltaX: number, deltaY: number) {
           Controls.moveViewTo(
             Controls.cursor.getX() + deltaX,
             Controls.cursor.getY() + deltaY
           );
           Controls.cursor.move(deltaX, deltaY);
+          const element = document.getElementById("web-page-body");
+          if (element === null)
+            throw new Error("could not find element with id web-page-body");
           // disable mouse cursor
-          document.getElementsByTagName("BODY")[0].style.cursor = "none";
+          element.style.cursor = "none";
         }
       },
       false
@@ -111,7 +117,7 @@ export class Controls {
     document.addEventListener("contextmenu", (event) => event.preventDefault());
   }
 
-  static _onDragStart(event) {
+  static _onDragStart(event: InteractionEvent) {
     const foreground = this.getChildByName("fg");
 
     this.dragging = true;
@@ -165,6 +171,9 @@ export class Controls {
     }
     Controls.mouseInput = true;
     document.getElementsByTagName("BODY")[0].style.cursor = "default";
+  }
+  static parent(parent: any) {
+    throw new Error("Method not implemented.");
   }
 
   static setLoadedChunksAround(x, y, width) {
