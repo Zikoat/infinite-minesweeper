@@ -5,7 +5,7 @@
 import * as PIXI from "pixi.js";
 import * as Textures from "./Textures.js";
 import { Controls } from "./Controls";
-import { CellSprite } from "./CellSprite";
+import { CellSprite, scale } from "./CellSprite";
 import { Cell } from "./Cell.js";
 import { Field } from "./Field.js";
 import { MinesTextures } from "./Textures.js";
@@ -43,7 +43,6 @@ var app = new PIXI.Application({
 
 document.body.appendChild(app.view);
 
-app.renderer.resize(window.innerWidth, window.innerHeight);
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
 var fieldContainer = new PIXI.Container();
@@ -78,6 +77,7 @@ function setup(
     app.renderer.width,
     app.renderer.height
   );
+  background.tileScale = { x: scale, y: scale };
 
   window.addEventListener("resize", function (event) {
     function resize(width: number, height: number) {

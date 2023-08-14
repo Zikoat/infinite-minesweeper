@@ -3,6 +3,7 @@ import { CHUNK_SIZE } from "./Chunk";
 import { Field } from "./Field";
 import * as PIXI from "pixi.js";
 import { FieldPersistence } from "./FieldPersistence";
+import { scale } from "./CellSprite";
 
 export class Controls {
   static cursor: Cursor;
@@ -12,6 +13,10 @@ export class Controls {
   static hasDragged: boolean = false;
   static mouseInput: boolean = false;
   static dragPoint: { x: number; y: number } = { x: 0, y: 0 };
+  static startPosition = {
+    x: 0,
+    y: 0,
+  };
 
   constructor(
     rootObject: PIXI.Container,
@@ -137,18 +142,20 @@ export class Controls {
     }
   }
   static _onDragMove(event) {
-    const width = this.getChildByName("bg").texture.width;
+    const width = (this.getChildByName("bg") as PIXI.TilingSprite).texture
+      .width;
 
     if (this.dragging) {
       var newPosition = event.data.getLocalPosition(this.parent);
       let x = Math.floor(newPosition.x - this.dragPoint.x);
       let y = Math.floor(newPosition.y - this.dragPoint.y);
 
-      const foreground = this.getChildByName("fg");
-      const background = this.getChildByName("bg");
+      const foreground = this.getChildByName("fg") as PIXI.Sprite;
+      const background = this.getChildByName("bg") as PIXI.TilingSprite;
 
       foreground.position.set(x, y);
       background.tilePosition.set(x, y);
+
       if (
         Math.pow(this.startPosition.x - x, 2) +
           Math.pow(this.startPosition.y - y, 2) >
@@ -165,8 +172,8 @@ export class Controls {
     }
     if (this.mouseInput) {
       let position = event.data.getLocalPosition(this.getChildByName("fg"));
-      let x = Math.floor(position.x / width);
-      let y = Math.floor(position.y / width);
+      let x = Math.floor(position.x / width / scale);
+      let y = Math.floor(position.y / width / scale);
       Controls.cursor.moveTo(x, y);
     }
     this.mouseInput = true;

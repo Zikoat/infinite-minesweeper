@@ -39,6 +39,7 @@ canvas,
   top: 2px;
   left: 2px;
   color: lightgray;
+  zoom: 2;
 }
 
 .menubutton {

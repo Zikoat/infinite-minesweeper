@@ -3,6 +3,9 @@ import * as PIXI from "pixi.js";
 import { Cell } from "./Cell";
 import { LoaderResource } from "pixi.js";
 
+export const scale = 3;
+const cellWidth = 16 * scale;
+
 export class CellSprite extends PIXI.Container {
   private value: number | null;
   // class for creating and updating sprites
@@ -12,6 +15,10 @@ export class CellSprite extends PIXI.Container {
     let cellTexture = this.getCellTexture(cell);
     let back = new PIXI.Sprite(cellTexture.back.texture);
     let front = new PIXI.Sprite(cellTexture.front.texture);
+    back.width = cellWidth;
+    back.height = cellWidth;
+    front.width = cellWidth;
+    front.height = cellWidth;
     const width = back.width;
     this.x = cell.x * width;
     this.y = cell.y * width;
@@ -23,21 +30,25 @@ export class CellSprite extends PIXI.Container {
   }
 
   update(cell: Cell) {
-    let back = this.getChildAt(0);
-    let front = this.getChildAt(1);
+    let back = this.getChildAt(0) as PIXI.Sprite;
+    let front = this.getChildAt(1) as PIXI.TilingSprite;
 
     let cellTexture = this.getCellTexture(cell);
     back.texture = cellTexture.back;
     front.texture = cellTexture.front;
+
     this.playUpdateAnimation();
   }
 
   playUpdateAnimation() {
-    let front = this.getChildByName("fg");
-    let back = this.getChildByName("bg");
-
+    let front = this.getChildByName("fg") as PIXI.Sprite;
+    let back = this.getChildByName("bg") as PIXI.TilingSprite;
+    console.log();
     TweenMax.from(front.scale, 0.2, { x: 0, y: 0 });
-    TweenMax.from(front, 0.2, { x: "+=8", y: "+=8" });
+    TweenMax.from(front, 0.2, {
+      x: "+=" + back.width / scale,
+      y: "+=" + back.width / scale,
+    });
     TweenMax.from(back, 0.2, { alpha: 0 });
   }
 

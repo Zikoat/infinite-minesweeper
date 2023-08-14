@@ -1,6 +1,6 @@
-import { textures } from "./Textures";
 import { TweenMax, Power4 } from "gsap";
 import * as PIXI from "pixi.js";
+import { scale } from "./CellSprite";
 
 /**
  * bug: cursor jitters when dragging field
@@ -14,9 +14,11 @@ export default class Cursor extends PIXI.Sprite {
     super(texture);
     this.pointX = x;
     this.pointY = y;
+    this.scale = { x: scale, y: scale };
 
     this.moveTo(x, y);
   }
+
   moveTo(x: number, y: number) {
     const foreground = this.parent?.getChildByName("fg")?.getGlobalPosition();
     if (!foreground) {
@@ -24,8 +26,8 @@ export default class Cursor extends PIXI.Sprite {
       return;
     }
 
-    this.pointX = x;
-    this.pointY = y;
+    this.pointX = x ;
+    this.pointY = y ;
     let pos = this.parent.getChildByName("fg").getGlobalPosition();
 
     // let pos = new PIXI.Point(0, 0);
@@ -35,12 +37,15 @@ export default class Cursor extends PIXI.Sprite {
 
     TweenMax.to(this, 0.1, { x: newX, y: newY, ease: Power4.easeOut });
   }
+
   move(dx: number, dy: number) {
     this.moveTo(this.pointX + dx, this.pointY + dy);
   }
+
   getX() {
     return this.pointX;
   }
+
   getY() {
     return this.pointY;
   }
