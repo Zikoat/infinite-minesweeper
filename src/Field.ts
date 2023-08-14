@@ -197,7 +197,7 @@ export class Field extends EventEmitter {
   getAll(): Cell[] {
     return this.cellData.getAll();
   }
-  
+
   value(x: number, y: number): number | null {
     // returns the amount of surrounding mines
     let cell = this.getCell(x, y);
@@ -205,7 +205,7 @@ export class Field extends EventEmitter {
     if (cell.isOpen === false) return null;
     else return this.getNeighbors(x, y).filter((cell) => cell.isMine).length;
   }
-  
+
   checkForErrors() {
     // debugging
     let cells = this.getAll();
@@ -234,7 +234,7 @@ export class Field extends EventEmitter {
   setVisibleChunk(x: any, y: any) {
     this.visibleChunks.push({ x: x, y: y });
   }
-  
+
   loadVisibleChunks() {
     for (let x in this.fieldData) {
       for (let y in this.fieldData[x]) {
@@ -244,7 +244,7 @@ export class Field extends EventEmitter {
             remove = false;
         }
         if (remove) {
-          this.unloadChunk(x, y);
+          this.unloadChunk(parseInt(x), parseInt(y));
         }
       }
     }
