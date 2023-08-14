@@ -10,7 +10,6 @@ import { Cell } from "./Cell.js";
 import { Field } from "./Field.js";
 import { MinesTextures } from "./Textures.js";
 import { FieldPersistence } from "./FieldPersistence.js";
-import { Texture } from "pixi.js";
 
 export class FieldRenderer extends PIXI.Application {
   field: Field;
@@ -38,8 +37,7 @@ export class FieldRenderer extends PIXI.Application {
 }
 
 var app = new PIXI.Application({
-  width: 800,
-  height: 600,
+  resizeTo: window,
   backgroundColor: 0x1099bb,
 });
 
