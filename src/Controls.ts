@@ -5,6 +5,8 @@ import * as PIXI from "pixi.js";
 import { FieldPersistence } from "./FieldPersistence";
 import { scale } from "./CellSprite";
 
+const DRAG_THRESHOLD = 5;
+
 export class Controls {
   static cursor: Cursor;
   static field: Field;
@@ -118,7 +120,8 @@ export class Controls {
   }
 
   static _onDragStart(event: unknown) {
-    const foreground = this.getChildByName("fg");
+    const foreground = this.getChildByName("fg") as PIXI.Sprite;
+    const background = this.getChildByName("bg") as PIXI.TilingSprite;
 
     this.dragging = true;
     this.hasDragged = false;
@@ -128,14 +131,13 @@ export class Controls {
       x: foreground.position.x,
       y: foreground.position.y,
     };
+
+    Controls.updateCursorPosition(event, foreground, background);
   }
 
   static _onDragEnd() {
-    if (this.hasDragged) {
-      this.dragging = false;
-    } else {
-      // if the mousebutton didnt move, it means the user clicked
-      this.dragging = false;
+    this.dragging = false;
+    if (!this.hasDragged) {
       Controls.open();
     }
   }
@@ -144,7 +146,14 @@ export class Controls {
       .width;
 
     if (this.dragging) {
-      var newPosition = event.data.getLocalPosition(this.parent);
+      const newPosition = event.data.getLocalPosition(this.parent);
+      const dx = newPosition.x - this.dragPoint.x;
+      const dy = newPosition.y - this.dragPoint.y;
+
+      if (Math.sqrt(dx * dx + dy * dy) > DRAG_THRESHOLD) {
+        this.hasDragged = true;
+      }
+
       let x = Math.floor(newPosition.x - this.dragPoint.x);
       let y = Math.floor(newPosition.y - this.dragPoint.y);
 
@@ -154,14 +163,6 @@ export class Controls {
       foreground.position.set(x, y);
       background.tilePosition.set(x, y);
 
-      if (
-        Math.pow(this.startPosition.x - x, 2) +
-          Math.pow(this.startPosition.y - y, 2) >
-        Math.pow(width, 2) / 9
-      ) {
-        this.hasDragged = true;
-      }
-
       Controls.setLoadedChunksAround(
         -Math.floor(x / width / CHUNK_SIZE),
         -Math.floor(y / width / CHUNK_SIZE),
@@ -169,16 +170,29 @@ export class Controls {
       );
     }
     if (this.mouseInput) {
-      let position = event.data.getLocalPosition(this.getChildByName("fg"));
-      let x = Math.floor(position.x / width / scale);
-      let y = Math.floor(position.y / width / scale);
-      Controls.cursor.moveTo(x, y);
+      Controls.updateCursorPosition(
+        event,
+        this.getChildByName("fg") as PIXI.Sprite,
+        this.getChildByName("bg") as PIXI.TilingSprite
+      );
     }
     this.mouseInput = true;
     document.getElementsByTagName("BODY")[0].style.cursor = "default";
   }
 
-  static setLoadedChunksAround(x, y, width) {
+  static updateCursorPosition(
+    event: any,
+    foreground: PIXI.Sprite,
+    background: PIXI.TilingSprite
+  ) {
+    const width = background.texture.width;
+    let position = event.data.getLocalPosition(foreground);
+    let x = Math.floor(position.x / width / scale);
+    let y = Math.floor(position.y / width / scale);
+    Controls.cursor.moveTo(x, y);
+  }
+
+  static setLoadedChunksAround(x: number, y: number, width: number) {
     let windowChunkWidth = Math.ceil(window.innerWidth / width / CHUNK_SIZE);
     let windowChunkHeight = Math.ceil(window.innerHeight / width / CHUNK_SIZE);
     for (let i = x - 1; i < x + windowChunkWidth; i++) {
@@ -219,6 +233,8 @@ export class Controls {
         Controls.field.open(neighbor.x, neighbor.y);
       });
       Controls.fieldStorage.save(Controls.field, Controls.field.fieldName);
+    } else if (cell.isOpen) {
+      Controls.flag();
     }
   }
 
