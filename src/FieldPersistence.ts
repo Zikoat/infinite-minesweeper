@@ -14,8 +14,6 @@ export class FieldPersistence {
   }
 
   save(field: Field, id: string) {
-    // saves a Field
-    console.log("saving field with id " + id);
     const compressedField = this.compress(field);
 
     this.localStorage.setItem(id, compressedField);
@@ -111,6 +109,8 @@ export class FieldPersistence {
       _lsTotal += _xLen;
       // console.log(_x.substr(0, 50) + " = " + (_xLen / 1024).toFixed(2) + " KB");
     }
-    console.log("Local storage size used: " + (_lsTotal / 1024).toFixed(2) + " KB");
+    console.log(
+      "Local storage size used: " + (_lsTotal / 1024).toFixed(2) + " KB"
+    );
   }
 }
