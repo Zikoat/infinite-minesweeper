@@ -6,6 +6,7 @@ import { FieldPersistence } from "./FieldPersistence";
 import { scale } from "./CellSprite";
 
 const DRAG_THRESHOLD = 5;
+const LONG_PRESS_DURATION = 200; // Duration in milliseconds to consider it a long press
 
 export class Controls {
   static cursor: Cursor;
@@ -19,6 +20,8 @@ export class Controls {
     x: 0,
     y: 0,
   };
+  static longPressTimer: ReturnType<typeof setTimeout> | null = null;
+  static hasLongPressed = false;
 
   constructor(
     rootObject: PIXI.Container,
@@ -133,15 +136,30 @@ export class Controls {
     };
 
     Controls.updateCursorPosition(event, foreground, background);
+
+    this.hasLongPressed = false;
+
+    Controls.longPressTimer = setTimeout(() => {
+      this.dragging = false;
+      this.hasLongPressed = true;
+
+      Controls.flag();
+    }, LONG_PRESS_DURATION);
   }
 
   static _onDragEnd() {
     this.dragging = false;
-    if (!this.hasDragged) {
+    if (!this.hasDragged && !this.hasLongPressed) {
       Controls.open();
     }
+    this.hasLongPressed = false;
+
+    if (Controls.longPressTimer) {
+      clearTimeout(Controls.longPressTimer);
+      this.longPressTimer = null;
+    }
   }
-  static _onDragMove(event) {
+  static _onDragMove(event: unknown) {
     const width = (this.getChildByName("bg") as PIXI.TilingSprite).texture
       .width;
 
@@ -150,8 +168,13 @@ export class Controls {
       const dx = newPosition.x - this.dragPoint.x;
       const dy = newPosition.y - this.dragPoint.y;
 
-      if (Math.sqrt(dx * dx + dy * dy) > DRAG_THRESHOLD) {
+      if (
+        Math.sqrt(dx * dx + dy * dy) > DRAG_THRESHOLD &&
+        Controls.longPressTimer
+      ) {
         this.hasDragged = true;
+        clearTimeout(Controls.longPressTimer);
+        this.longPressTimer = null;
       }
 
       let x = Math.floor(newPosition.x - this.dragPoint.x);
