@@ -46,8 +46,8 @@ export class CellSprite extends PIXI.Container {
     console.log();
     TweenMax.from(front.scale, 0.2, { x: 0, y: 0 });
     TweenMax.from(front, 0.2, {
-      x: "+=" + back.width / scale,
-      y: "+=" + back.width / scale,
+      x: "+=" + (back.width / scale) * 1.5,
+      y: "+=" + (back.width / scale) * 1.5,
     });
     TweenMax.from(back, 0.2, { alpha: 0 });
   }
