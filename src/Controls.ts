@@ -143,7 +143,10 @@ export class Controls {
       this.dragging = false;
       this.hasLongPressed = true;
 
-      Controls.flag();
+      const x = Controls.cursor.getX();
+      const y = Controls.cursor.getY();
+      const cell = Controls.field.getCell(x, y);
+      if (!cell.isOpen) Controls.flag();
     }, LONG_PRESS_DURATION);
   }
 
