@@ -49,9 +49,7 @@ export class Controls {
   static addTouchControls(rootObject: PIXI.Container) {
     rootObject
       .on("touchstart", Controls._onDragStart)
-
       .on("touchmove", Controls._onDragMove)
-
       .on("touchend", Controls._onDragEnd)
       .on("touchendoutside", Controls._onDragEnd);
 
@@ -254,7 +252,8 @@ export class Controls {
   }
 
   static moveViewTo(newx: number, newy: number) {
-    const width = Controls.cursor.parent.getChildByName("bg").texture.width;
+    const width = (Controls.cursor.parent.getChildByName("bg") as PIXI.Sprite)
+      .texture.width;
     const x = newx * width;
     const y = newy * width;
     const newPixelPositionX =
@@ -262,12 +261,13 @@ export class Controls {
     const newPixelPositionY =
       -y + Math.floor(window.innerHeight / width / 2) * width;
 
-    Controls.cursor.parent
-      .getChildByName("fg")
-      .position.set(newPixelPositionX, newPixelPositionY);
-    Controls.cursor.parent
-      .getChildByName("bg")
-      .tilePosition.set(newPixelPositionX, newPixelPositionY);
+    (Controls.cursor.parent.getChildByName("fg") as PIXI.Sprite).position.set(
+      newPixelPositionX,
+      newPixelPositionY
+    );
+    (
+      Controls.cursor.parent.getChildByName("bg") as PIXI.TilingSprite
+    ).tilePosition.set(newPixelPositionX, newPixelPositionY);
 
     Controls.setLoadedChunksAround(
       Math.floor(newx / CHUNK_SIZE),
