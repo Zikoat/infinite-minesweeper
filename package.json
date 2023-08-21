@@ -3,13 +3,15 @@
   "version": "0.3.0",
   "description": "An infinite, open source, minesweeper implementation. Perfect for creating bots, and based on borbit's mienfield.com",
   "scripts": {
-    "test": "bun run test-watch",
-    "test-watch": "watchlist -e src -- bun run test-single",
-    "test-single": "uvu -r tsm",
     "start": "vite",
-    "build": "vite build",
+    "test": "vitest",
     "lint-check": "prettier --check .",
-    "lint-write": "prettier --write ."
+    "lint-write": "prettier --write .",
+    "test-single": "uvu -r tsm",
+    "test-watch": "watchlist -e src -- bun run test-single",
+    "ci": "bun install --production && prettier --check . && vite build",
+    "localci": "rm ./bun.lockb && bun i && bun lint && bun clean && bun ci && vite preview --open",
+    "build": "vite build"
   },
   "repository": {
     "type": "git",
@@ -18,7 +20,7 @@
   "keywords": [
     "mines",
     "minesweeper",
-    "infinite", 
+    "infinite",
     "minefield"
   ],
   "author": "Sigurd Schoeler",
@@ -40,8 +42,8 @@
     "pixi.js": "^6.4.2",
     "reflect-metadata": "^0.1.13",
     "seedrandom": "^3.0.5",
-    "uvu": "^0.5.6",
     "vite": "^4.4.9",
+    "vitest": "^0.34.2",
     "watchlist": "^0.3.1"
   },
   "devDependencies": {

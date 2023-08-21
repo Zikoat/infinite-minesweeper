@@ -5,13 +5,10 @@ import { Chunk, CHUNK_SIZE } from "./Chunk";
 import { plainToInstance } from "class-transformer";
 import { SimpleCellData } from "./CellData";
 import { SimpleNumberStorage } from "./SimpleNumberStorage";
+import { LocalStorage } from "node-localstorage";
 
 export class FieldPersistence {
-  public localStorage: any;
-
-  constructor(localStorage: any) {
-    this.localStorage = localStorage;
-  }
+  constructor(public localStorage: LocalStorage) {}
 
   save(field: Field, id: string) {
     const compressedField = this.compress(field);
