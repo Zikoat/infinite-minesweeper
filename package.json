@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "vite --open",
     "test": "vitest",
+    "clean": "git clean -Xdf",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx ./src --fix && prettier --write .",
     "test-single": "uvu -r tsm",
     "test-watch": "watchlist -e src -- bun run test-single",
@@ -46,11 +47,12 @@
     "pixi.js": "^6.4.2",
     "reflect-metadata": "^0.1.13",
     "seedrandom": "^3.0.5",
+    "typescript": "^5.1.6",
     "vite": "^4.4.9",
     "vitest": "^0.34.2",
     "watchlist": "^0.3.1"
   },
   "devDependencies": {
-    "prettier": "^2.7.1"
+    "prettier": "^3.0.2"
   }
 }

@@ -69,16 +69,16 @@ export default class SimpleBot {
       .getAll()
       .filter(
         (cell) =>
-          cell.isOpen && this.field.getNeighbors(cell.x, cell.y).length !== 0
+          cell.isOpen && this.field.getNeighbors(cell.x, cell.y).length !== 0,
       )
       .forEach((cell) => {
         const neighboringCells = this.field.getNeighbors(cell.x, cell.y);
         const neighboringMinesAmount = neighboringCells.filter(
-          (c) => c.isMine
+          (c) => c.isMine,
         ).length;
 
         const restNeighbors = neighboringCells.filter(
-          (neighbor) => !(neighbor.isFlagged || neighbor.isOpen)
+          (neighbor) => !(neighbor.isFlagged || neighbor.isOpen),
         );
 
         if (restNeighbors.length === neighboringMinesAmount)
@@ -109,7 +109,7 @@ export default class SimpleBot {
     )
       console.warn(
         "openDiff:",
-        all.length - opened.length - all.filter((cell) => !cell.isOpen).length
+        all.length - opened.length - all.filter((cell) => !cell.isOpen).length,
       );
     console.log("closed:", all.length - opened.length);
   }

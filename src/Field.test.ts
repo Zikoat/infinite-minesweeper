@@ -25,7 +25,7 @@ test("JSON", () => {
   const output = JSON.stringify(input);
 
   expect(output).toMatchInlineSnapshot(
-    '"{\\"foo\\":\\"hello\\",\\"bar\\":\\"world\\"}"'
+    '"{\\"foo\\":\\"hello\\",\\"bar\\":\\"world\\"}"',
   );
   expect(JSON.parse(output)).toStrictEqual(input);
 });
@@ -121,7 +121,7 @@ describe("FieldStorage", () => {
     // );
     assert(
       field1.cellData instanceof SimpleCellData,
-      "field1 instance of simpleCellData"
+      "field1 instance of simpleCellData",
     );
 
     fieldStorage.save(field1, "test1");
@@ -224,7 +224,7 @@ describe("FieldStorage", () => {
       assert(cell.isOpen === false);
       assert.ok(
         cell.x >= 0,
-        JSON.stringify(cellToObject(cell)) + " does not have x>=0"
+        JSON.stringify(cellToObject(cell)) + " does not have x>=0",
       );
       assert.ok(cell.x < 32, cellToObject(cell) + " does not have x<32");
       assert.ok(cell.y >= 0, cellToObject(cell) + " does not have y>=0");
@@ -247,7 +247,7 @@ describe("FieldStorage", () => {
 .x324x.
 ...xxx.
 .......
-`
+`,
     );
   });
 });
@@ -277,18 +277,18 @@ function fieldsAreEqual(field1: Field, field2: Field): void {
 .x324x.
 ...xxx.
 ......F
-`
+`,
   );
   assert.equal(
     fieldViewToString(field1, -3, -3, 3, 3),
-    fieldViewToString(field2, -3, -3, 3, 3)
+    fieldViewToString(field2, -3, -3, 3, 3),
   );
 
   assert(field1.fieldName === field2.fieldName);
   assert(field1.score === field2.score, "field scores");
   assert(
     field1.getAll().length === field2.getAll().length,
-    "fieldsareequal getall.length"
+    "fieldsareequal getall.length",
   );
   assert(field1.gameOver === field2.gameOver, "field gameover");
 
@@ -325,7 +325,7 @@ test("Chunk should be instantiated", () => {
   assert(typeof chunkJsonStringified === "string");
   assert.equal(
     chunkJsonFunction,
-    chunkJsonStringified.substring(1, chunkJsonStringified.length - 1)
+    chunkJsonStringified.substring(1, chunkJsonStringified.length - 1),
   );
   assert(chunk instanceof Chunk);
 });
@@ -362,7 +362,7 @@ function fieldViewToString(
   x0: number,
   y0: number,
   x1: number,
-  y1: number
+  y1: number,
 ): string {
   let map = "";
 
@@ -381,7 +381,7 @@ function fieldViewToString(
       else if (!cell.isMine && !cell.isOpen && !cell.isFlagged) character = ".";
       else
         throw new Error(
-          `don't know what cell ${cell} on coordinate ${x},${y} is supposed to be`
+          `don't know what cell ${cell} on coordinate ${x},${y} is supposed to be`,
         );
 
       map += character;

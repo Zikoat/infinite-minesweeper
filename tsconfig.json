@@ -22,6 +22,11 @@
     // "types": ["bun-types"],
     "sourceMap": true
   },
-  "include": ["**/*.ts", "**/*.tsx", "src/bots/botSimple.ts", "custom.d.ts"],
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "src/bots/botSimple.ts",
+    "src/custom.d.ts"
+  ],
   "exclude": ["node_modules"]
 }

@@ -132,10 +132,10 @@ describe.each([{ storage: SimpleNumberStorage }, { storage: COO }])(
             real: new storageConstructor(),
           });
           fc.modelRun(s, cmds);
-        })
+        }),
       );
     });
-  }
+  },
 );
 
 type Model = object;
@@ -144,7 +144,7 @@ class SetCommand<T extends NumberStorage> implements fc.Command<Model, T> {
   constructor(
     readonly x: number,
     readonly y: number,
-    readonly insertValue: number
+    readonly insertValue: number,
   ) {}
 
   check = () => true;
@@ -159,7 +159,10 @@ class SetCommand<T extends NumberStorage> implements fc.Command<Model, T> {
 }
 
 class GetCommand<T extends NumberStorage> implements fc.Command<Model, T> {
-  constructor(readonly x: number, readonly y: number) {}
+  constructor(
+    readonly x: number,
+    readonly y: number,
+  ) {}
 
   check = () => true;
 
@@ -186,7 +189,7 @@ class StringifyCommand implements fc.Command<Model, CompressibleNumberStorage> {
     assert.equal(
       r.constructor.name,
       afterCompression.constructor.name,
-      "constructor name check"
+      "constructor name check",
     );
 
     r = afterCompression;

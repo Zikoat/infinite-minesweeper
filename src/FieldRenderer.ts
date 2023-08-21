@@ -16,7 +16,7 @@ export class FieldRenderer extends PIXI.Application {
   constructor(
     field: Field,
     updateScore: (input: Field) => void,
-    fieldPersistence: FieldPersistence
+    fieldPersistence: FieldPersistence,
   ) {
     super();
     this.field = field;
@@ -70,12 +70,12 @@ function updateAllCells(field: Field): void {
 function setup(
   tex: MinesTextures,
   field: Field,
-  fieldPersistence: FieldPersistence
+  fieldPersistence: FieldPersistence,
 ): void {
   const background = new PIXI.TilingSprite(
     tex.closed,
     app.renderer.width,
-    app.renderer.height
+    app.renderer.height,
   );
   background.tileScale = { x: scale, y: scale };
 

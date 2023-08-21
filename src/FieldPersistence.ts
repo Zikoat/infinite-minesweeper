@@ -39,13 +39,13 @@ export class FieldPersistence {
   saveChunk(chunk: Chunk, id: string) {
     this.localStorage.setItem(
       id + chunk.x + ";" + chunk.y,
-      JSON.stringify(chunk)
+      JSON.stringify(chunk),
     );
   }
   loadChunk(id: string, x: number, y: number): Chunk | undefined {
     const chunk = new Chunk(x, y);
     const chunkFromLocalStorage = this.localStorage.getItem(
-      id + chunk.x + ";" + chunk.y
+      id + chunk.x + ";" + chunk.y,
     );
     if (chunkFromLocalStorage) {
       const data = JSON.parse(chunkFromLocalStorage);
@@ -73,7 +73,7 @@ export class FieldPersistence {
     field.cellData = plainToInstance(SimpleCellData, recoveredField.cellData);
     field.cellData.numberStorage = plainToInstance(
       SimpleNumberStorage,
-      recoveredField.cellData.numberStorage
+      recoveredField.cellData.numberStorage,
     );
     // field.fieldStorage = new FieldPersistence(this.localStorage);
     return field;
@@ -84,8 +84,8 @@ export class FieldPersistence {
     const ratio = compressedByteCount / cellsCount;
     console.log(
       `saved ${compressedByteCount} bytes with a compression ratio of ${ratio.toPrecision(
-        5
-      )} bytes/cell`
+        5,
+      )} bytes/cell`,
     );
     console.log(string);
   }
@@ -105,7 +105,7 @@ export class FieldPersistence {
       // console.log(_x.substr(0, 50) + " = " + (_xLen / 1024).toFixed(2) + " KB");
     }
     console.log(
-      "Local storage size used: " + (_lsTotal / 1024).toFixed(2) + " KB"
+      "Local storage size used: " + (_lsTotal / 1024).toFixed(2) + " KB",
     );
   }
 }

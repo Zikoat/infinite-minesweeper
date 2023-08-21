@@ -36,7 +36,7 @@ export class Field extends EventEmitter {
     probability = 0.5,
     safeRadius = 1,
     fieldName: string,
-    seed: string | undefined = undefined
+    seed: string | undefined = undefined,
   ) {
     super();
 
@@ -71,7 +71,7 @@ export class Field extends EventEmitter {
   open(x: number, y: number): Cell[] {
     if (!Number.isSafeInteger(x) || !Number.isSafeInteger(y))
       throw new Error(
-        `Open was passed (${x},${y}), but it should be passed safe integers`
+        `Open was passed (${x},${y}), but it should be passed safe integers`,
       );
 
     if (this.pristine) this.setSafeCells(x, y);
@@ -117,7 +117,7 @@ export class Field extends EventEmitter {
     if (this.value(cell.x, cell.y) === 0) {
       const neighbors = this.getNeighbors(cell.x, cell.y);
       const closedNeighbors = neighbors.filter(
-        (neighbor: Cell) => !neighbor.isOpen && !neighbor.isFlagged
+        (neighbor: Cell) => !neighbor.isOpen && !neighbor.isFlagged,
       ); // filter the array, so only the closed neighbors are in it
       for (const neighbor of closedNeighbors) {
         const openedNeighbors = this.open(neighbor.x, neighbor.y);
@@ -213,7 +213,7 @@ export class Field extends EventEmitter {
     if (openedCells.some((cell) => cell.isFlagged))
       console.error(
         "cell is flagged and open",
-        openedCells.filter((cell) => cell.isFlagged)
+        openedCells.filter((cell) => cell.isFlagged),
       );
 
     const undefinedCells = cells.filter((cell) => cell.isMine === undefined);

@@ -12,7 +12,7 @@ export class Cell {
     x: number,
     y: number,
     isFlagged: boolean = false,
-    isMine?: boolean
+    isMine?: boolean,
   ) {
     this.x = x;
     this.y = y;

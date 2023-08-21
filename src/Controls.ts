@@ -33,7 +33,7 @@ export class Controls {
     rootObject: PIXI.Container,
     field: Field,
     cursorTexture: PIXI.Texture<PIXI.Resource>,
-    fieldStorage: FieldPersistence
+    fieldStorage: FieldPersistence,
   ) {
     Controls.field = field;
     Controls.fieldStorage = fieldStorage;
@@ -77,7 +77,7 @@ export class Controls {
         const move = (deltaX: number, deltaY: number) => {
           Controls.moveViewTo(
             Controls.cursor.getX() + deltaX,
-            Controls.cursor.getY() + deltaY
+            Controls.cursor.getY() + deltaY,
           );
           Controls.cursor.move(deltaX, deltaY);
           // disable mouse cursor
@@ -106,7 +106,7 @@ export class Controls {
             break;
         }
       },
-      false
+      false,
     );
   }
 
@@ -118,7 +118,7 @@ export class Controls {
         (event) => {
           event.stopPropagation();
         },
-        false
+        false,
       );
     }
   }
@@ -199,14 +199,14 @@ export class Controls {
       Controls.setLoadedChunksAround(
         -Math.floor(x / width / CHUNK_SIZE),
         -Math.floor(y / width / CHUNK_SIZE),
-        width
+        width,
       );
     }
     if (Controls.mouseInput) {
       Controls.updateCursorPosition(
         event,
         this.getChildByName("fg") as PIXI.Sprite,
-        this.getChildByName("bg") as PIXI.TilingSprite
+        this.getChildByName("bg") as PIXI.TilingSprite,
       );
     }
     Controls.mouseInput = true;
@@ -217,7 +217,7 @@ export class Controls {
   static updateCursorPosition(
     event: PixiEvent,
     foreground: PIXI.Sprite,
-    background: PIXI.TilingSprite
+    background: PIXI.TilingSprite,
   ) {
     const width = background.texture.width;
     const position = event.data.getLocalPosition(foreground);
@@ -229,7 +229,7 @@ export class Controls {
   static setLoadedChunksAround(x: number, y: number, width: number) {
     const windowChunkWidth = Math.ceil(window.innerWidth / width / CHUNK_SIZE);
     const windowChunkHeight = Math.ceil(
-      window.innerHeight / width / CHUNK_SIZE
+      window.innerHeight / width / CHUNK_SIZE,
     );
     for (let i = x - 1; i < x + windowChunkWidth; i++) {
       for (let j = y - 1; j < y + windowChunkHeight; j++) {
@@ -249,10 +249,10 @@ export class Controls {
     const cell = Controls.field.getCell(x, y);
     const neighbors = Controls.field.getNeighbors(x, y);
     const flaggedNeighbors = neighbors.filter(
-      (cell) => cell.isFlagged || (cell.isOpen && cell.isMine)
+      (cell) => cell.isFlagged || (cell.isOpen && cell.isMine),
     );
     const closedNotFlaggedNeighbors = neighbors.filter(
-      (cell) => !cell.isOpen && !cell.isFlagged
+      (cell) => !cell.isOpen && !cell.isFlagged,
     );
 
     if (Controls.fieldStorage === undefined)
@@ -280,10 +280,10 @@ export class Controls {
     const cell = Controls.field.getCell(x, y);
     const neighbors = Controls.field.getNeighbors(x, y);
     const closedNeighbors = neighbors.filter(
-      (cell) => !cell.isOpen || (cell.isOpen && cell.isMine)
+      (cell) => !cell.isOpen || (cell.isOpen && cell.isMine),
     );
     const closedNotFlaggedNeighbors = neighbors.filter(
-      (cell) => !cell.isOpen && !cell.isFlagged
+      (cell) => !cell.isOpen && !cell.isFlagged,
     );
 
     if (Controls.fieldStorage === undefined)
@@ -315,7 +315,7 @@ export class Controls {
 
     (Controls.cursor.parent.getChildByName("fg") as PIXI.Sprite).position.set(
       newPixelPositionX,
-      newPixelPositionY
+      newPixelPositionY,
     );
     (
       Controls.cursor.parent.getChildByName("bg") as PIXI.TilingSprite
@@ -324,7 +324,7 @@ export class Controls {
     Controls.setLoadedChunksAround(
       Math.floor(newx / CHUNK_SIZE),
       Math.floor(newy / CHUNK_SIZE),
-      width
+      width,
     );
 
     // didnt work as expected

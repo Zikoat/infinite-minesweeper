@@ -26,7 +26,7 @@ if (localStorage.getItem(fieldName)) {
   console.log(
     `loading previous field with ${
       field.getAll().filter((cell) => cell.isOpen).length
-    } fields opened`
+    } fields opened`,
   );
 } else {
   field = new Field(probability, 3, fieldName);
@@ -39,7 +39,7 @@ console.log(field);
 new FieldRenderer(field, updateScore, fieldStorage);
 
 const button: HTMLImageElement = document.getElementById(
-  "menubutton"
+  "menubutton",
 ) as HTMLImageElement;
 button.src = menubutton;
 
