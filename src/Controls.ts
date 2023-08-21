@@ -8,6 +8,12 @@ import { scale } from "./CellSprite";
 const DRAG_THRESHOLD = 5;
 const LONG_PRESS_DURATION = 200; // Duration in milliseconds to consider it a long press
 
+type PixiEvent = {
+  data: {
+    getLocalPosition: (arg0: PIXI.Container<PIXI.DisplayObject>) => PIXI.Point;
+  };
+};
+
 export class Controls {
   static cursor: Cursor;
   static field: Field;
@@ -105,8 +111,8 @@ export class Controls {
   }
 
   static removeUIEventBubbling() {
-    let uiElements = document.getElementsByClassName("ui");
-    for (let element of uiElements) {
+    const uiElements = document.getElementsByClassName("ui");
+    for (const element of uiElements) {
       element.addEventListener(
         "click",
         (event) => {
@@ -122,26 +128,27 @@ export class Controls {
     document.addEventListener("contextmenu", (event) => event.preventDefault());
   }
 
-  static _onDragStart(event: unknown) {
+  static _onDragStart(this: PIXI.Container, event: PixiEvent) {
+    console.log(this);
     const foreground = this.getChildByName("fg") as PIXI.Sprite;
     const background = this.getChildByName("bg") as PIXI.TilingSprite;
 
-    this.dragging = true;
-    this.hasDragged = false;
+    Controls.dragging = true;
+    Controls.hasDragged = false;
 
-    this.dragPoint = event.data.getLocalPosition(foreground);
-    this.startPosition = {
+    Controls.dragPoint = event.data.getLocalPosition(foreground);
+    Controls.startPosition = {
       x: foreground.position.x,
       y: foreground.position.y,
     };
 
     Controls.updateCursorPosition(event, foreground, background);
 
-    this.hasLongPressed = false;
+    Controls.hasLongPressed = false;
 
     Controls.longPressTimer = setTimeout(() => {
-      this.dragging = false;
-      this.hasLongPressed = true;
+      Controls.dragging = false;
+      Controls.hasLongPressed = true;
 
       const x = Controls.cursor.getX();
       const y = Controls.cursor.getY();
@@ -162,26 +169,26 @@ export class Controls {
       this.longPressTimer = null;
     }
   }
-  static _onDragMove(event: unknown) {
+  static _onDragMove(this: PIXI.Container, event: PixiEvent) {
     const width = (this.getChildByName("bg") as PIXI.TilingSprite).texture
       .width;
 
-    if (this.dragging) {
+    if (Controls.dragging) {
       const newPosition = event.data.getLocalPosition(this.parent);
-      const dx = newPosition.x - this.dragPoint.x;
-      const dy = newPosition.y - this.dragPoint.y;
+      const dx = newPosition.x - Controls.dragPoint.x;
+      const dy = newPosition.y - Controls.dragPoint.y;
 
       if (
         Math.sqrt(dx * dx + dy * dy) > DRAG_THRESHOLD &&
         Controls.longPressTimer
       ) {
-        this.hasDragged = true;
+        Controls.hasDragged = true;
         clearTimeout(Controls.longPressTimer);
-        this.longPressTimer = null;
+        Controls.longPressTimer = null;
       }
 
-      let x = Math.floor(newPosition.x - this.dragPoint.x);
-      let y = Math.floor(newPosition.y - this.dragPoint.y);
+      const x = Math.floor(newPosition.x - Controls.dragPoint.x);
+      const y = Math.floor(newPosition.y - Controls.dragPoint.y);
 
       const foreground = this.getChildByName("fg") as PIXI.Sprite;
       const background = this.getChildByName("bg") as PIXI.TilingSprite;
@@ -195,32 +202,35 @@ export class Controls {
         width
       );
     }
-    if (this.mouseInput) {
+    if (Controls.mouseInput) {
       Controls.updateCursorPosition(
         event,
         this.getChildByName("fg") as PIXI.Sprite,
         this.getChildByName("bg") as PIXI.TilingSprite
       );
     }
-    this.mouseInput = true;
-    document.getElementsByTagName("BODY")[0].style.cursor = "default";
+    Controls.mouseInput = true;
+    (document.getElementsByTagName("BODY")[0] as HTMLElement).style.cursor =
+      "default";
   }
 
   static updateCursorPosition(
-    event: any,
+    event: PixiEvent,
     foreground: PIXI.Sprite,
     background: PIXI.TilingSprite
   ) {
     const width = background.texture.width;
-    let position = event.data.getLocalPosition(foreground);
-    let x = Math.floor(position.x / width / scale);
-    let y = Math.floor(position.y / width / scale);
+    const position = event.data.getLocalPosition(foreground);
+    const x = Math.floor(position.x / width / scale);
+    const y = Math.floor(position.y / width / scale);
     Controls.cursor.moveTo(x, y);
   }
 
   static setLoadedChunksAround(x: number, y: number, width: number) {
-    let windowChunkWidth = Math.ceil(window.innerWidth / width / CHUNK_SIZE);
-    let windowChunkHeight = Math.ceil(window.innerHeight / width / CHUNK_SIZE);
+    const windowChunkWidth = Math.ceil(window.innerWidth / width / CHUNK_SIZE);
+    const windowChunkHeight = Math.ceil(
+      window.innerHeight / width / CHUNK_SIZE
+    );
     for (let i = x - 1; i < x + windowChunkWidth; i++) {
       for (let j = y - 1; j < y + windowChunkHeight; j++) {
         Controls.field.setVisibleChunk(i, j);
@@ -229,7 +239,7 @@ export class Controls {
     Controls.field.loadVisibleChunks();
   }
 
-  static _onRightClick(event) {
+  static _onRightClick(_event: unknown) {
     Controls.flag();
   }
 

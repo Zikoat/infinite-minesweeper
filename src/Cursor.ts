@@ -26,9 +26,9 @@ export default class Cursor extends PIXI.Sprite {
       return;
     }
 
-    this.pointX = x ;
-    this.pointY = y ;
-    let pos = this.parent.getChildByName("fg").getGlobalPosition();
+    this.pointX = x;
+    this.pointY = y;
+    const pos = this.parent.getChildByName("fg").getGlobalPosition();
 
     // let pos = new PIXI.Point(0, 0);
 

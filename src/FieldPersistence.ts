@@ -5,10 +5,9 @@ import { Chunk, CHUNK_SIZE } from "./Chunk";
 import { plainToInstance } from "class-transformer";
 import { SimpleCellData } from "./CellData";
 import { SimpleNumberStorage } from "./SimpleNumberStorage";
-import { LocalStorage } from "node-localstorage";
 
 export class FieldPersistence {
-  constructor(public localStorage: LocalStorage) {}
+  constructor(public localStorage: Storage) {}
 
   save(field: Field, id: string) {
     const compressedField = this.compress(field);
@@ -37,25 +36,25 @@ export class FieldPersistence {
     return stringifiedField;
   }
 
-  saveChunk(chunk: Chunk, id: any) {
+  saveChunk(chunk: Chunk, id: string) {
     this.localStorage.setItem(
       id + chunk.x + ";" + chunk.y,
       JSON.stringify(chunk)
     );
   }
   loadChunk(id: string, x: number, y: number): Chunk | undefined {
-    var chunk = new Chunk(x, y);
+    const chunk = new Chunk(x, y);
     const chunkFromLocalStorage = this.localStorage.getItem(
       id + chunk.x + ";" + chunk.y
     );
     if (chunkFromLocalStorage) {
-      var data = JSON.parse(chunkFromLocalStorage);
+      const data = JSON.parse(chunkFromLocalStorage);
 
       for (let i = 0; i < CHUNK_SIZE; i++) {
         for (let j = 0; j < CHUNK_SIZE; j++) {
-          let cell = new Cell(x * CHUNK_SIZE + i, y * CHUNK_SIZE + j);
+          const cell = new Cell(x * CHUNK_SIZE + i, y * CHUNK_SIZE + j);
 
-          let cellPointer = (i * CHUNK_SIZE + j) * 3;
+          const cellPointer = (i * CHUNK_SIZE + j) * 3;
           cell.isOpen = data.charAt(cellPointer) == true;
           const isMine = data.charAt(cellPointer + 1);
           cell.isMine =
@@ -69,8 +68,8 @@ export class FieldPersistence {
     return undefined;
   }
   decompress(compressedField: string) {
-    let recoveredField = JSON.parse(compressedField);
-    let field = plainToInstance(Field, recoveredField as Field);
+    const recoveredField = JSON.parse(compressedField);
+    const field = plainToInstance(Field, recoveredField as Field);
     field.cellData = plainToInstance(SimpleCellData, recoveredField.cellData);
     field.cellData.numberStorage = plainToInstance(
       SimpleNumberStorage,
@@ -79,10 +78,7 @@ export class FieldPersistence {
     // field.fieldStorage = new FieldPersistence(this.localStorage);
     return field;
   }
-  logStats(
-    field: { getAll: () => { (): any; new (): any; length: any } },
-    string: string
-  ) {
+  logStats(field: Field, string: string) {
     const cellsCount = field.getAll().length;
     const compressedByteCount = unescape(encodeURI(string)).length;
     const ratio = compressedByteCount / cellsCount;
@@ -95,14 +91,16 @@ export class FieldPersistence {
   }
 
   getLocalStorageSize() {
-    var _lsTotal = 0,
+    let _lsTotal = 0,
       _xLen,
       _x;
+
+    // todo: loop through for i this.localStorage.key(i), until undefined, instead of using in which is internal.
     for (_x in this.localStorage) {
-      if (!this.localStorage.hasOwnProperty(_x)) {
+      if (!Object.prototype.hasOwnProperty.call(this.localStorage, _x)) {
         continue;
       }
-      _xLen = (this.localStorage[_x].length + _x.length) * 2;
+      _xLen = (this.localStorage.getItem(_x)?.length ?? 0 + _x.length) * 2;
       _lsTotal += _xLen;
       // console.log(_x.substr(0, 50) + " = " + (_xLen / 1024).toFixed(2) + " KB");
     }

@@ -55,7 +55,7 @@ export class SimpleCellData implements CellData {
   compress(): string {
     throw new Error("Method not implemented.");
   }
-  decompress(compressed: string): CellData {
+  decompress(_compressed: string): CellData {
     throw new Error("Method not implemented.");
   }
 }

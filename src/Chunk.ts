@@ -1,6 +1,5 @@
 import { Cell } from "./Cell";
 
-
 export const CHUNK_SIZE = 32;
 export class Chunk {
   x: number;
@@ -28,8 +27,8 @@ export class Chunk {
   }
 
   getAll() {
-    let ans = [];
-    var i, j;
+    const ans = [];
+    let i, j;
     for (i in this.cells) {
       for (j in this.cells[i]) {
         ans.push(this.cells[i][j]);

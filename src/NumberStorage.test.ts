@@ -52,7 +52,11 @@ class COO implements CompressibleNumberStorage {
 
 describe.each([{ storage: SimpleNumberStorage }, { storage: COO }])(
   "$storage",
-  ({ storage: storageConstructor }: { storage: { new (): NumberStorage } }) => {
+  ({
+    storage: storageConstructor,
+  }: {
+    storage: { new (): CompressibleNumberStorage };
+  }) => {
     it("should get a setted value", () => {
       const storage = new storageConstructor();
       storage.set(0, 0, 1);
@@ -75,7 +79,7 @@ describe.each([{ storage: SimpleNumberStorage }, { storage: COO }])(
     });
 
     it("should return the same after stringification", () => {
-      let storage = new storageConstructor();
+      const storage = new storageConstructor();
       storage.set(0, 0, 1);
       storage.set(0, 1, 0);
       storage.set(1, 1, 1);
@@ -134,7 +138,7 @@ describe.each([{ storage: SimpleNumberStorage }, { storage: COO }])(
   }
 );
 
-type Model = {};
+type Model = object;
 
 class SetCommand<T extends NumberStorage> implements fc.Command<Model, T> {
   constructor(
@@ -162,7 +166,7 @@ class GetCommand<T extends NumberStorage> implements fc.Command<Model, T> {
   run(m: SimpleNumberStorage, r: T): void {
     const outputValue = r.get(this.x, this.y);
     if (outputValue !== null) {
-      assert.type(outputValue, "number");
+      assert(typeof outputValue === "number");
     }
     const modelOutputValue = m.get(this.x, this.y);
     assert.equal(outputValue, modelOutputValue);
@@ -175,7 +179,7 @@ class StringifyCommand implements fc.Command<Model, CompressibleNumberStorage> {
 
   check = () => true;
 
-  run(m: SimpleNumberStorage, r: CompressibleNumberStorage): void {
+  run(_m: SimpleNumberStorage, r: CompressibleNumberStorage): void {
     const afterCompression = r.decompress(r.compress());
 
     assert.equal(typeof r, typeof afterCompression, "typeof check");

@@ -11,6 +11,7 @@ import { Type } from "class-transformer";
 
 import "reflect-metadata";
 import { CellSprite } from "./CellSprite";
+import { Layout } from "./Layouts";
 const EventEmitter = PIXI.utils.EventEmitter;
 
 export type ChunkedField = Record<number, Record<number, Chunk>>;
@@ -21,13 +22,12 @@ export class Field extends EventEmitter {
   public safeRadius: number;
   public pristine: boolean;
   public gameOver: boolean;
-  public neighborPosition: any;
+  public neighborPosition: Layout;
   public score: number;
-  public visibleChunks: any;
+  public visibleChunks: { x: number; y: number }[];
 
   public fieldName: string;
   private rng: seedrandom.PRNG;
-  private seed?: string;
 
   @Type(() => SimpleCellData)
   public cellData = new SimpleCellData();
@@ -55,7 +55,6 @@ export class Field extends EventEmitter {
     this.visibleChunks = [];
     this.fieldName = fieldName;
     this.rng = seedrandom(seed);
-    this.seed = seed;
 
     // todo someday:
     // be able to change the options through an object
@@ -90,7 +89,7 @@ export class Field extends EventEmitter {
     this.setCell(x, y, { isOpen: true });
     cell = this.getCell(x, y);
 
-    let openedCells = [];
+    const openedCells = [];
     openedCells.push(cell);
 
     if (cell.isMine) {
@@ -102,8 +101,8 @@ export class Field extends EventEmitter {
 
     if (this.score > 1000) throw Error("probably a recursive loop");
     // generating of neighbors. we generate the cells when a neighbor is opened
-    let neighbors = this.getNeighbors(cell.x, cell.y);
-    for (var i = 0; i < neighbors.length; i++) {
+    const neighbors = this.getNeighbors(cell.x, cell.y);
+    for (let i = 0; i < neighbors.length; i++) {
       const neighbor = neighbors[i];
       if (neighbor.isMine === undefined) {
         neighbor.isMine = this.rng() < this.probability;
@@ -130,7 +129,7 @@ export class Field extends EventEmitter {
   }
 
   flag(x: number, y: number): Cell | null {
-    let cell = this.getCell(x, y);
+    const cell = this.getCell(x, y);
     if (!cell.isOpen) {
       cell.isFlagged = !cell.isFlagged;
       this.setCell(x, y, cell);
@@ -139,11 +138,11 @@ export class Field extends EventEmitter {
     }
     return null;
   }
-  getNeighbors(x: any, y: any) {
-    let neighbors = [];
-    for (var i = 0; i <= this.neighborPosition.length - 1; i++) {
-      let newX = x + this.neighborPosition[i][0];
-      let newY = y + this.neighborPosition[i][1];
+  getNeighbors(x: number, y: number) {
+    const neighbors = [];
+    for (let i = 0; i <= this.neighborPosition.length - 1; i++) {
+      const newX = x + this.neighborPosition[i][0];
+      const newY = y + this.neighborPosition[i][1];
       neighbors.push(this.getCell(newX, newY));
     }
     return neighbors;
@@ -200,7 +199,7 @@ export class Field extends EventEmitter {
 
   value(x: number, y: number): number | null {
     // returns the amount of surrounding mines
-    let cell = this.getCell(x, y);
+    const cell = this.getCell(x, y);
     // it does not make sense to request the value of a closed cell
     if (cell.isOpen === false) return null;
     else return this.getNeighbors(x, y).filter((cell) => cell.isMine).length;
@@ -208,8 +207,8 @@ export class Field extends EventEmitter {
 
   checkForErrors() {
     // debugging
-    let cells = this.getAll();
-    let openedCells = cells.filter((cell) => cell.isOpen);
+    const cells = this.getAll();
+    const openedCells = cells.filter((cell) => cell.isOpen);
 
     if (openedCells.some((cell) => cell.isFlagged))
       console.error(
@@ -217,7 +216,7 @@ export class Field extends EventEmitter {
         openedCells.filter((cell) => cell.isFlagged)
       );
 
-    let undefinedCells = cells.filter((cell) => cell.isMine === undefined);
+    const undefinedCells = cells.filter((cell) => cell.isMine === undefined);
     if (undefinedCells.length > 0)
       console.error("undefined cells", undefinedCells);
   }
@@ -225,26 +224,28 @@ export class Field extends EventEmitter {
   isEligibleToOpen(x: number, y: number) {
     // returns a bool, whether this cell can be opened
     //if(this.gameOver) return false;
-    let cell = this.getCell(x, y);
+    const cell = this.getCell(x, y);
     if (cell.isFlagged) return false;
     if (cell.isOpen) return false;
     return true;
   }
 
-  setVisibleChunk(x: any, y: any) {
+  setVisibleChunk(x: number, y: number) {
     this.visibleChunks.push({ x: x, y: y });
   }
 
   loadVisibleChunks() {
-    for (let x in this.fieldData) {
-      for (let y in this.fieldData[x]) {
+    for (const xString in this.fieldData) {
+      const x = Number(xString);
+      for (const yString in this.fieldData[x]) {
+        const y = Number(yString);
         let remove = true;
         for (let i = 0; i < this.visibleChunks.length; i++) {
-          if (this.visibleChunks[i].x == x && this.visibleChunks[i].y == y)
+          if (this.visibleChunks[i].x === x && this.visibleChunks[i].y === y)
             remove = false;
         }
         if (remove) {
-          this.unloadChunk(parseInt(x), parseInt(y));
+          this.unloadChunk(x, y);
         }
       }
     }
@@ -257,14 +258,14 @@ export class Field extends EventEmitter {
   setSafeCells(x0: number, y0: number) {
     // initiate the field with a circle of cells that aren't mines
     this.pristine = false;
-    let r = this.safeRadius;
+    const r = this.safeRadius;
 
     for (let dy = Math.floor(-r); dy < Math.ceil(r); dy++) {
       for (let dx = Math.floor(-r); dx < Math.ceil(r); dx++) {
         // if the cell is in a circle with radius r
         if (r ** 2 > dx ** 2 + dy ** 2) {
-          let x = x0 + dx;
-          let y = y0 + dy;
+          const x = x0 + dx;
+          const y = y0 + dy;
           // we generate the cell, and overwrite the isMine state
           this.setCell(x, y, { isFlagged: false, isMine: false });
           // this.generateCell(x, y, false, false);

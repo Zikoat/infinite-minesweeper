@@ -36,7 +36,7 @@ export class FieldRenderer extends PIXI.Application {
   }
 }
 
-var app = new PIXI.Application({
+const app = new PIXI.Application({
   resizeTo: window,
   backgroundColor: 0x1099bb,
 });
@@ -45,8 +45,8 @@ document.body.appendChild(app.view);
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
-var fieldContainer = new PIXI.Container();
-var clickHandler = new PIXI.Container();
+const fieldContainer = new PIXI.Container();
+const clickHandler = new PIXI.Container();
 clickHandler.interactive = true;
 app.stage.addChild(clickHandler);
 
@@ -79,7 +79,7 @@ function setup(
   );
   background.tileScale = { x: scale, y: scale };
 
-  window.addEventListener("resize", function (event) {
+  window.addEventListener("resize", function (_event) {
     function resize(width: number, height: number) {
       app.renderer.resize(width, height);
       background.width = app.renderer.width;
@@ -89,7 +89,7 @@ function setup(
     resize(window.innerWidth, window.innerHeight);
   });
 
-  const width = tex.closed.width;
+  const width = tex.closed?.width;
 
   background.tint = 0xffffff;
 
@@ -109,10 +109,10 @@ function setup(
 
   function centerField(x = 0, y = 0) {
     // x and y are tile coordinates
-    let centerX = app.renderer.width / 2;
-    let centerY = app.renderer.height / 2;
-    let newX = Math.floor(-x * width + centerX);
-    let newY = Math.floor(-y * width + centerY);
+    const centerX = app.renderer.width / 2;
+    const centerY = app.renderer.height / 2;
+    const newX = Math.floor(-x * width + centerX);
+    const newY = Math.floor(-y * width + centerY);
     // newX and newY are pixel-coordinates
     fieldContainer.position.set(newX, newY);
     background.tilePosition.set(newX, newY);

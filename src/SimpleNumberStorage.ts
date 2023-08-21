@@ -22,7 +22,7 @@ export class SimpleNumberStorage implements NumberStorage {
     instance.data = JSON.parse(input);
     return instance;
   }
-  
+
   getAll(): { x: number; y: number; value: number }[] {
     const output: { x: number; y: number; value: number }[] = [];
     for (const x in this.data) {

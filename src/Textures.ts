@@ -20,6 +20,7 @@ import five from "./assets/default/5.png";
 import six from "./assets/default/6.png";
 import seven from "./assets/default/7.png";
 import eight from "./assets/default/8.png";
+import assert from "assert";
 
 export let textures: MinesTextures;
 export type MinesTextures = {
@@ -43,8 +44,8 @@ export let width = 2;
 
 type SingleTexture = PIXI.Texture<PIXI.Resource>;
 
-function processTextures(): Promise<PIXI.utils.Dict<PIXI.LoaderResource>> {
-  return new Promise((resolve, reject) => {
+async function processTextures() {
+  return new Promise<PIXI.utils.Dict<PIXI.LoaderResource>>((resolve) => {
     const loader = PIXI.Loader.shared;
     loader
       .add("closed", closed)
@@ -62,7 +63,7 @@ function processTextures(): Promise<PIXI.utils.Dict<PIXI.LoaderResource>> {
       .add("7", seven)
       .add("8", eight)
 
-      .load((loader, resources) => {
+      .load((_loader, resources) => {
         resolve(resources);
       });
   });
@@ -72,27 +73,41 @@ let loadingPromise: MinesTextures;
 
 export async function load() {
   // if the loading has already started, return the same promise
-  if (!loadingPromise) {
+  if (loadingPromise) {
     const resources = await processTextures();
-    // extract the textures out from the resources we loaded
+    assert(resources.mine.texture);
+    assert(resources.closed.texture);
+    assert(resources.flag.texture);
+    assert(resources.mineWrong.texture);
+    assert(resources.open.texture);
+    assert(resources.cursor.texture);
+    assert(resources[1].texture);
+    assert(resources[2].texture);
+    assert(resources[3].texture);
+    assert(resources[4].texture);
+    assert(resources[5].texture);
+    assert(resources[6].texture);
+    assert(resources[7].texture);
+    assert(resources[8].texture);
+
     textures = {
-      mine: resources!.mine!.texture,
-      closed: resources!.closed!.texture,
-      flag: resources!.flag!.texture,
-      mineWrong: resources!.mineWrong!.texture,
-      open: resources!.open!.texture,
-      cursor: resources!.cursor!.texture,
-      1: resources![1]!.texture,
-      2: resources![2]!.texture,
-      3: resources![3]!.texture,
-      4: resources![4]!.texture,
-      5: resources![5]!.texture,
-      6: resources![6]!.texture,
-      7: resources![7]!.texture,
-      8: resources![8]!.texture,
+      mine: resources.mine.texture,
+      closed: resources.closed.texture,
+      flag: resources.flag.texture,
+      mineWrong: resources.mineWrong.texture,
+      open: resources.open.texture,
+      cursor: resources.cursor.texture,
+      1: resources[1].texture,
+      2: resources[2].texture,
+      3: resources[3].texture,
+      4: resources[4].texture,
+      5: resources[5].texture,
+      6: resources[6].texture,
+      7: resources[7].texture,
+      8: resources[8].texture,
     };
 
-    width = textures!.closed!.width;
+    width = textures.closed.width;
     return textures;
   }
 

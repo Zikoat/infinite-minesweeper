@@ -1,10 +1,13 @@
 import { TweenMax } from "gsap";
 import * as PIXI from "pixi.js";
 import { Cell } from "./Cell";
-import { LoaderResource } from "pixi.js";
+
+import assert from "assert";
 
 export const scale = 3;
 const cellWidth = 16 * scale;
+
+type MyTexture = PIXI.Texture<PIXI.Resource>;
 
 export class CellSprite extends PIXI.Container {
   private value: number | null;
@@ -12,9 +15,9 @@ export class CellSprite extends PIXI.Container {
   constructor(cell: Cell, value: number | null) {
     super();
     this.value = value;
-    let cellTexture = this.getCellTexture(cell);
-    let back = new PIXI.Sprite(cellTexture.back.texture);
-    let front = new PIXI.Sprite(cellTexture.front.texture);
+    const cellTexture = this.getCellTexture(cell);
+    const back = new PIXI.Sprite(cellTexture.back);
+    const front = new PIXI.Sprite(cellTexture.front);
     back.width = cellWidth;
     back.height = cellWidth;
     front.width = cellWidth;
@@ -30,10 +33,10 @@ export class CellSprite extends PIXI.Container {
   }
 
   update(cell: Cell) {
-    let back = this.getChildAt(0) as PIXI.Sprite;
-    let front = this.getChildAt(1) as PIXI.TilingSprite;
+    const back = this.getChildAt(0) as PIXI.Sprite;
+    const front = this.getChildAt(1) as PIXI.TilingSprite;
 
-    let cellTexture = this.getCellTexture(cell);
+    const cellTexture = this.getCellTexture(cell);
     back.texture = cellTexture.back;
     front.texture = cellTexture.front;
 
@@ -41,8 +44,8 @@ export class CellSprite extends PIXI.Container {
   }
 
   playUpdateAnimation() {
-    let front = this.getChildByName("fg") as PIXI.Sprite;
-    let back = this.getChildByName("bg") as PIXI.TilingSprite;
+    const front = this.getChildByName("fg") as PIXI.Sprite;
+    const back = this.getChildByName("bg") as PIXI.TilingSprite;
     console.log();
     TweenMax.from(front.scale, 0.2, { x: 0, y: 0 });
     TweenMax.from(front, 0.2, {
@@ -52,25 +55,30 @@ export class CellSprite extends PIXI.Container {
     TweenMax.from(back, 0.2, { alpha: 0 });
   }
 
-  getCellTexture(cell: Cell): { back: LoaderResource; front: LoaderResource } {
+  getCellTexture(cell: Cell): {
+    back: MyTexture;
+    front: MyTexture;
+  } {
     const textures = PIXI.Loader.shared.resources;
 
-    let back: LoaderResource | undefined = undefined;
-    let front: LoaderResource | undefined = undefined;
+    let back;
+    let front;
 
     if (cell.isOpen) {
-      back = textures.open;
-      if (cell.isMine) front = textures.mineWrong;
+      back = textures.open.texture;
+      if (cell.isMine) front = textures.mineWrong.texture;
       else if (this.value !== null && this.value > 0)
-        front = textures[this.value];
-      else front = textures.open;
+        front = textures[this.value].texture;
+      else front = textures.open.texture;
     } else {
-      back = textures.closed;
-      front = cell.isFlagged
-        ? textures.flag
-        : (PIXI.Texture.EMPTY as LoaderResource);
+      back = textures.closed.texture;
+      front = cell.isFlagged ? textures.flag.texture : PIXI.Texture.EMPTY;
     }
-    let texture: { back: LoaderResource; front: LoaderResource } = {
+
+    assert(front);
+    assert(back);
+
+    const texture: { back: MyTexture; front: MyTexture } = {
       back,
       front,
     };

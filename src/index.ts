@@ -4,7 +4,7 @@ import { FieldPersistence } from "./FieldPersistence";
 import "./css/stylesheet.css";
 import menubutton from "./assets/default/menubutton.png";
 
-var fieldName = (window.fieldName = "defaultSavedFieldv3");
+const fieldName = (window.fieldName = "defaultSavedFieldv3");
 const localStorage = window.localStorage;
 const fieldStorage = (window.FieldStorage = new FieldPersistence(localStorage));
 
@@ -15,9 +15,9 @@ function updateScore(localField: Field) {
   scoreElement.innerHTML = localField.score.toString();
 }
 
-var field: Field;
+let field: Field;
 
-const probability = 0.20
+const probability = 0.2;
 
 field = new Field(probability, 3, fieldName);
 
@@ -38,14 +38,15 @@ console.log(field);
 
 new FieldRenderer(field, updateScore, fieldStorage);
 
-let button: HTMLImageElement = document.getElementById(
+const button: HTMLImageElement = document.getElementById(
   "menubutton"
 ) as HTMLImageElement;
 button.src = menubutton;
 
 self.toggleMenu = function () {
-  let menu = document.getElementById("menu");
-  if(menu === null) throw new Error("Tried to toggle menu, but element is null")
+  const menu = document.getElementById("menu");
+  if (menu === null)
+    throw new Error("Tried to toggle menu, but element is null");
   menu.style.display = menu.style.display == "none" ? "block" : "none";
 };
 
