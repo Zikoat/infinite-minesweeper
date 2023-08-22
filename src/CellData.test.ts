@@ -3,7 +3,7 @@ import { test, expect } from "vitest";
 import { Cell } from "./Cell";
 import { SimpleCellData } from "./CellData";
 import { assertCellsAreSame } from "./assertCellsAreSame";
-import assert from "assert";
+import { assert } from "./assert";
 
 test("SimpleCellData should be able to store all type of cells", () => {
   const cell = new Cell(1, 1);

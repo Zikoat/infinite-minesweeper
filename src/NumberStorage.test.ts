@@ -1,8 +1,8 @@
 import * as fc from "fast-check";
-
 import { SimpleNumberStorage } from "./SimpleNumberStorage";
 import { describe, expect, it } from "vitest";
-import assert from "assert";
+import { assert } from "./assert";
+
 abstract class CompressibleNumberStorage implements NumberStorage {
   abstract get(x: number, y: number): number | null;
   abstract set(x: number, y: number, value: number | null): void;
@@ -89,9 +89,9 @@ describe.each([{ storage: SimpleNumberStorage }, { storage: COO }])(
       assert(typeof stringifiedStorage === "string");
       const newStorage = storage.decompress(stringifiedStorage);
 
-      assert.equal(newStorage.get(0, 0), 1);
-      assert.equal(newStorage.get(0, 1), 0);
-      assert.equal(newStorage.get(0, 2), null);
+      assert(newStorage.get(0, 0) === 1);
+      assert(newStorage.get(0, 1) === 0);
+      assert(newStorage.get(0, 2) === null);
       // assert.equal(newStorage.get(1, 1), null);
     });
 
@@ -172,7 +172,7 @@ class GetCommand<T extends NumberStorage> implements fc.Command<Model, T> {
       assert(typeof outputValue === "number");
     }
     const modelOutputValue = m.get(this.x, this.y);
-    assert.equal(outputValue, modelOutputValue);
+    assert(outputValue === modelOutputValue);
   }
 
   toString = () => `get(${this.x},${this.y})`;
@@ -185,10 +185,9 @@ class StringifyCommand implements fc.Command<Model, CompressibleNumberStorage> {
   run(_m: SimpleNumberStorage, r: CompressibleNumberStorage): void {
     const afterCompression = r.decompress(r.compress());
 
-    assert.equal(typeof r, typeof afterCompression, "typeof check");
-    assert.equal(
-      r.constructor.name,
-      afterCompression.constructor.name,
+    assert(typeof r === typeof afterCompression, "typeof check");
+    assert(
+      r.constructor.name === afterCompression.constructor.name,
       "constructor name check",
     );
 

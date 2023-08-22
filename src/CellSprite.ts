@@ -1,8 +1,7 @@
 import { TweenMax } from "gsap";
 import * as PIXI from "pixi.js";
 import { Cell } from "./Cell";
-
-import assert from "assert";
+import { assert } from "./assert";
 
 export const scale = 3;
 const cellWidth = 16 * scale;

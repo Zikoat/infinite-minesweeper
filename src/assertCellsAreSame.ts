@@ -1,5 +1,5 @@
-import assert from "assert";
 import { Cell } from "./Cell";
+import { assert } from "./assert";
 
 export function assertCellsAreSame(cellA: Cell, cellB: Cell): void {
   assert(cellA.isOpen === cellB.isOpen);

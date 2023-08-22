@@ -7,8 +7,8 @@ import { FieldPersistence } from "./FieldPersistence";
 import seedrandom from "seedrandom";
 import { Chunk } from "./Chunk";
 import { SimpleCellData } from "./CellData";
-import assert from "assert";
 import { assertCellsAreSame } from "./assertCellsAreSame";
+import { assert } from "./assert";
 
 test("Math.sqrt()", () => {
   assert(Math.sqrt(4) === 2);
@@ -222,13 +222,13 @@ describe("FieldStorage", () => {
       assert(cell.isFlagged === false);
       assert(cell.isMine === undefined);
       assert(cell.isOpen === false);
-      assert.ok(
+      assert(
         cell.x >= 0,
         JSON.stringify(cellToObject(cell)) + " does not have x>=0",
       );
-      assert.ok(cell.x < 32, cellToObject(cell) + " does not have x<32");
-      assert.ok(cell.y >= 0, cellToObject(cell) + " does not have y>=0");
-      assert.ok(cell.y < 32, cellToObject(cell) + " does not have y<32");
+      assert(cell.x < 32, cellToObject(cell) + " does not have x<32");
+      assert(cell.y >= 0, cellToObject(cell) + " does not have y>=0");
+      assert(cell.y < 32, cellToObject(cell) + " does not have y<32");
     }
   });
 
@@ -238,9 +238,9 @@ describe("FieldStorage", () => {
 
     const map = fieldViewToString(field1, -3, -3, 3, 3);
 
-    assert.equal(
-      map,
-      `.......
+    assert(
+      map ===
+        `.......
 .xxx...
 ..422x.
 .x202..
@@ -268,9 +268,9 @@ export function getAllKeys(localStorage: LocalStorage): string[] {
 }
 
 function fieldsAreEqual(field1: Field, field2: Field): void {
-  assert.equal(
-    fieldViewToString(field2, -3, -3, 3, 3),
-    `.......
+  assert(
+    fieldViewToString(field2, -3, -3, 3, 3) ===
+      `.......
 .xxx...
 ..422x.
 .x202..
@@ -279,9 +279,9 @@ function fieldsAreEqual(field1: Field, field2: Field): void {
 ......F
 `,
   );
-  assert.equal(
-    fieldViewToString(field1, -3, -3, 3, 3),
-    fieldViewToString(field2, -3, -3, 3, 3),
+  assert(
+    fieldViewToString(field1, -3, -3, 3, 3) ===
+      fieldViewToString(field2, -3, -3, 3, 3),
   );
 
   assert(field1.fieldName === field2.fieldName);
@@ -323,9 +323,9 @@ test("Chunk should be instantiated", () => {
   const chunkJsonStringified = JSON.stringify(chunk);
   assert(typeof chunkJsonFunction === "string");
   assert(typeof chunkJsonStringified === "string");
-  assert.equal(
-    chunkJsonFunction,
-    chunkJsonStringified.substring(1, chunkJsonStringified.length - 1),
+  assert(
+    chunkJsonFunction ===
+      chunkJsonStringified.substring(1, chunkJsonStringified.length - 1),
   );
   assert(chunk instanceof Chunk);
 });
@@ -334,7 +334,7 @@ test("Chunk should get cell", () => {
   const chunk = new Chunk(0, 0);
 
   const cell: Cell = chunk.getCell(0, 0);
-  assert.equal(cell.toJSON(), "020", "tojson cell");
+  assert(cell.toJSON() === "020", "tojson cell");
   assert(cell instanceof Cell, "is instance");
   expect(cellToObject(cell)).toStrictEqual({
     isFlagged: false,

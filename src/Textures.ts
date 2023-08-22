@@ -20,7 +20,7 @@ import five from "./assets/default/5.png";
 import six from "./assets/default/6.png";
 import seven from "./assets/default/7.png";
 import eight from "./assets/default/8.png";
-import assert from "assert";
+import { assert } from "./assert";
 
 export let textures: MinesTextures;
 export type MinesTextures = {
