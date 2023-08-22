@@ -69,11 +69,11 @@ async function processTextures() {
   });
 }
 
-let loadingPromise: MinesTextures;
+let loadingPromise: MinesTextures | undefined;
 
 export async function load() {
   // if the loading has already started, return the same promise
-  if (loadingPromise) {
+  if (!loadingPromise) {
     const resources = await processTextures();
     assert(resources.mine.texture);
     assert(resources.closed.texture);
