@@ -8,7 +8,7 @@ and join our [Discord][discord]
 
 ## Getting started with development
 
-If you need help with using installation or using the source, message me on the [Discord server][discord] or [send me a mail][mail]
+If you need help with using installation or using the source, create an issue with detail of your problems, and i will help you to get started!
 
 ### Prerequisites
 
