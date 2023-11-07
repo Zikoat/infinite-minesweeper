@@ -8,8 +8,6 @@ and join our [Discord][discord]
 
 ## Getting started with development
 
-If you need help with using installation or using the source, message me on the [Discord server][discord] or [send me a mail][mail]
-
 ### Prerequisites
 
 Install [nodejs](https://nodejs.org/en/)
