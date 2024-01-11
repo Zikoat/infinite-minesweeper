@@ -5,6 +5,7 @@ import { Chunk, CHUNK_SIZE } from "./Chunk";
 import { plainToInstance } from "class-transformer";
 import { SimpleCellData } from "./CellData";
 import { SimpleNumberStorage } from "./SimpleNumberStorage";
+import { as } from "vitest/dist/reporters-5f784f42";
 
 export class FieldPersistence {
   constructor(public localStorage: Storage) {}
@@ -17,13 +18,25 @@ export class FieldPersistence {
     // this.getLocalStorageSize();
     return;
   }
-  load(id: string): Field {
-    // returns a Field
+  load(id: string): Field | undefined {
     const compressedField = this.localStorage.getItem(id);
-    if (compressedField === null)
-      throw new Error(`Could not find field with id '${id}' in localStorage`);
-    const field = this.decompress(compressedField);
-    return field;
+    if (compressedField === null) return undefined;
+    const recoveredField = JSON.parse(compressedField);
+    if (
+      recoveredField &&
+      typeof recoveredField === "object" &&
+      "cellData" in recoveredField &&
+      recoveredField.cellData &&
+      typeof recoveredField.cellData === "object" &&
+      "numberStorage" in recoveredField.cellData
+    ) {
+      const field = this.decompress(
+        recoveredField as { cellData: { numberStorage: unknown } },
+      );
+      return field;
+    } else {
+      return undefined;
+    }
   }
 
   compress(field: Field) {
@@ -42,40 +55,13 @@ export class FieldPersistence {
       JSON.stringify(chunk),
     );
   }
-  loadChunk(id: string, x: number, y: number): Chunk | undefined {
-    const chunk = new Chunk(x, y);
-    const chunkFromLocalStorage = this.localStorage.getItem(
-      id + chunk.x + ";" + chunk.y,
-    );
-    if (chunkFromLocalStorage) {
-      const data = JSON.parse(chunkFromLocalStorage);
-
-      for (let i = 0; i < CHUNK_SIZE; i++) {
-        for (let j = 0; j < CHUNK_SIZE; j++) {
-          const cell = new Cell(x * CHUNK_SIZE + i, y * CHUNK_SIZE + j);
-
-          const cellPointer = (i * CHUNK_SIZE + j) * 3;
-          cell.isOpen = data.charAt(cellPointer) == true;
-          const isMine = data.charAt(cellPointer + 1);
-          cell.isMine =
-            isMine == "2" ? undefined : isMine == "1" ? true : false;
-          cell.isFlagged = data.charAt(cellPointer + 2) == true;
-          chunk.cells[i][j] = cell;
-        }
-      }
-      return chunk;
-    }
-    return undefined;
-  }
-  decompress(compressedField: string) {
-    const recoveredField = JSON.parse(compressedField);
+  decompress(recoveredField: { cellData: { numberStorage: unknown } }): Field {
     const field = plainToInstance(Field, recoveredField as Field);
     field.cellData = plainToInstance(SimpleCellData, recoveredField.cellData);
     field.cellData.numberStorage = plainToInstance(
       SimpleNumberStorage,
       recoveredField.cellData.numberStorage,
     );
-    // field.fieldStorage = new FieldPersistence(this.localStorage);
     return field;
   }
   logStats(field: Field, string: string) {

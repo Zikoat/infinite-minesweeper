@@ -1,0 +1,5 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`JSON: "{\"foo\":\"hello\",\"bar\":\"world\"}" 1`] = `"{"foo":"hello","bar":"world"}"`;
+
+exports[`JSON 1`] = `"{"foo":"hello","bar":"world"}"`;

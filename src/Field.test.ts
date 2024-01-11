@@ -24,9 +24,7 @@ test("JSON", () => {
 
   const output = JSON.stringify(input);
 
-  expect(output).toMatchInlineSnapshot(
-    '"{\\"foo\\":\\"hello\\",\\"bar\\":\\"world\\"}"',
-  );
+  expect(output).toMatchSnapshot();
   expect(JSON.parse(output)).toStrictEqual(input);
 });
 
@@ -137,6 +135,7 @@ describe("FieldStorage", () => {
     // );
 
     const cell1 = field1.getCell(0, 1);
+    if (!field2) throw Error("field2 is undefined");
     const cell2 = field2.getCell(0, 1);
 
     assert(cell1.isOpen === true, "cell1 open");
@@ -210,27 +209,6 @@ describe("FieldStorage", () => {
   //   const opened = field2.open(0, 0);
   //   assert(opened, true);
   // });
-
-  it("should be able to save and load a chunk", () => {
-    const chunk = new Chunk(0, 0);
-    fieldStorage.saveChunk(chunk, "test");
-    const loadedChunk = fieldStorage.loadChunk("test", 0, 0);
-    assert(loadedChunk);
-    assert(loadedChunk.getAll().length === 1024);
-
-    for (const cell of loadedChunk.getAll()) {
-      assert(cell.isFlagged === false);
-      assert(cell.isMine === undefined);
-      assert(cell.isOpen === false);
-      assert(
-        cell.x >= 0,
-        JSON.stringify(cellToObject(cell)) + " does not have x>=0",
-      );
-      assert(cell.x < 32, cellToObject(cell) + " does not have x<32");
-      assert(cell.y >= 0, cellToObject(cell) + " does not have y>=0");
-      assert(cell.y < 32, cellToObject(cell) + " does not have y<32");
-    }
-  });
 
   it("Field should draw a view", () => {
     const field1 = new Field(0.6, 2, "test1", "testSeed");
@@ -339,7 +317,6 @@ test("Chunk should get cell", () => {
   expect(cellToObject(cell)).toStrictEqual({
     isFlagged: false,
     isOpen: false,
-    parent: undefined,
     x: 0,
     y: 0,
     isMine: undefined,

@@ -15,23 +15,20 @@ function updateScore(localField: Field) {
   scoreElement.innerHTML = localField.score.toString();
 }
 
-let field: Field;
-
 const probability = 0.2;
 
-field = new Field(probability, 3, fieldName);
+let field: Field | undefined = fieldStorage.load(fieldName);
 
-if (localStorage.getItem(fieldName)) {
-  field = fieldStorage.load(fieldName);
+if (!field) {
+  field = new Field(probability, 3, fieldName);
+  field.open(1, 1);
+  fieldStorage.save(field, fieldName);
+} else {
   console.log(
     `loading previous field with ${
       field.getAll().filter((cell) => cell.isOpen).length
     } fields opened`,
   );
-} else {
-  field = new Field(probability, 3, fieldName);
-  field.open(1, 1);
-  fieldStorage.save(field, fieldName);
 }
 
 console.log(field);
