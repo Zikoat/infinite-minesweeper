@@ -45,7 +45,7 @@ export class Controls {
     Controls.addTouchControls(rootObject);
     Controls.addKeyboardControls();
     Controls.removeUIEventBubbling();
-    Controls.disableRightClick();
+    Controls.disableRightClickContextMenu();
   }
 
   static addMouseControls(rootObject: PIXI.Container) {
@@ -123,8 +123,7 @@ export class Controls {
     }
   }
 
-  static disableRightClick() {
-    // disable right click context menu
+  static disableRightClickContextMenu() {
     document.addEventListener("contextmenu", (event) => event.preventDefault());
   }
 
