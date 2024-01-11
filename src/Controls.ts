@@ -155,16 +155,16 @@ export class Controls {
     }, LONG_PRESS_DURATION);
   }
 
-  static _onDragEnd() {
-    this.dragging = false;
-    if (!this.hasDragged && !this.hasLongPressed) {
+  static _onDragEnd(this: Controls) {
+    Controls.dragging = false;
+    if (!Controls.hasDragged && !Controls.hasLongPressed) {
       Controls.open();
     }
-    this.hasLongPressed = false;
+    Controls.hasLongPressed = false;
 
     if (Controls.longPressTimer) {
       clearTimeout(Controls.longPressTimer);
-      this.longPressTimer = null;
+      Controls.longPressTimer = null;
     }
   }
   static _onDragMove(this: PIXI.Container, event: PixiEvent) {
