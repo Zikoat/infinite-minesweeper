@@ -153,7 +153,12 @@ export class Controls {
   }
 
   static _onDragEnd(event: PIXI.InteractionEvent) {
-    console.log("drag end", Controls.hasDragged, event);
+    console.log(
+      "drag end",
+      Controls.hasDragged,
+      Controls.hasLongPressed,
+      event,
+    );
     Controls.dragging = false;
     if (!Controls.hasDragged && !Controls.hasLongPressed) {
       Controls.open();
