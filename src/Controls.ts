@@ -159,6 +159,7 @@ export class Controls {
       Controls.open();
     }
     Controls.hasLongPressed = false;
+    Controls.hasDragged = false;
 
     if (Controls.longPressTimer) {
       clearTimeout(Controls.longPressTimer);
