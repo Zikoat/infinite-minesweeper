@@ -5,7 +5,7 @@ import * as PIXI from "pixi.js";
 import { FieldPersistence } from "./FieldPersistence";
 import { scale } from "./CellSprite";
 
-const DRAG_THRESHOLD = 20;
+const DRAG_THRESHOLD = 40;
 const LONG_PRESS_DURATION = 200; // Duration in milliseconds to consider it a long press
 
 type PixiEvent = {
@@ -63,9 +63,6 @@ export class Controls {
       .on("touchmove", Controls._onDragMove)
       .on("touchend", Controls._onDragEnd)
       .on("touchendoutside", Controls._onDragEnd);
-
-    // not decided how flagging works on mobile
-    // .on('rightclick', Controls._onRightClick);
   }
 
   static addKeyboardControls() {
@@ -155,7 +152,8 @@ export class Controls {
     }, LONG_PRESS_DURATION);
   }
 
-  static _onDragEnd() {
+  static _onDragEnd(event: PIXI.InteractionEvent) {
+    console.log("drag end", Controls.hasDragged, event);
     Controls.dragging = false;
     if (!Controls.hasDragged && !Controls.hasLongPressed) {
       Controls.open();
