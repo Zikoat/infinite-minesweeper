@@ -304,8 +304,8 @@ export class Controls {
   static moveViewTo(newx: number, newy: number) {
     const width = (Controls.cursor.parent.getChildByName("bg") as PIXI.Sprite)
       .texture.width;
-    const x = newx * width;
-    const y = newy * width;
+    const x = newx * width * scale;
+    const y = newy * width * scale;
     const newPixelPositionX =
       -x + Math.floor(window.innerWidth / width / 2) * width;
     const newPixelPositionY =
