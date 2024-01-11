@@ -20,17 +20,14 @@ export default class Cursor extends PIXI.Sprite {
   }
 
   moveTo(x: number, y: number) {
-    const foreground = this.parent?.getChildByName("fg")?.getGlobalPosition();
-    if (!foreground) {
+    const pos = this.parent?.getChildByName("fg")?.getGlobalPosition();
+    if (!pos) {
       console.warn("Tried to move cursor, but foreground is not defined");
       return;
     }
 
     this.pointX = x;
     this.pointY = y;
-    const pos = this.parent.getChildByName("fg").getGlobalPosition();
-
-    // let pos = new PIXI.Point(0, 0);
 
     const newX = pos.x + this.pointX * this.width;
     const newY = pos.y + this.pointY * this.width;
