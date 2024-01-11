@@ -5,7 +5,7 @@ import * as PIXI from "pixi.js";
 import { FieldPersistence } from "./FieldPersistence";
 import { scale } from "./CellSprite";
 
-const DRAG_THRESHOLD = 5;
+const DRAG_THRESHOLD = 20;
 const LONG_PRESS_DURATION = 200; // Duration in milliseconds to consider it a long press
 
 type PixiEvent = {
@@ -176,30 +176,32 @@ export class Controls {
       const dx = newPosition.x - Controls.dragPoint.x;
       const dy = newPosition.y - Controls.dragPoint.y;
 
-      if (
-        Math.sqrt(dx * dx + dy * dy) > DRAG_THRESHOLD &&
-        Controls.longPressTimer
-      ) {
+      if (Math.sqrt(dx * dx + dy * dy) > DRAG_THRESHOLD) {
         Controls.hasDragged = true;
-        clearTimeout(Controls.longPressTimer);
-        Controls.longPressTimer = null;
+        if (Controls.longPressTimer) {
+          clearTimeout(Controls.longPressTimer);
+          Controls.longPressTimer = null;
+        }
       }
 
-      const x = Math.floor(newPosition.x - Controls.dragPoint.x);
-      const y = Math.floor(newPosition.y - Controls.dragPoint.y);
+      if (Controls.hasDragged) {
+        const x = Math.floor(newPosition.x - Controls.dragPoint.x);
+        const y = Math.floor(newPosition.y - Controls.dragPoint.y);
 
-      const foreground = this.getChildByName("fg") as PIXI.Sprite;
-      const background = this.getChildByName("bg") as PIXI.TilingSprite;
+        const foreground = this.getChildByName("fg") as PIXI.Sprite;
+        const background = this.getChildByName("bg") as PIXI.TilingSprite;
 
-      foreground.position.set(x, y);
-      background.tilePosition.set(x, y);
+        foreground.position.set(x, y);
+        background.tilePosition.set(x, y);
 
-      Controls.setLoadedChunksAround(
-        -Math.floor(x / width / CHUNK_SIZE),
-        -Math.floor(y / width / CHUNK_SIZE),
-        width,
-      );
+        Controls.setLoadedChunksAround(
+          -Math.floor(x / width / CHUNK_SIZE),
+          -Math.floor(y / width / CHUNK_SIZE),
+          width,
+        );
+      }
     }
+
     if (Controls.mouseInput) {
       Controls.updateCursorPosition(
         event,
