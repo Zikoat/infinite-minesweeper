@@ -5,7 +5,7 @@ import * as PIXI from "pixi.js";
 import { FieldPersistence } from "./FieldPersistence";
 import { scale } from "./CellSprite";
 
-const DRAG_THRESHOLD = 40;
+const DRAG_THRESHOLD = 100;
 const LONG_PRESS_DURATION = 200; // Duration in milliseconds to consider it a long press
 
 type PixiEvent = {
