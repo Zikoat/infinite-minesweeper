@@ -129,7 +129,6 @@ export class Controls {
   }
 
   static _onDragStart(this: PIXI.Container, event: PixiEvent) {
-    console.log(this);
     const foreground = this.getChildByName("fg") as PIXI.Sprite;
     const background = this.getChildByName("bg") as PIXI.TilingSprite;
 
