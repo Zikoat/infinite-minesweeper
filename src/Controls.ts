@@ -155,7 +155,7 @@ export class Controls {
     }, LONG_PRESS_DURATION);
   }
 
-  static _onDragEnd(this: Controls) {
+  static _onDragEnd() {
     Controls.dragging = false;
     if (!Controls.hasDragged && !Controls.hasLongPressed) {
       Controls.open();
@@ -167,7 +167,7 @@ export class Controls {
       Controls.longPressTimer = null;
     }
   }
-  static _onDragMove(this: PIXI.Container, event: PixiEvent) {
+  static _onDragMove(this: PIXI.Container, event: PIXI.InteractionEvent) {
     const width = (this.getChildByName("bg") as PIXI.TilingSprite).texture
       .width;
 
