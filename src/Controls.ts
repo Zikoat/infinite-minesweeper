@@ -5,7 +5,7 @@ import * as PIXI from "pixi.js";
 import { FieldPersistence } from "./FieldPersistence";
 import { scale } from "./CellSprite";
 
-const DRAG_THRESHOLD = 100;
+const DRAG_THRESHOLD = 30;
 const LONG_PRESS_DURATION = 200; // Duration in milliseconds to consider it a long press
 
 type PixiEvent = {
@@ -21,7 +21,8 @@ export class Controls {
   static dragging: boolean = false;
   static hasDragged: boolean = false;
   static mouseInput: boolean = false;
-  static dragPoint: { x: number; y: number } = { x: 0, y: 0 };
+  static screenDragStart: { x: number; y: number } = { x: 0, y: 0 };
+  static foregroundDragStartPosition: { x: number; y: number } = { x: 0, y: 0 };
   static startPosition = {
     x: 0,
     y: 0,
@@ -131,8 +132,9 @@ export class Controls {
     Controls.dragging = true;
     Controls.hasDragged = false;
 
-    Controls.dragPoint = event.data.getLocalPosition(foreground);
-    Controls.startPosition = {
+    Controls.screenDragStart = event.data.getLocalPosition(this);
+
+    Controls.foregroundDragStartPosition = {
       x: foreground.position.x,
       y: foreground.position.y,
     };
@@ -152,13 +154,7 @@ export class Controls {
     }, LONG_PRESS_DURATION);
   }
 
-  static _onDragEnd(event: PIXI.InteractionEvent) {
-    console.log(
-      "drag end",
-      Controls.hasDragged,
-      Controls.hasLongPressed,
-      event,
-    );
+  static _onDragEnd(_event: PIXI.InteractionEvent) {
     Controls.dragging = false;
     if (!Controls.hasDragged && !Controls.hasLongPressed) {
       Controls.open();
@@ -176,9 +172,10 @@ export class Controls {
       .width;
 
     if (Controls.dragging) {
-      const newPosition = event.data.getLocalPosition(this.parent);
-      const dx = newPosition.x - Controls.dragPoint.x;
-      const dy = newPosition.y - Controls.dragPoint.y;
+      const screenDragCurrent = event.data.getLocalPosition(this);
+
+      const dx = screenDragCurrent.x - Controls.screenDragStart.x;
+      const dy = screenDragCurrent.y - Controls.screenDragStart.y;
 
       if (Math.sqrt(dx * dx + dy * dy) > DRAG_THRESHOLD) {
         Controls.hasDragged = true;
@@ -189,8 +186,8 @@ export class Controls {
       }
 
       if (Controls.hasDragged) {
-        const x = Math.floor(newPosition.x - Controls.dragPoint.x);
-        const y = Math.floor(newPosition.y - Controls.dragPoint.y);
+        const x = Math.floor(dx) + Controls.foregroundDragStartPosition.x;
+        const y = Math.floor(dy) + Controls.foregroundDragStartPosition.y;
 
         const foreground = this.getChildByName("fg") as PIXI.Sprite;
         const background = this.getChildByName("bg") as PIXI.TilingSprite;
