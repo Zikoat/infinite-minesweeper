@@ -99,7 +99,6 @@ export class Field extends EventEmitter {
     }
     this.score++;
 
-    if (this.score > 1000) throw Error("probably a recursive loop");
     // generating of neighbors. we generate the cells when a neighbor is opened
     const neighbors = this.getNeighbors(cell.x, cell.y);
     for (let i = 0; i < neighbors.length; i++) {
