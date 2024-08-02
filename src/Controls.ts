@@ -33,7 +33,7 @@ export class Controls {
   constructor(
     rootObject: PIXI.Container,
     field: Field,
-    cursorTexture: PIXI.Texture<PIXI.Resource>,
+    cursorTexture: PIXI.Texture,
     fieldStorage: FieldPersistence,
   ) {
     Controls.field = field;

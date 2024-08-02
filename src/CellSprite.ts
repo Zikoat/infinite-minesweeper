@@ -7,7 +7,7 @@ import { getTextures } from "./Textures";
 export const scale = 3;
 const cellWidth = 16 * scale;
 
-type MyTexture = PIXI.Texture<PIXI.Resource>;
+type MyTexture = PIXI.Texture;
 
 type NeighborCount = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 

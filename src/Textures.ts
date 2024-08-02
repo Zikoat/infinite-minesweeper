@@ -2,7 +2,7 @@
  * Created by sisc0606 on 19.08.2017.
  */
 
-import { Assets, Texture, Resource } from "pixi.js";
+import { Assets, Texture } from "pixi.js";
 
 // todo make loading multiple skins possible
 import tex_mine from "./assets/default/mine.png";
@@ -21,7 +21,6 @@ import tex_7 from "./assets/default/7.png";
 import tex_8 from "./assets/default/8.png";
 import { assert } from "./assert";
 
-// todo rename resource to texture. never use resource?
 const textureNames = [
   "mine",
   "closed",
@@ -87,9 +86,7 @@ export function getTextures(): MinesTextures {
   return textures;
 }
 
-function validateTextures(
-  textures: Record<string, Texture<Resource>>,
-): MinesTextures {
+function validateTextures(textures: Record<string, Texture>): MinesTextures {
   assert(textures.mine);
   assert(textures.closed);
   assert(textures.flag);

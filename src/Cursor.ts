@@ -10,7 +10,7 @@ export default class Cursor extends PIXI.Sprite {
   pointX;
   pointY;
 
-  constructor(x = 0, y = 0, texture: PIXI.Texture<PIXI.Resource>) {
+  constructor(x = 0, y = 0, texture: PIXI.Texture) {
     super(texture);
     this.pointX = x;
     this.pointY = y;
