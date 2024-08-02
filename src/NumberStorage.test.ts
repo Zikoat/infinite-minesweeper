@@ -4,11 +4,11 @@ import { describe, expect, it } from "vitest";
 import { assert } from "./assert";
 
 abstract class CompressibleNumberStorage implements NumberStorage {
-  abstract get(x: number, y: number): number | null;
-  abstract set(x: number, y: number, value: number | null): void;
-  abstract getAll(): { x: number; y: number; value: number }[];
-  abstract compress(): string;
-  abstract decompress(compressed: string): this;
+  public abstract get(x: number, y: number): number | null;
+  public abstract set(x: number, y: number, value: number | null): void;
+  public abstract getAll(): { x: number; y: number; value: number }[];
+  public abstract compress(): string;
+  public abstract decompress(compressed: string): this;
 }
 
 type COOFormat = Record<number, Record<number, number>>;
@@ -16,17 +16,17 @@ type COOFormat = Record<number, Record<number, number>>;
 class COO implements CompressibleNumberStorage {
   protected data: COOFormat = {};
 
-  compress(): string {
+  public compress(): string {
     return JSON.stringify(this.data);
   }
-  decompress(compressed: string) {
+  public decompress(compressed: string) {
     const parsedJson = JSON.parse(compressed) as COOFormat;
     this.data = parsedJson;
 
     return this;
   }
 
-  set(x: number, y: number, value: number): void {
+  public set(x: number, y: number, value: number): void {
     if (this.data[x] !== undefined) this.data[x]![y] = value;
     else {
       this.data[x] = {};
@@ -34,11 +34,11 @@ class COO implements CompressibleNumberStorage {
     }
   }
 
-  get(x: number, y: number): number | null {
+  public get(x: number, y: number): number | null {
     return this.data[x]?.[y] ?? null;
   }
 
-  getAll(): { x: number; y: number; value: number }[] {
+  public getAll(): { x: number; y: number; value: number }[] {
     const output: { x: number; y: number; value: number }[] = [];
     for (const x in this.data) {
       for (const y in this.data[x]) {
@@ -92,27 +92,7 @@ describe.each([{ storage: SimpleNumberStorage }, { storage: COO }])(
       assert(newStorage.get(0, 0) === 1);
       assert(newStorage.get(0, 1) === 0);
       assert(newStorage.get(0, 2) === null);
-      // assert.equal(newStorage.get(1, 1), null);
     });
-
-    // storageSuite.skip(
-    //   "should return the same after stringification, quickcheck",
-    //   () => {
-    //     fc.assert(
-    //       fc.property(fc.integer(), (a) => {
-    //         let storage = new storageConstructor();
-    //         storage.set(0, 0, a);
-
-    //         const stringifiedStorage = storage.compress();
-    //         assert.type(stringifiedStorage, "string");
-    //         const newStorage = storage.decompress(stringifiedStorage);
-
-    //         assert.equal(newStorage.get(0, 0), a);
-    //         assert.not.instance(storage, newStorage);
-    //       })
-    //     );
-    //   }
-    // );
 
     it("should pass quickceck", () => {
       const allCommands = [
@@ -141,32 +121,32 @@ describe.each([{ storage: SimpleNumberStorage }, { storage: COO }])(
 type Model = object;
 
 class SetCommand<T extends NumberStorage> implements fc.Command<Model, T> {
-  constructor(
-    readonly x: number,
-    readonly y: number,
-    readonly insertValue: number,
+  public constructor(
+    private readonly x: number,
+    private readonly y: number,
+    private readonly insertValue: number,
   ) {}
 
-  check = () => true;
+  public check = () => true;
 
-  run(m: SimpleNumberStorage, r: T): void {
+  public run(m: SimpleNumberStorage, r: T): void {
     r.set(this.x, this.y, this.insertValue);
     m.set(this.x, this.y, this.insertValue);
   }
 
-  toString = () =>
+  public toString = () =>
     `set(${this.x},${this.y},${JSON.stringify(this.insertValue)})`;
 }
 
 class GetCommand<T extends NumberStorage> implements fc.Command<Model, T> {
-  constructor(
-    readonly x: number,
-    readonly y: number,
+  public constructor(
+    private readonly x: number,
+    private readonly y: number,
   ) {}
 
-  check = () => true;
+  public check = () => true;
 
-  run(m: SimpleNumberStorage, r: T): void {
+  public run(m: SimpleNumberStorage, r: T): void {
     const outputValue = r.get(this.x, this.y);
     if (outputValue !== null) {
       assert(typeof outputValue === "number");
@@ -175,14 +155,14 @@ class GetCommand<T extends NumberStorage> implements fc.Command<Model, T> {
     assert(outputValue === modelOutputValue);
   }
 
-  toString = () => `get(${this.x},${this.y})`;
+  public toString = () => `get(${this.x},${this.y})`;
 }
 class StringifyCommand implements fc.Command<Model, CompressibleNumberStorage> {
-  constructor() {}
+  public constructor() {}
 
-  check = () => true;
+  public check = () => true;
 
-  run(_m: SimpleNumberStorage, r: CompressibleNumberStorage): void {
+  public run(_m: SimpleNumberStorage, r: CompressibleNumberStorage): void {
     const afterCompression = r.decompress(r.compress());
 
     assert(typeof r === typeof afterCompression, "typeof check");
@@ -193,5 +173,6 @@ class StringifyCommand implements fc.Command<Model, CompressibleNumberStorage> {
 
     r = afterCompression;
   }
-  toString = () => `compress`;
+
+  public toString = () => `compress`;
 }

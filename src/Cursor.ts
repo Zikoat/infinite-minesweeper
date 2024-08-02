@@ -7,10 +7,10 @@ import { scale } from "./CellSprite";
  */
 
 export default class Cursor extends PIXI.Sprite {
-  pointX;
-  pointY;
+  private pointX: number;
+  private pointY: number;
 
-  constructor(x = 0, y = 0, texture: PIXI.Texture) {
+  public constructor(x = 0, y = 0, texture: PIXI.Texture) {
     super(texture);
     this.pointX = x;
     this.pointY = y;
@@ -19,7 +19,7 @@ export default class Cursor extends PIXI.Sprite {
     this.moveTo(x, y);
   }
 
-  moveTo(x: number, y: number) {
+  public moveTo(x: number, y: number) {
     const pos = this.parent?.getChildByName("fg")?.getGlobalPosition();
     if (!pos) {
       console.warn("Tried to move cursor, but foreground is not defined");
@@ -35,15 +35,15 @@ export default class Cursor extends PIXI.Sprite {
     TweenMax.to(this, 0.1, { x: newX, y: newY, ease: Power4.easeOut });
   }
 
-  move(dx: number, dy: number) {
+  public move(dx: number, dy: number) {
     this.moveTo(this.pointX + dx, this.pointY + dy);
   }
 
-  getX() {
+  public getX() {
     return this.pointX;
   }
 
-  getY() {
+  public getY() {
     return this.pointY;
   }
 }

@@ -15,12 +15,12 @@ function updateScore(localField: Field) {
   scoreElement.innerHTML = localField.score.toString();
 }
 
-const probability = 0.2;
+const probability = 0.1;
 
 let field: Field | undefined = fieldStorage.load(fieldName);
 
 if (!field) {
-  field = new Field(probability, 3, fieldName);
+  field = new Field(probability, 3, fieldName, "1");
   field.open(1, 1);
   fieldStorage.save(field, fieldName);
 } else {

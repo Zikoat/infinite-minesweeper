@@ -25,7 +25,7 @@ export class CellSprite {
   private back: PIXI.Sprite;
   private front: PIXI.Sprite;
 
-  constructor(cell: Cell, value: number | null, parent: PIXI.Container) {
+  public constructor(cell: Cell, value: number | null, parent: PIXI.Container) {
     this.value = value === null ? null : numberToValueNumber(value);
     const cellTexture = this.getCellTexture(cell);
     this.back = new PIXI.Sprite(cellTexture.back);

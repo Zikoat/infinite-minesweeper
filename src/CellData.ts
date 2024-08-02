@@ -15,9 +15,7 @@ export class SimpleCellData implements CellData {
   @Type(() => SimpleNumberStorage)
   public numberStorage = new SimpleNumberStorage();
 
-  constructor() {}
-
-  getAll(): Cell[] {
+  public getAll(): Cell[] {
     const numbers = this.numberStorage.getAll();
     return numbers.map((val) => {
       return this.numberToCell(val.x, val.y, val.value);
@@ -46,16 +44,18 @@ export class SimpleCellData implements CellData {
     return cell;
   }
 
-  get(x: number, y: number): Cell {
+  public get(x: number, y: number): Cell {
     return this.numberToCell(x, y, this.numberStorage.get(x, y));
   }
-  set(x: number, y: number, cell: Cell): void {
+
+  public set(x: number, y: number, cell: Cell): void {
     this.numberStorage.set(x, y, this.cellToNumber(cell));
   }
-  compress(): string {
+  public compress(): string {
     throw new Error("Method not implemented.");
   }
-  decompress(_compressed: string): CellData {
+
+  public decompress(_compressed: string): CellData {
     throw new Error("Method not implemented.");
   }
 }

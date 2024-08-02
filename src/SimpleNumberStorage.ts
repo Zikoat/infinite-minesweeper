@@ -1,7 +1,7 @@
 export class SimpleNumberStorage implements NumberStorage {
   private data: DOKFormat = {};
 
-  set(x: number, y: number, value: number): void {
+  public set(x: number, y: number, value: number): void {
     if (this.data[x] !== undefined) this.data[x]![y] = value;
     else {
       this.data[x] = {};
@@ -9,22 +9,22 @@ export class SimpleNumberStorage implements NumberStorage {
     }
   }
 
-  get(x: number, y: number): number | null {
+  public get(x: number, y: number): number | null {
     return this.data[x]?.[y] ?? null;
   }
 
-  compress(): string {
+  public compress(): string {
     return JSON.stringify(this.data);
   }
 
-  decompress(input: string): SimpleNumberStorage {
+  public decompress(input: string): SimpleNumberStorage {
     const instance = new SimpleNumberStorage();
     // todo use zod to parse
     instance.data = JSON.parse(input) as DOKFormat;
     return instance;
   }
 
-  getAll(): { x: number; y: number; value: number }[] {
+  public getAll(): { x: number; y: number; value: number }[] {
     const output: { x: number; y: number; value: number }[] = [];
     for (const x in this.data) {
       for (const y in this.data[x]) {

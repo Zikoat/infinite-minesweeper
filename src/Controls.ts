@@ -15,22 +15,21 @@ type PixiEvent = {
 };
 
 export class Controls {
-  static cursor: Cursor;
-  static field: Field;
-  static fieldStorage: FieldPersistence;
-  static dragging: boolean = false;
-  static hasDragged: boolean = false;
-  static mouseInput: boolean = false;
-  static screenDragStart: { x: number; y: number } = { x: 0, y: 0 };
-  static foregroundDragStartPosition: { x: number; y: number } = { x: 0, y: 0 };
-  static startPosition = {
+  private static cursor: Cursor;
+  private static field: Field;
+  private static fieldStorage: FieldPersistence;
+  private static dragging: boolean = false;
+  private static hasDragged: boolean = false;
+  private static mouseInput: boolean = false;
+  private static screenDragStart: { x: number; y: number } = { x: 0, y: 0 };
+  private static foregroundDragStartPosition: { x: number; y: number } = {
     x: 0,
     y: 0,
   };
-  static longPressTimer: ReturnType<typeof setTimeout> | null = null;
-  static hasLongPressed = false;
+  private static longPressTimer: ReturnType<typeof setTimeout> | null = null;
+  private static hasLongPressed = false;
 
-  constructor(
+  public constructor(
     rootObject: PIXI.Container,
     field: Field,
     cursorTexture: PIXI.Texture,
@@ -49,7 +48,7 @@ export class Controls {
     Controls.disableRightClickContextMenu();
   }
 
-  static addMouseControls(rootObject: PIXI.Container) {
+  private static addMouseControls(rootObject: PIXI.Container) {
     rootObject
       .on("mousedown", Controls._onDragStart)
       .on("mouseup", Controls._onDragEnd)
@@ -58,7 +57,7 @@ export class Controls {
       .on("rightclick", Controls._onRightClick);
   }
 
-  static addTouchControls(rootObject: PIXI.Container) {
+  private static addTouchControls(rootObject: PIXI.Container) {
     rootObject
       .on("touchstart", Controls._onDragStart)
       .on("touchmove", Controls._onDragMove)
@@ -66,7 +65,7 @@ export class Controls {
       .on("touchendoutside", Controls._onDragEnd);
   }
 
-  static addKeyboardControls() {
+  private static addKeyboardControls() {
     window.addEventListener(
       "keydown",
       (event) => {
@@ -108,7 +107,7 @@ export class Controls {
     );
   }
 
-  static removeUIEventBubbling() {
+  private static removeUIEventBubbling() {
     const uiElements = document.getElementsByClassName("ui");
     for (const element of uiElements) {
       element.addEventListener(
@@ -121,11 +120,11 @@ export class Controls {
     }
   }
 
-  static disableRightClickContextMenu() {
+  private static disableRightClickContextMenu() {
     document.addEventListener("contextmenu", (event) => event.preventDefault());
   }
 
-  static _onDragStart(this: PIXI.Container, event: PixiEvent) {
+  private static _onDragStart(this: PIXI.Container, event: PixiEvent) {
     const foreground = this.getChildByName("fg") as PIXI.Sprite;
     const background = this.getChildByName("bg") as PIXI.TilingSprite;
 
@@ -154,7 +153,7 @@ export class Controls {
     }, LONG_PRESS_DURATION);
   }
 
-  static _onDragEnd(_event: PIXI.FederatedPointerEvent) {
+  private static _onDragEnd(_event: PIXI.FederatedPointerEvent) {
     Controls.dragging = false;
     if (!Controls.hasDragged && !Controls.hasLongPressed) {
       Controls.open();
@@ -168,7 +167,10 @@ export class Controls {
     }
   }
 
-  static _onDragMove(this: PIXI.Container, event: PIXI.FederatedPointerEvent) {
+  private static _onDragMove(
+    this: PIXI.Container,
+    event: PIXI.FederatedPointerEvent,
+  ) {
     const width = (this.getChildByName("bg") as PIXI.TilingSprite).texture
       .width;
 
@@ -216,7 +218,7 @@ export class Controls {
       "default";
   }
 
-  static updateCursorPosition(
+  private static updateCursorPosition(
     event: PixiEvent,
     foreground: PIXI.Sprite,
     background: PIXI.TilingSprite,
@@ -228,7 +230,7 @@ export class Controls {
     Controls.cursor.moveTo(x, y);
   }
 
-  static setLoadedChunksAround(x: number, y: number, width: number) {
+  public static setLoadedChunksAround(x: number, y: number, width: number) {
     const windowChunkWidth = Math.ceil(window.innerWidth / width / CHUNK_SIZE);
     const windowChunkHeight = Math.ceil(
       window.innerHeight / width / CHUNK_SIZE,
@@ -241,11 +243,11 @@ export class Controls {
     Controls.field.loadVisibleChunks();
   }
 
-  static _onRightClick(_event: unknown) {
+  private static _onRightClick(_event: unknown) {
     Controls.flag();
   }
 
-  static open() {
+  private static open() {
     const x = Controls.cursor.getX();
     const y = Controls.cursor.getY();
     const cell = Controls.field.getCell(x, y);
@@ -276,7 +278,7 @@ export class Controls {
     }
   }
 
-  static flag() {
+  private static flag() {
     const x = Controls.cursor.getX();
     const y = Controls.cursor.getY();
     const cell = Controls.field.getCell(x, y);
@@ -305,7 +307,7 @@ export class Controls {
     }
   }
 
-  static moveViewTo(newx: number, newy: number) {
+  private static moveViewTo(newx: number, newy: number) {
     const width = (Controls.cursor.parent.getChildByName("bg") as PIXI.Sprite)
       .texture.width;
     const x = newx * width * scale;

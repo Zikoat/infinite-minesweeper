@@ -1,12 +1,13 @@
 import { Cell } from "./Cell";
 
 export const CHUNK_SIZE = 32;
-export class Chunk {
-  x: number;
-  y: number;
-  cells: Cell[][];
 
-  constructor(x: number, y: number) {
+export class Chunk {
+  public x: number;
+  public y: number;
+  private cells: Cell[][];
+
+  public constructor(x: number, y: number) {
     console.log(" creating new chunkS");
     this.x = x;
     this.y = y;
@@ -18,15 +19,12 @@ export class Chunk {
       }
     }
   }
-  getCell(x: number, y: number) {
+
+  public getCell(x: number, y: number) {
     return this.cells[x][y];
   }
 
-  getCellFromGlobalCoords(x: number, y: number) {
-    return this.cells[x - this.x * CHUNK_SIZE][y - this.y * CHUNK_SIZE];
-  }
-
-  toJSON() {
+  public toJSON() {
     let ans = "";
     for (let x = 0; x < CHUNK_SIZE; x++) {
       for (let y = 0; y < CHUNK_SIZE; y++) {

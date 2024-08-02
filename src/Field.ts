@@ -30,7 +30,7 @@ export class Field extends PIXI.EventEmitter {
   @Type(() => SimpleCellData)
   public cellData = new SimpleCellData();
 
-  constructor(
+  public constructor(
     probability = 0.5,
     safeRadius = 1,
     fieldName: string,

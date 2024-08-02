@@ -12,8 +12,9 @@ import { MinesTextures } from "./Textures.js";
 import { FieldPersistence } from "./FieldPersistence.js";
 
 export class FieldRenderer extends PIXI.Application {
-  field: Field;
-  constructor(
+  private field: Field;
+
+  public constructor(
     field: Field,
     updateScore: (input: Field) => void,
     fieldPersistence: FieldPersistence,
