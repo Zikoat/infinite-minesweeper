@@ -47,16 +47,16 @@ export class CellSprite {
     this.playUpdateAnimation();
   }
 
-  update(cell: Cell) {
+  public update(cell: Cell, playAnimation = true) {
     const cellTexture = this.getCellTexture(cell);
     this.back.texture = cellTexture.back;
     this.front.texture = cellTexture.front;
 
-    this.playUpdateAnimation();
+    if (playAnimation) this.playUpdateAnimation();
   }
 
   // todo don't run update animation then updating all cells to improve performance on load and reload.
-  playUpdateAnimation() {
+  private playUpdateAnimation() {
     TweenMax.from(this.front.scale, 0.2, { x: 0, y: 0 });
     TweenMax.from(this.front, 0.2, {
       x: "+=" + (this.back.width / scale) * 1.5,
@@ -65,7 +65,7 @@ export class CellSprite {
     TweenMax.from(this.back, 0.2, { alpha: 0 });
   }
 
-  getCellTexture(cell: Cell): {
+  private getCellTexture(cell: Cell): {
     back: MyTexture;
     front: MyTexture;
   } {

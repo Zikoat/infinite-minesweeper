@@ -59,14 +59,13 @@ export class Field extends PIXI.EventEmitter {
     // overwrite mine state
     // freeze mode
   }
-  getChunk(x: number, y: number) {
-    return this.fieldData[x][y];
-  }
-  getCell(x: number, y: number) {
+
+  public getCell(x: number, y: number) {
     const cell = this.cellData.get(x, y);
     return cell;
   }
-  open(x: number, y: number): Cell[] {
+
+  public open(x: number, y: number): Cell[] {
     if (!Number.isSafeInteger(x) || !Number.isSafeInteger(y))
       throw new Error(
         `Open was passed (${x},${y}), but it should be passed safe integers`,
@@ -125,7 +124,7 @@ export class Field extends PIXI.EventEmitter {
     return openedCells;
   }
 
-  flag(x: number, y: number): Cell | null {
+  public flag(x: number, y: number): Cell | null {
     const cell = this.getCell(x, y);
     if (!cell.isOpen) {
       cell.isFlagged = !cell.isFlagged;
@@ -135,7 +134,8 @@ export class Field extends PIXI.EventEmitter {
     }
     return null;
   }
-  getNeighbors(x: number, y: number) {
+
+  public getNeighbors(x: number, y: number) {
     const neighbors = [];
     for (let i = 0; i <= this.neighborPosition.length - 1; i++) {
       const newX = x + this.neighborPosition[i][0];
@@ -145,7 +145,7 @@ export class Field extends PIXI.EventEmitter {
     return neighbors;
   }
 
-  showChunk(x: number, y: number) {
+  private showChunk(x: number, y: number) {
     const showChunk = this.getCoordinatesInChunk(x, y);
     for (const cellCoords of showChunk) {
       const cell = this.getCell(cellCoords.x, cellCoords.y);
@@ -156,7 +156,10 @@ export class Field extends PIXI.EventEmitter {
     return;
   }
 
-  getCoordinatesInChunk(x: number, y: number): { x: number; y: number }[] {
+  private getCoordinatesInChunk(
+    x: number,
+    y: number,
+  ): { x: number; y: number }[] {
     const startCellX = 32 * x;
     const startCellY = 32 * y + 32;
     const endCellX = 32 * x;
@@ -171,18 +174,18 @@ export class Field extends PIXI.EventEmitter {
     return output;
   }
 
-  restart() {
+  public restart() {
     // todo
     this.pristine = true;
     // todo: delete all of the rows, update all of the cells
     throw Error("not implemented");
   }
 
-  getAll(): Cell[] {
+  public getAll(): Cell[] {
     return this.cellData.getAll();
   }
 
-  value(x: number, y: number): number | null {
+  public value(x: number, y: number): number | null {
     // returns the amount of surrounding mines
     const cell = this.getCell(x, y);
     // it does not make sense to request the value of a closed cell
@@ -190,23 +193,7 @@ export class Field extends PIXI.EventEmitter {
     else return this.getNeighbors(x, y).filter((cell) => cell.isMine).length;
   }
 
-  checkForErrors() {
-    // debugging
-    const cells = this.getAll();
-    const openedCells = cells.filter((cell) => cell.isOpen);
-
-    if (openedCells.some((cell) => cell.isFlagged))
-      console.error(
-        "cell is flagged and open",
-        openedCells.filter((cell) => cell.isFlagged),
-      );
-
-    const undefinedCells = cells.filter((cell) => cell.isMine === undefined);
-    if (undefinedCells.length > 0)
-      console.error("undefined cells", undefinedCells);
-  }
-
-  isEligibleToOpen(x: number, y: number) {
+  private isEligibleToOpen(x: number, y: number) {
     // returns a bool, whether this cell can be opened
     //if(this.gameOver) return false;
     const cell = this.getCell(x, y);
@@ -215,18 +202,18 @@ export class Field extends PIXI.EventEmitter {
     return true;
   }
 
-  setVisibleChunk(x: number, y: number) {
+  public setVisibleChunk(x: number, y: number) {
     this.visibleChunks.push({ x: x, y: y });
   }
 
-  loadVisibleChunks() {
+  public loadVisibleChunks() {
     for (let i = 0; i < this.visibleChunks.length; i++) {
       this.showChunk(this.visibleChunks[i].x, this.visibleChunks[i].y);
     }
     this.visibleChunks = [];
   }
 
-  setSafeCells(x0: number, y0: number) {
+  private setSafeCells(x0: number, y0: number) {
     // initiate the field with a circle of cells that aren't mines
     this.pristine = false;
     const r = this.safeRadius;
@@ -245,7 +232,7 @@ export class Field extends PIXI.EventEmitter {
     }
   }
 
-  setCell(x: number, y: number, cell: Partial<Cell>) {
+  private setCell(x: number, y: number, cell: Partial<Cell>) {
     const gottenCell = this.cellData.get(x, y);
     if (cell.isMine !== undefined) gottenCell.isMine = cell.isMine;
     if (cell.isFlagged !== undefined) gottenCell.isFlagged = cell.isFlagged;

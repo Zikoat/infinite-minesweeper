@@ -29,14 +29,17 @@ export class FieldRenderer extends PIXI.Application {
     // todo use async
     Textures.loadTextures().then((tex) => setup(tex, field, fieldPersistence));
   }
-  updateCell(cell: Cell) {
+
+  public updateCell(cell: Cell) {
     updateCell(this.field, cell);
   }
-  updateAllCells() {
+
+  public updateAllCells() {
     updateAllCells(this.field);
   }
 }
 
+// todo inline
 // todo: bug when i reset the game to reset the camera to 0,0, then the cell at 0,0 flashes with the "zoom out to spawn" animation every time the camera moves a pixel.
 function updateCell(field: Field, cell: Cell & { sprite?: CellSprite }) {
   if (cell.sprite === undefined) {
@@ -47,6 +50,7 @@ function updateCell(field: Field, cell: Cell & { sprite?: CellSprite }) {
   }
 }
 
+// todo inline
 function updateAllCells(field: Field): void {
   field
     .getAll()
@@ -55,6 +59,7 @@ function updateAllCells(field: Field): void {
 }
 
 function setup(
+  // todo rename
   tex: MinesTextures,
   field: Field,
   fieldPersistence: FieldPersistence,
