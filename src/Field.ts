@@ -12,11 +12,10 @@ import { Type } from "class-transformer";
 import "reflect-metadata";
 import { CellSprite } from "./CellSprite";
 import { Layout } from "./Layouts";
-const EventEmitter = PIXI.utils.EventEmitter;
 
 export type ChunkedField = Record<number, Record<number, Chunk>>;
 
-export class Field extends EventEmitter {
+export class Field extends PIXI.EventEmitter {
   public fieldData: ChunkedField;
   public probability: number;
   public safeRadius: number;

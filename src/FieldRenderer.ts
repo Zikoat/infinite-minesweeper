@@ -37,15 +37,17 @@ export class FieldRenderer extends PIXI.Application {
   }
 }
 
-const app = new PIXI.Application({
+// todo: bug when i reset the game to reset the camera to 0,0, then the cell at 0,0 flashes with the "zoom out to spawn" animation every time the camera moves a pixel.
+const app = new PIXI.Application();
+
+await app.init({
   resizeTo: window,
   backgroundColor: 0x1099bb,
 });
 
-// todo after migration to v8 change with canvas
-document.body.appendChild(app.view as unknown as Node);
+document.body.appendChild(app.canvas);
 
-PIXI.BaseTexture.defaultOptions.scaleMode = PIXI.SCALE_MODES.NEAREST;
+PIXI.TextureSource.defaultOptions.scaleMode = "nearest";
 
 const fieldContainer = new PIXI.Container();
 const clickHandler = new PIXI.Container();

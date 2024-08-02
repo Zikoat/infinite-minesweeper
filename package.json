@@ -47,7 +47,7 @@
     "fast-check": "^3.0.1",
     "gsap": "^3.6.0",
     "node-localstorage": "^2.2.1",
-    "pixi.js": "7.4.2",
+    "pixi.js": "^8.2.6",
     "prettier": "^3.0.2",
     "reflect-metadata": "^0.1.13",
     "seedrandom": "^3.0.5",

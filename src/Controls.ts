@@ -10,7 +10,7 @@ const LONG_PRESS_DURATION = 200; // Duration in milliseconds to consider it a lo
 
 type PixiEvent = {
   data: {
-    getLocalPosition: (arg0: PIXI.Container<PIXI.DisplayObject>) => PIXI.Point;
+    getLocalPosition: (arg0: PIXI.Container) => PIXI.Point;
   };
 };
 
