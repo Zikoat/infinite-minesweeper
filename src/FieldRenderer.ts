@@ -26,7 +26,8 @@ export class FieldRenderer extends PIXI.Application {
       updateScore(field);
     });
 
-    Textures.load().then((tex) => setup(tex, field, fieldPersistence));
+    // todo use async
+    Textures.loadTextures().then((tex) => setup(tex, field, fieldPersistence));
   }
   updateCell(cell: Cell) {
     updateCell(this.field, cell);
