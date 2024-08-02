@@ -23,6 +23,7 @@ import eight from "./assets/default/8.png";
 import { assert } from "./assert";
 
 export let textures: MinesTextures;
+
 export type MinesTextures = {
   mine: Texture;
   closed: Texture;
@@ -40,9 +41,8 @@ export type MinesTextures = {
   7: Texture;
   8: Texture;
 };
-export let width = 2;
 
-// type SingleTexture = Texture<Resource>;
+export let width = 2;
 
 async function processTextures(): Promise<Record<string, Texture>> {
   Assets.addBundle("myBundle", [
@@ -62,78 +62,48 @@ async function processTextures(): Promise<Record<string, Texture>> {
     { alias: "8", src: eight },
   ]);
 
-  const loadedAssets = await Assets.load([
-    "closed",
-    "flag",
-    "mine",
-    "mineWrong",
-    "open",
-    "cursor",
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
+  const loadedBundle: { myBundle: MinesTextures } = await Assets.loadBundle([
+    "myBundle",
   ]);
 
-  console.log(loadedAssets);
-  console.log(loadedAssets["1"]);
-  // const bundle = await Assets.loadBundle("myBundle")
-  // return new Promise<PIXI.utils.Dict<PIXI.LoaderResource>>((resolve) => {
-  //   const loader = PIXI.Loader.shared;
-  //   loader.load((_loader, resources) => {
-  //     resolve(resources);
-  //   });
-  // });
-
-  return loadedAssets;
+  return loadedBundle.myBundle;
 }
-
-// shit remove loading promise, we don't call this multiple times.
-let loadingPromise: MinesTextures | undefined;
 
 export async function load() {
   // if the loading has already started, return the same promise
-  if (!loadingPromise) {
-    const resources = await processTextures();
-    assert(resources.mine);
-    assert(resources.closed);
-    assert(resources.flag);
-    assert(resources.mineWrong);
-    assert(resources.open);
-    assert(resources.cursor);
-    assert(resources[1]);
-    assert(resources[2]);
-    assert(resources[3]);
-    assert(resources[4]);
-    assert(resources[5]);
-    assert(resources[6]);
-    assert(resources[7]);
-    assert(resources[8]);
+  const resources = await processTextures();
+  assert(resources.mine);
+  assert(resources.closed);
+  assert(resources.flag);
+  assert(resources.mineWrong);
+  assert(resources.open);
+  assert(resources.cursor);
+  assert(resources[1]);
+  assert(resources[2]);
+  assert(resources[3]);
+  assert(resources[4]);
+  assert(resources[5]);
+  assert(resources[6]);
+  assert(resources[7]);
+  assert(resources[8]);
 
-    textures = {
-      mine: resources.mine,
-      closed: resources.closed,
-      flag: resources.flag,
-      mineWrong: resources.mineWrong,
-      open: resources.open,
-      cursor: resources.cursor,
-      1: resources[1],
-      2: resources[2],
-      3: resources[3],
-      4: resources[4],
-      5: resources[5],
-      6: resources[6],
-      7: resources[7],
-      8: resources[8],
-    };
+  textures = {
+    mine: resources.mine,
+    closed: resources.closed,
+    flag: resources.flag,
+    mineWrong: resources.mineWrong,
+    open: resources.open,
+    cursor: resources.cursor,
+    1: resources[1],
+    2: resources[2],
+    3: resources[3],
+    4: resources[4],
+    5: resources[5],
+    6: resources[6],
+    7: resources[7],
+    8: resources[8],
+  };
 
-    width = textures.closed.width;
-    return textures;
-  }
-
-  return loadingPromise;
+  width = textures.closed.width;
+  return textures;
 }

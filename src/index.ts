@@ -31,8 +31,6 @@ if (!field) {
   );
 }
 
-console.log(field);
-
 new FieldRenderer(field, updateScore, fieldStorage);
 
 const button: HTMLImageElement = document.getElementById(
