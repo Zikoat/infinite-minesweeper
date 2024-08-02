@@ -4,15 +4,11 @@
   "description": "An infinite, open source, minesweeper implementation. Perfect for creating bots, and based on borbit's mienfield.com",
   "scripts": {
     "dev": "vite --open",
+    "check": "bun i && eslint --ext .js,.jsx,.ts,.tsx ./src --fix && prettier --write . && bun ci && vite preview --open",
+    "ci": "bun install --production && prettier --check . && tsc --noemit && vite build",
     "test": "vitest",
-    "clean": "git clean -Xdf",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx ./src --fix && prettier --write .",
     "test-single": "uvu -r tsm",
-    "test-watch": "watchlist -e src -- bun run test-single",
-    "ci": "bun install --production && prettier --check . && vite build",
-    "localci": "rm ./bun.lockb && bun i && bun lint && bun clean && bun ci && vite preview --open",
-    "build": "vite build",
-    "type": "tsc --noemit"
+    "test-watch": "watchlist -e src -- bun run test-single"
   },
   "repository": {
     "type": "git",
