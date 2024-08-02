@@ -20,51 +20,49 @@ function numberToValueNumber(value: number): NeighborCount {
   return value as NeighborCount;
 }
 
-export class CellSprite extends PIXI.Container {
+export class CellSprite {
   private value: NeighborCount | null;
-  // class for creating and updating sprites
-  constructor(cell: Cell, value: number | null) {
-    super();
+  private back: PIXI.Sprite;
+  private front: PIXI.Sprite;
 
+  constructor(cell: Cell, value: number | null, parent: PIXI.Container) {
     this.value = value === null ? null : numberToValueNumber(value);
     const cellTexture = this.getCellTexture(cell);
-    const back = new PIXI.Sprite(cellTexture.back);
-    const front = new PIXI.Sprite(cellTexture.front);
-    back.width = cellWidth;
-    back.height = cellWidth;
-    front.width = cellWidth;
-    front.height = cellWidth;
-    const width = back.width;
-    this.x = cell.x * width;
-    this.y = cell.y * width;
-    back.name = "bg";
-    front.name = "fg";
-    this.addChildAt(back, 0);
-    this.addChildAt(front, 1);
+    this.back = new PIXI.Sprite(cellTexture.back);
+    this.front = new PIXI.Sprite(cellTexture.front);
+    this.back.width = cellWidth;
+    this.back.height = cellWidth;
+    this.front.width = cellWidth;
+    this.front.height = cellWidth;
+    const width = this.back.width;
+    const x = cell.x * width;
+    const y = cell.y * width;
+    this.front.x = x;
+    this.front.y = y;
+    this.back.x = x;
+    this.back.y = y;
+    this.back.name = "bg";
+    this.front.name = "fg";
+    parent.addChild(this.back, this.front);
     this.playUpdateAnimation();
   }
 
   update(cell: Cell) {
-    const back = this.getChildAt(0) as PIXI.Sprite;
-    const front = this.getChildAt(1) as PIXI.TilingSprite;
-
     const cellTexture = this.getCellTexture(cell);
-    back.texture = cellTexture.back;
-    front.texture = cellTexture.front;
+    this.back.texture = cellTexture.back;
+    this.front.texture = cellTexture.front;
 
     this.playUpdateAnimation();
   }
 
+  // todo don't run update animation then updating all cells to improve performance on load and reload.
   playUpdateAnimation() {
-    const front = this.getChildByName("fg") as PIXI.Sprite;
-    const back = this.getChildByName("bg") as PIXI.TilingSprite;
-    console.log();
-    TweenMax.from(front.scale, 0.2, { x: 0, y: 0 });
-    TweenMax.from(front, 0.2, {
-      x: "+=" + (back.width / scale) * 1.5,
-      y: "+=" + (back.width / scale) * 1.5,
+    TweenMax.from(this.front.scale, 0.2, { x: 0, y: 0 });
+    TweenMax.from(this.front, 0.2, {
+      x: "+=" + (this.back.width / scale) * 1.5,
+      y: "+=" + (this.back.width / scale) * 1.5,
     });
-    TweenMax.from(back, 0.2, { alpha: 0 });
+    TweenMax.from(this.back, 0.2, { alpha: 0 });
   }
 
   getCellTexture(cell: Cell): {

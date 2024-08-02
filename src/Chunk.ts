@@ -26,16 +26,6 @@ export class Chunk {
     return this.cells[x - this.x * CHUNK_SIZE][y - this.y * CHUNK_SIZE];
   }
 
-  getAll() {
-    const ans = [];
-    let i, j;
-    for (i in this.cells) {
-      for (j in this.cells[i]) {
-        ans.push(this.cells[i][j]);
-      }
-    }
-    return ans;
-  }
   toJSON() {
     let ans = "";
     for (let x = 0; x < CHUNK_SIZE; x++) {

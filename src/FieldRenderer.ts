@@ -41,8 +41,7 @@ export class FieldRenderer extends PIXI.Application {
 function updateCell(field: Field, cell: Cell & { sprite?: CellSprite }) {
   if (cell.sprite === undefined) {
     const value = field.value(cell.x, cell.y);
-    cell.sprite = new CellSprite(cell, value);
-    fieldContainer.addChild(cell.sprite);
+    cell.sprite = new CellSprite(cell, value, fieldContainer);
   } else {
     cell.sprite.update(cell);
   }
@@ -113,7 +112,10 @@ function setup(
 }
 
 const app = new PIXI.Application();
-const fieldContainer = new PIXI.Container();
+const fieldContainer = new PIXI.Container({
+  isRenderGroup: true,
+  interactiveChildren: false,
+});
 const clickHandler = new PIXI.Container();
 
 (async () => {

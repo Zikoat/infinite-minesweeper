@@ -8,9 +8,7 @@ import seedrandom from "seedrandom";
 import { Cell } from "./Cell";
 import { SimpleCellData } from "./CellData";
 import { Type } from "class-transformer";
-
 import "reflect-metadata";
-import { CellSprite } from "./CellSprite";
 import { Layout } from "./Layouts";
 
 export type ChunkedField = Record<number, Record<number, Chunk>>;
@@ -28,6 +26,7 @@ export class Field extends PIXI.EventEmitter {
   public fieldName: string;
   private rng: seedrandom.PRNG;
 
+  // todo use zod to validate. deprecate class-transformer
   @Type(() => SimpleCellData)
   public cellData = new SimpleCellData();
 
@@ -172,18 +171,6 @@ export class Field extends PIXI.EventEmitter {
     return output;
   }
 
-  unloadChunk(x: number, y: number) {
-    this.fieldData;
-    this.fieldData[x][y]
-      .getAll()
-      .forEach((cell: Cell & { sprite?: CellSprite }) => {
-        if (!(cell.sprite === undefined)) {
-          cell.sprite.parent.removeChild(cell.sprite);
-        }
-      });
-    delete this.fieldData[x][y];
-  }
-
   restart() {
     // todo
     this.pristine = true;
@@ -233,20 +220,6 @@ export class Field extends PIXI.EventEmitter {
   }
 
   loadVisibleChunks() {
-    for (const xString in this.fieldData) {
-      const x = Number(xString);
-      for (const yString in this.fieldData[x]) {
-        const y = Number(yString);
-        let remove = true;
-        for (let i = 0; i < this.visibleChunks.length; i++) {
-          if (this.visibleChunks[i].x === x && this.visibleChunks[i].y === y)
-            remove = false;
-        }
-        if (remove) {
-          this.unloadChunk(x, y);
-        }
-      }
-    }
     for (let i = 0; i < this.visibleChunks.length; i++) {
       this.showChunk(this.visibleChunks[i].x, this.visibleChunks[i].y);
     }

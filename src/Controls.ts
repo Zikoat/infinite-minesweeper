@@ -167,6 +167,7 @@ export class Controls {
       Controls.longPressTimer = null;
     }
   }
+
   static _onDragMove(this: PIXI.Container, event: PIXI.FederatedPointerEvent) {
     const width = (this.getChildByName("bg") as PIXI.TilingSprite).texture
       .width;
