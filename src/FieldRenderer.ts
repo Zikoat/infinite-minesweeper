@@ -45,7 +45,7 @@ const app = new PIXI.Application({
 // todo after migration to v8 change with canvas
 document.body.appendChild(app.view as unknown as Node);
 
-PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+PIXI.BaseTexture.defaultOptions.scaleMode = PIXI.SCALE_MODES.NEAREST;
 
 const fieldContainer = new PIXI.Container();
 const clickHandler = new PIXI.Container();
