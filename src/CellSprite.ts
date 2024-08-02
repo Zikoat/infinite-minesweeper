@@ -2,18 +2,31 @@ import { TweenMax } from "gsap";
 import * as PIXI from "pixi.js";
 import { Cell } from "./Cell";
 import { assert } from "./assert";
+import { load, textures } from "./Textures";
 
 export const scale = 3;
 const cellWidth = 16 * scale;
 
 type MyTexture = PIXI.Texture<PIXI.Resource>;
 
+type NeighborCount = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+
+// todo rename to neighborcount
+function numberToValueNumber(value: number): NeighborCount {
+  assert(value % 1 === 0);
+  assert(value >= 0);
+  assert(value <= 8);
+
+  return value as NeighborCount;
+}
+
 export class CellSprite extends PIXI.Container {
-  private value: number | null;
+  private value: NeighborCount | null;
   // class for creating and updating sprites
   constructor(cell: Cell, value: number | null) {
     super();
-    this.value = value;
+
+    this.value = value === null ? null : numberToValueNumber(value);
     const cellTexture = this.getCellTexture(cell);
     const back = new PIXI.Sprite(cellTexture.back);
     const front = new PIXI.Sprite(cellTexture.front);
@@ -58,20 +71,34 @@ export class CellSprite extends PIXI.Container {
     back: MyTexture;
     front: MyTexture;
   } {
-    const textures = PIXI.Loader.shared.resources;
+    // todo create a getter, maybe call load every time
+    const textures = {
+      open: PIXI.Assets.get("open") as PIXI.Texture,
+      mineWrong: PIXI.Assets.get("mineWrong") as PIXI.Texture,
+      closed: PIXI.Assets.get("closed") as PIXI.Texture,
+      flag: PIXI.Assets.get("flag") as PIXI.Texture,
+      1: PIXI.Assets.get("1") as PIXI.Texture,
+      2: PIXI.Assets.get("2") as PIXI.Texture,
+      3: PIXI.Assets.get("3") as PIXI.Texture,
+      4: PIXI.Assets.get("4") as PIXI.Texture,
+      5: PIXI.Assets.get("5") as PIXI.Texture,
+      6: PIXI.Assets.get("6") as PIXI.Texture,
+      7: PIXI.Assets.get("7") as PIXI.Texture,
+      8: PIXI.Assets.get("8") as PIXI.Texture,
+    };
 
     let back;
     let front;
 
     if (cell.isOpen) {
-      back = textures.open.texture;
-      if (cell.isMine) front = textures.mineWrong.texture;
+      back = textures.open;
+      if (cell.isMine) front = textures.mineWrong;
       else if (this.value !== null && this.value > 0)
-        front = textures[this.value].texture;
-      else front = textures.open.texture;
+        front = textures[this.value as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8];
+      else front = textures.open;
     } else {
-      back = textures.closed.texture;
-      front = cell.isFlagged ? textures.flag.texture : PIXI.Texture.EMPTY;
+      back = textures.closed;
+      front = cell.isFlagged ? textures.flag : PIXI.Texture.EMPTY;
     }
 
     assert(front);
