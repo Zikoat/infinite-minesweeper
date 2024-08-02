@@ -42,7 +42,8 @@ const app = new PIXI.Application({
   backgroundColor: 0x1099bb,
 });
 
-document.body.appendChild(app.view);
+// todo after migration to v8 change with canvas
+document.body.appendChild(app.view as unknown as Node);
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 

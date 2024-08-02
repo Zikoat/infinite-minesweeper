@@ -19,7 +19,8 @@ export class SimpleNumberStorage implements NumberStorage {
 
   decompress(input: string): SimpleNumberStorage {
     const instance = new SimpleNumberStorage();
-    instance.data = JSON.parse(input);
+    // todo use zod to parse
+    instance.data = JSON.parse(input) as DOKFormat;
     return instance;
   }
 
