@@ -49,7 +49,7 @@ PIXI.BaseTexture.defaultOptions.scaleMode = PIXI.SCALE_MODES.NEAREST;
 
 const fieldContainer = new PIXI.Container();
 const clickHandler = new PIXI.Container();
-clickHandler.interactive = true;
+clickHandler.eventMode = "static";
 app.stage.addChild(clickHandler);
 
 function updateCell(field: Field, cell: Cell & { sprite?: CellSprite }) {
