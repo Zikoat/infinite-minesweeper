@@ -3,6 +3,7 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  background-color: #0f0f0f;
 }
 
 img,
@@ -81,7 +82,6 @@ a {
 }
 
 p {
-  display:;
   margin: 0.2em 0;
 }
 

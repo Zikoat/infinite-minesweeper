@@ -126,7 +126,7 @@ const clickHandler = new PIXI.Container();
 (async () => {
   await app.init({
     resizeTo: window,
-    backgroundColor: 0x1099bb,
+    backgroundColor: 0x0f0f0f,
   });
 
   document.body.appendChild(app.canvas);
