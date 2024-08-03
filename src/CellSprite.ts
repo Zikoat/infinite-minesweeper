@@ -3,9 +3,9 @@ import * as PIXI from "pixi.js";
 import { Cell } from "./Cell";
 import { assert } from "./assert";
 import { getTextures } from "./Textures";
+import { type CellWidth } from "./Cursor";
 
-export const scale = 3;
-const cellWidth = 16 * scale;
+export const CELL_WIDTH = 16 as CellWidth;
 
 type MyTexture = PIXI.Texture;
 
@@ -25,42 +25,50 @@ export class CellSprite {
   private back: PIXI.Sprite;
   private front: PIXI.Sprite;
 
-  public constructor(cell: Cell, value: number | null, parent: PIXI.Container) {
+  public constructor(
+    cell: Cell,
+    value: number | null,
+    parent: PIXI.Container,
+    playAnimation: boolean,
+  ) {
     this.value = value === null ? null : numberToValueNumber(value);
     const cellTexture = this.getCellTexture(cell);
     this.back = new PIXI.Sprite(cellTexture.back);
     this.front = new PIXI.Sprite(cellTexture.front);
-    this.back.width = cellWidth;
-    this.back.height = cellWidth;
-    this.front.width = cellWidth;
-    this.front.height = cellWidth;
-    const width = this.back.width;
-    const x = cell.x * width;
-    const y = cell.y * width;
+    this.back.width = CELL_WIDTH;
+    this.back.height = CELL_WIDTH;
+    this.front.width = CELL_WIDTH;
+    this.front.height = CELL_WIDTH;
+    // shit this should use cell-space to world space helpers
+    const x = cell.x * CELL_WIDTH;
+    const y = cell.y * CELL_WIDTH;
     this.front.x = x;
     this.front.y = y;
     this.back.x = x;
     this.back.y = y;
     this.back.name = "bg";
     this.front.name = "fg";
+    this.back.zIndex = 1;
+    this.front.zIndex = 2;
     parent.addChild(this.back, this.front);
-    this.playUpdateAnimation();
+    console.log("creating cell");
+    if (playAnimation) this.playUpdateAnimation();
   }
 
-  public update(cell: Cell, playAnimation = true) {
+  public update(cell: Cell) {
     const cellTexture = this.getCellTexture(cell);
     this.back.texture = cellTexture.back;
     this.front.texture = cellTexture.front;
 
-    if (playAnimation) this.playUpdateAnimation();
+    this.playUpdateAnimation();
   }
 
   // todo don't run update animation then updating all cells to improve performance on load and reload.
   private playUpdateAnimation() {
     TweenMax.from(this.front.scale, 0.2, { x: 0, y: 0 });
     TweenMax.from(this.front, 0.2, {
-      x: "+=" + (this.back.width / scale) * 1.5,
-      y: "+=" + (this.back.width / scale) * 1.5,
+      x: "+=" + this.back.width / 2,
+      y: "+=" + this.back.width / 2,
     });
     TweenMax.from(this.back, 0.2, { alpha: 0 });
   }

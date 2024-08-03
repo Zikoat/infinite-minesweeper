@@ -3,9 +3,9 @@
  */
 
 import * as PIXI from "pixi.js";
-import * as Textures from "./Textures.js";
+import { loadTextures } from "./Textures.js";
 import { Controls } from "./Controls";
-import { CellSprite, scale } from "./CellSprite";
+import { CellSprite } from "./CellSprite";
 import { Cell } from "./Cell.js";
 import { Field } from "./Field.js";
 import { MinesTextures } from "./Textures.js";
@@ -23,16 +23,18 @@ export class FieldRenderer extends PIXI.Application {
     this.field = field;
 
     field.on("cellChanged", (cell) => {
-      updateCell(field, cell);
+      updateCell(field, cell, true);
       updateScore(field);
     });
 
     // todo use async
-    Textures.loadTextures().then((tex) => setup(tex, field, fieldPersistence));
+    loadTextures().then((minesTextures) =>
+      setup(minesTextures, field, fieldPersistence),
+    );
   }
 
   public updateCell(cell: Cell) {
-    updateCell(this.field, cell);
+    updateCell(this.field, cell, true);
   }
 
   public updateAllCells() {
@@ -42,10 +44,14 @@ export class FieldRenderer extends PIXI.Application {
 
 // todo inline
 // todo: bug when i reset the game to reset the camera to 0,0, then the cell at 0,0 flashes with the "zoom out to spawn" animation every time the camera moves a pixel.
-function updateCell(field: Field, cell: Cell & { sprite?: CellSprite }) {
+function updateCell(
+  field: Field,
+  cell: Cell & { sprite?: CellSprite },
+  playAnimation: boolean,
+) {
   if (cell.sprite === undefined) {
     const value = field.value(cell.x, cell.y);
-    cell.sprite = new CellSprite(cell, value, fieldContainer);
+    cell.sprite = new CellSprite(cell, value, fieldContainer, playAnimation);
   } else {
     cell.sprite.update(cell);
   }
@@ -56,21 +62,21 @@ function updateAllCells(field: Field): void {
   field
     .getAll()
     .filter((cell) => cell.isOpen || cell.isFlagged)
-    .forEach((cell) => updateCell(field, cell));
+    .forEach((cell) => updateCell(field, cell, false));
 }
 
 function setup(
   // todo rename
-  tex: MinesTextures,
+  minesTextures: MinesTextures,
   field: Field,
   fieldPersistence: FieldPersistence,
 ): void {
+  // todo migrate away from tilingsprite
   const background = new PIXI.TilingSprite(
-    tex.closed,
+    minesTextures.closed,
     app.renderer.width,
     app.renderer.height,
   );
-  background.tileScale = { x: scale, y: scale };
 
   window.addEventListener("resize", function (_event) {
     function resize(width: number, height: number) {
@@ -82,39 +88,18 @@ function setup(
     resize(window.innerWidth, window.innerHeight);
   });
 
-  const width = tex.closed?.width;
+  // const width = minesTextures.closed?.width;
 
-  background.tint = 0xffffff;
-
+  // todo this is deprecated?
   background.name = "bg";
   fieldContainer.name = "fg";
 
   clickHandler.addChildAt(background, 0);
   clickHandler.addChildAt(fieldContainer, 1);
 
-  new Controls(clickHandler, field, tex.cursor, fieldPersistence);
-
-  // todo move to controls
-  // disable right click context menu
-  document.addEventListener("contextmenu", (event) => event.preventDefault());
+  new Controls(clickHandler, field, fieldPersistence);
 
   updateAllCells(field);
-
-  function centerField(x = 0, y = 0) {
-    // x and y are tile coordinates
-    const centerX = app.renderer.width / 2;
-    const centerY = app.renderer.height / 2;
-    const newX = Math.floor(-x * width + centerX);
-    const newY = Math.floor(-y * width + centerY);
-    // newX and newY are pixel-coordinates
-    fieldContainer.position.set(newX, newY);
-    background.tilePosition.set(newX, newY);
-  }
-
-  centerField(0, 0);
-  Controls.setLoadedChunksAround(0, 0, background.texture.width);
-
-  console.log("done setup");
 }
 
 const app = new PIXI.Application();

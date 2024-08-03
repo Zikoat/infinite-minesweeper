@@ -15,7 +15,7 @@ function updateScore(localField: Field) {
   scoreElement.innerHTML = localField.score.toString();
 }
 
-const probability = 0.1;
+const probability = 0.2;
 
 let field: Field | undefined = fieldStorage.load(fieldName);
 
