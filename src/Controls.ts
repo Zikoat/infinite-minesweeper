@@ -169,7 +169,7 @@ export class Controls {
         background.tilePosition.set(x, y);
         background.tileScale.set(scale);
       });
-    // .duration(0);
+    
 
     select<Element, unknown>("canvas")
       .call(zoomHandler)
