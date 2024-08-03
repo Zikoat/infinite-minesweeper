@@ -3,7 +3,7 @@ import * as PIXI from "pixi.js";
 import { Cell } from "./Cell";
 import { assert } from "./assert";
 import { getTextures } from "./Textures";
-import { type CellWidth } from "./Cursor";
+import { CellWidth } from "./CoordTypes";
 
 export const CELL_WIDTH = 16 as CellWidth;
 

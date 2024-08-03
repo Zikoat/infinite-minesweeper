@@ -1,4 +1,4 @@
-import { Cursor, ScreenPos, WorldPos } from "./Cursor";
+import { Cursor } from "./Cursor";
 import * as PIXI from "pixi.js";
 import { zoom, ZoomTransform } from "d3-zoom";
 import { select } from "d3-selection";
@@ -6,6 +6,7 @@ import { z } from "zod";
 import { Field } from "./Field";
 import { FieldPersistence } from "./FieldPersistence";
 import { assert } from "./assert";
+import { WorldPos, ScreenPos } from "./CoordTypes";
 
 // todo add setting for long press duration
 const LONG_PRESS_DURATION = 200; // Duration in milliseconds to consider it a long press

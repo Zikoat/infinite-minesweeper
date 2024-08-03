@@ -2,24 +2,8 @@ import { TweenMax, Power4 } from "gsap";
 import * as PIXI from "pixi.js";
 import { CELL_WIDTH } from "./CellSprite";
 import { getTextures } from "./Textures";
-import type { Tagged } from "type-fest";
 import { assert } from "./assert";
-
-// todo move these to a different file
-type Pos<T> = { x: T; y: T };
-// A cell position is the index which is to find a specific cell in the game board.
-type CellCoord = Tagged<number, "CellCoord">;
-export type WorldCoord = Tagged<number, "WorldCoord">;
-// A world position describes a place in the pixi scene graph where a sprite is located.
-export type WorldPos = Pos<WorldCoord>;
-export type CellWidth = Tagged<number, "CellWidth">;
-export type ScreenCoord = Tagged<number, "ScreenCoord">;
-// A screen position describes a position on the user's screen
-export type ScreenPos = Pos<ScreenCoord>;
-
-/**
- * bug todo: cursor jitters when dragging field
- */
+import { CellCoord, WorldCoord } from "./CoordTypes";
 
 export class Cursor extends PIXI.Sprite {
   private cellCoordX: CellCoord;
@@ -39,7 +23,6 @@ export class Cursor extends PIXI.Sprite {
     this.moveTo(x, y);
   }
 
-  // todo pass in local-for-foreground coordinates instead of cell coordinates to simplify transforms.
   public moveTo(x: WorldCoord, y: WorldCoord) {
     this.cellCoordX = worldCoordToCellCoord(x);
     this.cellCoordY = worldCoordToCellCoord(y);
