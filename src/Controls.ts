@@ -1,22 +1,8 @@
-import {
-  Cursor,
-  ScreenPos,
-  // WorldCoord,
-  // worldCoordToCellCoord,
-  WorldPos,
-} from "./Cursor";
-// import { CHUNK_SIZE } from "./Chunk";
-// import { Field } from "./Field";
+import { Cursor, ScreenPos, WorldPos } from "./Cursor";
 import * as PIXI from "pixi.js";
-// import { FieldPersistence } from "./FieldPersistence";
-// import { scale } from "./CellSprite";
 import { zoom } from "d3-zoom";
-import {
-  // BaseType,
-  select,
-} from "d3-selection";
+import { select } from "d3-selection";
 import { z } from "zod";
-// import { SCALE } from "./CellSprite";
 import { Field } from "./Field";
 import { FieldPersistence } from "./FieldPersistence";
 import { assert } from "./assert";
@@ -56,8 +42,6 @@ export class Controls {
     // Controls.addMouseControls(rootObject);
     Controls.setupZoom(rootObject);
     // Controls.addTouchControls(rootObject);
-    // Controls.addKeyboardControls();
-    // Controls.removeUIEventBubbling();
     Controls.disableRightClickContextMenu();
   }
 
@@ -76,62 +60,6 @@ export class Controls {
   //   // .on("touchmove", Controls._onDragMove)
   //   // .on("touchend", Controls._onDragEnd)
   //   // .on("touchendoutside", Controls._onDragEnd);
-  // }
-
-  // private static addKeyboardControls() {
-  //   window.addEventListener(
-  //     "keydown",
-  //     (event) => {
-  //       Controls.mouseInput = false;
-
-  //       const move = (deltaX: number, deltaY: number) => {
-  //         Controls.moveViewTo(
-  //           Controls.cursor.getX() + deltaX,
-  //           Controls.cursor.getY() + deltaY,
-  //         );
-  //         Controls.cursor.move(deltaX, deltaY);
-  //         // disable mouse cursor
-  //         (
-  //           document.getElementsByTagName("BODY")[0] as HTMLElement
-  //         ).style.cursor = "none";
-  //       };
-  //       switch (event.keyCode) {
-  //         case 88:
-  //           Controls.open();
-  //           break;
-  //         case 90:
-  //           Controls.flag();
-  //           break;
-  //         case 37:
-  //           move(-1, 0);
-  //           break;
-  //         case 38:
-  //           move(0, -1);
-  //           break;
-  //         case 40:
-  //           move(0, 1);
-  //           break;
-  //         case 39:
-  //           move(1, 0);
-  //           break;
-  //       }
-  //     },
-  //     false,
-  //   );
-  // }
-
-  // todo is this still needed?
-  // private static removeUIEventBubbling() {
-  //   const uiElements = document.getElementsByClassName("ui");
-  //   for (const element of uiElements) {
-  //     element.addEventListener(
-  //       "click",
-  //       (event) => {
-  //         event.stopPropagation();
-  //       },
-  //       false,
-  //     );
-  //   }
   // }
 
   private static disableRightClickContextMenu() {

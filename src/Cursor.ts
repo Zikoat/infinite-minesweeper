@@ -3,6 +3,7 @@ import * as PIXI from "pixi.js";
 import { CELL_WIDTH } from "./CellSprite";
 import { getTextures } from "./Textures";
 import type { Tagged } from "type-fest";
+import { assert } from "./assert";
 
 // todo move these to a different file
 type Pos<T> = { x: T; y: T };
@@ -43,19 +44,15 @@ export class Cursor extends PIXI.Sprite {
     this.cellCoordX = worldCoordToCellCoord(x);
     this.cellCoordY = worldCoordToCellCoord(y);
 
-    const snappedWorldCoordX = cellCoordToWorldCoord(this.cellCoordX);
-    const snappedWorldCoordY = cellCoordToWorldCoord(this.cellCoordY);
+    assert(this.cellCoordX % 1 === 0);
+    assert(this.cellCoordY % 1 === 0);
 
     TweenMax.to(this, 0.1, {
-      x: snappedWorldCoordX,
-      y: snappedWorldCoordY,
+      x: cellCoordToWorldCoord(this.cellCoordX),
+      y: cellCoordToWorldCoord(this.cellCoordY),
       ease: Power4.easeOut,
     });
   }
-
-  // private moveDelta(dx: CellCoord, dy: CellCoord) {
-  //   this.moveTo(add(this.pointX, dx), add(this.pointY, dy));
-  // }
 
   public getX() {
     return this.cellCoordX;
