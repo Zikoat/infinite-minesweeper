@@ -2,7 +2,6 @@ import { Field } from "./Field";
 import { FieldRenderer } from "./FieldRenderer";
 import { FieldPersistence } from "./FieldPersistence";
 import "./css/stylesheet.css";
-import menubutton from "./assets/default/menubutton.png";
 import { loadTextures } from "./Textures";
 import * as PIXI from "pixi.js";
 
@@ -33,11 +32,6 @@ if (!field) {
   );
 }
 
-const button: HTMLImageElement = document.getElementById(
-  "menubutton",
-) as HTMLImageElement;
-button.src = menubutton;
-
 self.toggleMenu = function () {
   const menu = document.getElementById("menu");
   if (menu === null)
@@ -60,5 +54,6 @@ self.restart = function () {
     backgroundColor: 0x0f0f0f,
   });
   document.body.appendChild(app.canvas);
+  // We have to setup after canvas has been added to the dom because we add interactivity on the canvas element instead of using pixi interaction manager.
   app.setupAfterCanvasReady();
 })();
