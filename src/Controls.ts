@@ -1,6 +1,6 @@
 import { Cursor, ScreenPos, WorldPos } from "./Cursor";
 import * as PIXI from "pixi.js";
-import { zoom } from "d3-zoom";
+import { zoom, ZoomTransform } from "d3-zoom";
 import { select } from "d3-selection";
 import { z } from "zod";
 import { Field } from "./Field";
@@ -57,6 +57,8 @@ export class Controls {
         clearTimeout(longPressTimer);
         longPressTimer = null;
       }
+
+      savedCameraTransform.set(event.transform);
     });
 
     let longPressTimer: NodeJS.Timeout | null = null;
@@ -68,8 +70,6 @@ export class Controls {
         const touchPosition = event.touches[0];
 
         // todo dedup between mousemove.
-        console.log(event, touchPosition);
-        console.log("touchstart");
         assert(typeof touchPosition.clientX === "number");
         assert(typeof touchPosition.clientY === "number");
         const foreground = rootObject.getChildByName("fg");
@@ -91,7 +91,6 @@ export class Controls {
         }
       })
       .on("click", () => {
-        console.log("click");
         // todo we can simplify position calculations massively by rendering all of the closed cells and adding interactivity to them, then add some metadata to each sprite which coordinate it represents.
         Controls.open();
       })
@@ -107,8 +106,17 @@ export class Controls {
       .call(zoomHandler)
       .on("dblclick.zoom", null);
 
-    zoomHandler.translateTo(selection, 0, 0);
-    zoomHandler.scaleBy(selection, window.devicePixelRatio * 2);
+    const savedTransform = savedCameraTransform.get();
+
+    if (savedTransform) {
+      zoomHandler.transform(
+        selection,
+        new ZoomTransform(savedTransform.k, savedTransform.x, savedTransform.y),
+      );
+    } else {
+      zoomHandler.translateTo(selection, 0, 0);
+      zoomHandler.scaleBy(selection, window.devicePixelRatio * 2);
+    }
   }
 
   // todo create method on the parent which applies transform instead of mutating the object directly.
@@ -154,6 +162,7 @@ export class Controls {
     }
   }
 
+  // todo this logic should be moved to the field. If we want custom behavior then we should save settings on the field to enable/disable multi-flagging.
   private static flag() {
     const x = Controls.cursor.getX();
     const y = Controls.cursor.getY();
@@ -194,3 +203,22 @@ const eventSchema = z
     }),
   })
   .passthrough();
+
+const savedCameraTransform = {
+  key: "savedCamerTransform",
+  get: (): CameraTransform | null => {
+    return JSON.parse(
+      (localStorage.getItem(savedCameraTransform.key) as string | null) ??
+        "null",
+    ) as CameraTransform;
+  },
+  set: (transform: CameraTransform): void => {
+    localStorage.setItem(savedCameraTransform.key, JSON.stringify(transform));
+  },
+};
+
+type CameraTransform = {
+  x: number;
+  y: number;
+  k: number;
+};
