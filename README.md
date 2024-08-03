@@ -1,4 +1,4 @@
-# ![flag](https://i.imgur.com/YnpGd36.png) Minefield Resurrected
+# ![flag](https://i.imgur.com/YnpGd36.png) Minefield
 
 An infinite, open source, Minesweeper. Based on borbit's mienfield.com
 
