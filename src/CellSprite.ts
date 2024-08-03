@@ -39,9 +39,13 @@ export class CellSprite {
     this.back.height = CELL_WIDTH;
     this.front.width = CELL_WIDTH;
     this.front.height = CELL_WIDTH;
+    this.front.anchor.set(0.5);
+    this.front.scale = 0.85;
+    this.back.anchor.set(0.5);
+
     // shit this should use cell-space to world space helpers
-    const x = cell.x * CELL_WIDTH;
-    const y = cell.y * CELL_WIDTH;
+    const x = cell.x * CELL_WIDTH + CELL_WIDTH / 2;
+    const y = cell.y * CELL_WIDTH + CELL_WIDTH / 2;
     this.front.x = x;
     this.front.y = y;
     this.back.x = x;
@@ -65,10 +69,10 @@ export class CellSprite {
   // todo don't run update animation then updating all cells to improve performance on load and reload.
   private playUpdateAnimation() {
     TweenMax.from(this.front.scale, 0.2, { x: 0, y: 0 });
-    TweenMax.from(this.front, 0.2, {
-      x: "+=" + this.back.width / 2,
-      y: "+=" + this.back.width / 2,
-    });
+    // TweenMax.from(this.front, 0.2, {
+    //   x: "+=" + this.back.width / 2,
+    //   y: "+=" + this.back.width / 2,
+    // });
     TweenMax.from(this.back, 0.2, { alpha: 0 });
   }
 
@@ -87,7 +91,7 @@ export class CellSprite {
       if (cell.isMine) front = textures.mineWrong;
       else if (this.value !== null && this.value > 0)
         front = textures[this.value as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8];
-      else front = textures.open;
+      else front = PIXI.Texture.EMPTY;
     } else {
       back = textures.closed;
       front = cell.isFlagged ? textures.flag : PIXI.Texture.EMPTY;
