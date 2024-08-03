@@ -95,6 +95,9 @@ export class Controls {
         // todo we can simplify position calculations massively by rendering all of the closed cells and adding interactivity to them, then add some metadata to each sprite which coordinate it represents.
         Controls.open();
       })
+      .on("mouseup", (e: MouseEvent) => {
+        if (e.button === 2) Controls.flag();
+      })
       .on("mousemove", (event: PointerEvent & ScreenPos) => {
         assert(typeof event.x === "number");
         assert(typeof event.y === "number");
