@@ -35,7 +35,6 @@
     "@types/seedrandom": "^3.0.8",
     "@typescript-eslint/eslint-plugin": "^6.4.1",
     "@typescript-eslint/parser": "^6.4.1",
-    "assert": "^2.0.0",
     "bun-types": "^0.1.2",
     "class-transformer": "^0.5.1",
     "d3-selection": "^3.0.0",
