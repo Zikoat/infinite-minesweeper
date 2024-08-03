@@ -3,7 +3,7 @@
  */
 
 import * as PIXI from "pixi.js";
-import { getTextures, loadTextures } from "./Textures.js";
+import { getTextures } from "./Textures.js";
 import { Controls } from "./Controls";
 import { CellSprite } from "./CellSprite";
 import { Cell } from "./Cell.js";
@@ -16,25 +16,28 @@ type CellSprites = Record<
 >;
 
 export class FieldRenderer extends PIXI.Application {
-  private field: Field;
+  private fieldContainer = new PIXI.Container({
+    isRenderGroup: true,
+    interactiveChildren: false,
+  });
+
+  private clickHandler = new PIXI.Container();
 
   public cellSprites: CellSprites = {};
 
   public constructor(
-    field: Field,
+    private field: Field,
     updateScore: (input: Field) => void,
-    fieldPersistence: FieldPersistence,
+    private fieldPersistence: FieldPersistence,
   ) {
     super();
-    this.field = field;
 
     field.on("cellChanged", (cell) => {
       this.updateCell(cell, true);
       updateScore(field);
     });
 
-    // todo use async, move to before fieldRenderer initialisation.
-    loadTextures().then(() => this.setup(field, fieldPersistence));
+    this.setup();
   }
 
   public updateCell(cell: Cell, playAnimation: boolean) {
@@ -46,7 +49,12 @@ export class FieldRenderer extends PIXI.Application {
       cellSprite.update(cell);
     } else {
       const value = this.field.value(cell.x, cell.y);
-      cellSprite = new CellSprite(cell, value, fieldContainer, playAnimation);
+      cellSprite = new CellSprite(
+        cell,
+        value,
+        this.fieldContainer,
+        playAnimation,
+      );
       this.cellSprites[cell.y]![cell.x] = cellSprite;
     }
   }
@@ -61,63 +69,37 @@ export class FieldRenderer extends PIXI.Application {
   // todo: bug when i reset the game to reset the camera to 0,0, then the cell at 0,0 flashes with the "zoom out to spawn" animation every time the camera moves a pixel.
 
   // todo inline
-  private setup(
-    // todo get from textures directly
-
-    field: Field,
-    fieldPersistence: FieldPersistence,
-  ): void {
-    const closedTexture = getTextures().closed;
-
+  private setup(): void {
     // todo migrate away from tilingsprite
     const background = new PIXI.TilingSprite(
-      closedTexture,
-      app.renderer.width,
-      app.renderer.height,
+      getTextures().closed,
+      this.renderer?.width ?? window.innerWidth,
+      this.renderer?.height ?? window.innerHeight,
     );
 
-    window.addEventListener("resize", function (_event) {
-      function resize(width: number, height: number) {
-        app.renderer.resize(width, height);
-        background.width = app.renderer.width;
-        background.height = app.renderer.height;
-      }
+    window.addEventListener("resize", () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
 
-      resize(window.innerWidth, window.innerHeight);
+      this.renderer.resize(width, height);
+
+      background.width = width;
+      background.height = height;
     });
 
-    // const width = minesTextures.closed?.width;
-
-    // todo this is deprecated?
     background.name = "bg";
-    fieldContainer.name = "fg";
+    this.fieldContainer.name = "fg";
 
-    clickHandler.addChildAt(background, 0);
-    clickHandler.addChildAt(fieldContainer, 1);
+    this.clickHandler.addChildAt(background, 0);
+    this.clickHandler.addChildAt(this.fieldContainer, 1);
+    this.clickHandler.eventMode = "static";
 
-    new Controls(clickHandler, field, fieldPersistence);
+    this.stage.addChild(this.clickHandler);
 
     this.updateAllCells();
   }
+
+  public setupAfterCanvasReady() {
+    new Controls(this.clickHandler, this.field, this.fieldPersistence);
+  }
 }
-
-const app = new PIXI.Application();
-const fieldContainer = new PIXI.Container({
-  isRenderGroup: true,
-  interactiveChildren: false,
-});
-const clickHandler = new PIXI.Container();
-
-(async () => {
-  await app.init({
-    resizeTo: window,
-    backgroundColor: 0x0f0f0f,
-  });
-
-  document.body.appendChild(app.canvas);
-
-  PIXI.TextureSource.defaultOptions.scaleMode = "nearest";
-
-  clickHandler.eventMode = "static";
-  app.stage.addChild(clickHandler);
-})();

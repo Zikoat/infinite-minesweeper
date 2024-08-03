@@ -3,6 +3,8 @@ import { FieldRenderer } from "./FieldRenderer";
 import { FieldPersistence } from "./FieldPersistence";
 import "./css/stylesheet.css";
 import menubutton from "./assets/default/menubutton.png";
+import { loadTextures } from "./Textures";
+import * as PIXI from "pixi.js";
 
 const fieldName = (window.fieldName = "defaultSavedFieldv3");
 const localStorage = window.localStorage;
@@ -31,8 +33,6 @@ if (!field) {
   );
 }
 
-new FieldRenderer(field, updateScore, fieldStorage);
-
 const button: HTMLImageElement = document.getElementById(
   "menubutton",
 ) as HTMLImageElement;
@@ -50,3 +50,15 @@ self.restart = function () {
   console.log("removed: ", fieldName);
   window.location.reload();
 };
+
+(async () => {
+  PIXI.TextureSource.defaultOptions.scaleMode = "nearest";
+  await loadTextures();
+  const app = new FieldRenderer(field, updateScore, fieldStorage);
+  await app.init({
+    resizeTo: window,
+    backgroundColor: 0x0f0f0f,
+  });
+  document.body.appendChild(app.canvas);
+  app.setupAfterCanvasReady();
+})();
