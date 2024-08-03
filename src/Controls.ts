@@ -7,23 +7,13 @@ import { Field } from "./Field";
 import { FieldPersistence } from "./FieldPersistence";
 import { assert } from "./assert";
 
-// const DRAG_THRESHOLD = 30;
-// const LONG_PRESS_DURATION = 200; // Duration in milliseconds to consider it a long press
+// todo add setting for long press duration
+const LONG_PRESS_DURATION = 200; // Duration in milliseconds to consider it a long press
 
 export class Controls {
   private static cursor: Cursor;
   private static field: Field;
   private static fieldStorage: FieldPersistence;
-  // private static dragging: boolean = false;
-  // private static hasDragged: boolean = false;
-  // private static mouseInput: boolean = false;
-  // private static screenDragStart: { x: number; y: number } = { x: 0, y: 0 };
-  // private static foregroundDragStartPosition: { x: number; y: number } = {
-  //   x: 0,
-  //   y: 0,
-  // };
-  // private static longPressTimer: ReturnType<typeof setTimeout> | null = null;
-  // private static hasLongPressed = false;
 
   public constructor(
     rootObject: PIXI.Container,
@@ -34,33 +24,13 @@ export class Controls {
     Controls.fieldStorage = fieldStorage;
 
     Controls.cursor = new Cursor();
-    // todo why do we have to specify position here? can we just not add it normally?
-    (rootObject.getChildByName("fg") as PIXI.Container).addChild(
-      Controls.cursor,
-    );
+    const foreground = rootObject.getChildByName("fg");
+    assert(foreground);
+    foreground.addChild(Controls.cursor);
 
-    // Controls.addMouseControls(rootObject);
     Controls.setupZoom(rootObject);
-    // Controls.addTouchControls(rootObject);
     Controls.disableRightClickContextMenu();
   }
-
-  // private static addMouseControls(rootObject: PIXI.Container) {
-  //   rootObject;
-  //   // .on("mousedown", Controls._onDragStart)
-  //   // .on("mouseup", Controls._onDragEnd)
-  //   // .on("pointerupoutside", Controls._onDragEnd)
-  //   // .on("pointermove", Controls._onDragMove)
-  //   // .on("rightclick", Controls._onRightClick);
-  // }
-
-  // private static addTouchControls(rootObject: PIXI.Container) {
-  //   rootObject;
-  //   // .on("touchstart", Controls._onDragStart)
-  //   // .on("touchmove", Controls._onDragMove)
-  //   // .on("touchend", Controls._onDragEnd)
-  //   // .on("touchendoutside", Controls._onDragEnd);
-  // }
 
   private static disableRightClickContextMenu() {
     document.addEventListener("contextmenu", (event) => event.preventDefault());
@@ -81,12 +51,47 @@ export class Controls {
       foreground.scale.set(scale);
       background.tilePosition.set(x, y);
       background.tileScale.set(scale);
+
+      // todo dedupe between touchend
+      if (longPressTimer) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+      }
     });
 
+    let longPressTimer: NodeJS.Timeout | null = null;
+
     const selection = select<Element, unknown>("canvas")
-      .call(zoomHandler)
-      .on("dblclick.zoom", null)
+      .on("touchstart", (event: TouchEvent) => {
+        if (event.touches.length > 1) return;
+
+        const touchPosition = event.touches[0];
+
+        // todo dedup between mousemove.
+        console.log(event, touchPosition);
+        console.log("touchstart");
+        assert(typeof touchPosition.clientX === "number");
+        assert(typeof touchPosition.clientY === "number");
+        const foreground = rootObject.getChildByName("fg");
+        assert(foreground);
+        const worldPos = foreground.toLocal({
+          x: touchPosition.clientX,
+          y: touchPosition.clientY,
+        }) as WorldPos;
+
+        longPressTimer = setTimeout(() => {
+          Controls.cursor.moveTo(worldPos.x, worldPos.y);
+          Controls.flag();
+        }, LONG_PRESS_DURATION);
+      })
+      .on("touchend", () => {
+        if (longPressTimer) {
+          clearTimeout(longPressTimer);
+          longPressTimer = null;
+        }
+      })
       .on("click", () => {
+        console.log("click");
         // todo we can simplify position calculations massively by rendering all of the closed cells and adding interactivity to them, then add some metadata to each sprite which coordinate it represents.
         Controls.open();
       })
@@ -99,12 +104,10 @@ export class Controls {
 
         Controls.cursor.moveTo(worldPos.x, worldPos.y);
       })
-      .on("contextmenu", (_event: MouseEvent) => {
-        Controls.flag();
-      });
+      .call(zoomHandler)
+      .on("dblclick.zoom", null);
 
     zoomHandler.translateTo(selection, 0, 0);
-
     zoomHandler.scaleBy(selection, window.devicePixelRatio * 2);
   }
 
@@ -118,129 +121,6 @@ export class Controls {
   // todo after restarting, the opened cell is not in the middle
   // todo, when i load the page, then press somewhere, then it jumps to another place
   // - todo i need to pass initial transform to controls
-
-  // private static _onDragStart(this: PIXI.Container, event: PixiEvent) {
-  //   const foreground = this.getChildByName("fg") as PIXI.Sprite;
-  //   const background = this.getChildByName("bg") as PIXI.TilingSprite;
-
-  //   Controls.dragging = true;
-  //   Controls.hasDragged = false;
-
-  //   Controls.screenDragStart = event.data.getLocalPosition(this);
-
-  //   Controls.foregroundDragStartPosition = {
-  //     x: foreground.position.x,
-  //     y: foreground.position.y,
-  //   };
-
-  //   Controls.updateCursorPosition(event, foreground, background);
-
-  //   Controls.hasLongPressed = false;
-
-  //   Controls.longPressTimer = setTimeout(() => {
-  //     Controls.dragging = false;
-  //     Controls.hasLongPressed = true;
-
-  //     const x = Controls.cursor.getX();
-  //     const y = Controls.cursor.getY();
-  //     const cell = Controls.field.getCell(x, y);
-  //     if (!cell.isOpen) Controls.flag();
-  //   }, LONG_PRESS_DURATION);
-  // }
-
-  // private static _onDragEnd(_event: PIXI.FederatedPointerEvent) {
-  //   Controls.dragging = false;
-  //   if (!Controls.hasDragged && !Controls.hasLongPressed) {
-  //     Controls.open();
-  //   }
-  //   Controls.hasLongPressed = false;
-  //   Controls.hasDragged = false;
-
-  //   if (Controls.longPressTimer) {
-  //     clearTimeout(Controls.longPressTimer);
-  //     Controls.longPressTimer = null;
-  //   }
-  // }
-
-  // private static _onDragMove(
-  //   this: PIXI.Container,
-  //   event: PIXI.FederatedPointerEvent,
-  // ) {
-  //   const width = (this.getChildByName("bg") as PIXI.TilingSprite).texture
-  //     .width;
-
-  //   if (Controls.dragging) {
-  //     const screenDragCurrent = event.data.getLocalPosition(this);
-
-  //     const dx = screenDragCurrent.x - Controls.screenDragStart.x;
-  //     const dy = screenDragCurrent.y - Controls.screenDragStart.y;
-
-  //     if (Math.sqrt(dx * dx + dy * dy) > DRAG_THRESHOLD) {
-  //       Controls.hasDragged = true;
-  //       if (Controls.longPressTimer) {
-  //         clearTimeout(Controls.longPressTimer);
-  //         Controls.longPressTimer = null;
-  //       }
-  //     }
-
-  //     if (Controls.hasDragged) {
-  //       const x = Math.floor(dx) + Controls.foregroundDragStartPosition.x;
-  //       const y = Math.floor(dy) + Controls.foregroundDragStartPosition.y;
-
-  //       const foreground = this.getChildByName("fg") as PIXI.Sprite;
-  //       const background = this.getChildByName("bg") as PIXI.TilingSprite;
-
-  //       foreground.position.set(x, y);
-  //       background.tilePosition.set(x, y);
-
-  //       Controls.setLoadedChunksAround(
-  //         -Math.floor(x / width / CHUNK_SIZE),
-  //         -Math.floor(y / width / CHUNK_SIZE),
-  //         width,
-  //       );
-  //     }
-  //   }
-
-  //   if (Controls.mouseInput) {
-  //     Controls.updateCursorPosition(
-  //       event,
-  //       this.getChildByName("fg") as PIXI.Sprite,
-  //       this.getChildByName("bg") as PIXI.TilingSprite,
-  //     );
-  //   }
-  //   Controls.mouseInput = true;
-  //   (document.getElementsByTagName("BODY")[0] as HTMLElement).style.cursor =
-  //     "default";
-  // }
-
-  // private static updateCursorPosition(
-  //   event: PixiEvent,
-  //   foreground: PIXI.Sprite,
-  //   background: PIXI.TilingSprite,
-  // ) {
-  //   const width = background.texture.width;
-  //   const position = event.data.getLocalPosition(foreground);
-  //   const x = Math.floor(position.x / width / scale);
-  //   const y = Math.floor(position.y / width / scale);
-  //   Controls.cursor.moveTo(x, y);
-  // }
-
-  // private static setLoadedChunksAround(x: number, y: number, width: number) {
-  //   const windowChunkWidth = Math.ceil(window.innerWidth / width / CHUNK_SIZE);
-  //   const windowChunkHeight = Math.ceil(
-  //     window.innerHeight / width / CHUNK_SIZE,
-  //   );
-  //   for (let i = x - 1; i < x + windowChunkWidth; i++) {
-  //     for (let j = y - 1; j < y + windowChunkHeight; j++) {
-  //       Controls.field.setVisibleChunk(i, j);
-  //     }
-  //   }
-  //   Controls.field.loadVisibleChunks();
-  // }
-
-  // private static _onRightClick(_event: unknown) {
-  //   Controls.flag();
-  // }
 
   // todo this logic should be moved to the field. If we want custom behavior then we should save settings on the field to enable/disable multi-flagging.
   private static open() {
@@ -302,35 +182,6 @@ export class Controls {
       Controls.fieldStorage.save(Controls.field, Controls.field.fieldName);
     }
   }
-
-  // private static moveViewTo(newx: number, newy: number) {
-  //   const width = (Controls.cursor.parent.getChildByName("bg") as PIXI.Sprite)
-  //     .texture.width;
-  //   const x = newx * width * scale;
-  //   const y = newy * width * scale;
-  //   const newPixelPositionX =
-  //     -x + Math.floor(window.innerWidth / width / 2) * width;
-  //   const newPixelPositionY =
-  //     -y + Math.floor(window.innerHeight / width / 2) * width;
-
-  //   (Controls.cursor.parent.getChildByName("fg") as PIXI.Sprite).position.set(
-  //     newPixelPositionX,
-  //     newPixelPositionY,
-  //   );
-  //   (
-  //     Controls.cursor.parent.getChildByName("bg") as PIXI.TilingSprite
-  //   ).tilePosition.set(newPixelPositionX, newPixelPositionY);
-
-  //   Controls.setLoadedChunksAround(
-  //     Math.floor(newx / CHUNK_SIZE),
-  //     Math.floor(newy / CHUNK_SIZE),
-  //     width,
-  //   );
-
-  //   // didnt work as expected
-  //   // TweenMax.to(Controls.cursor.parent.getChildByName("fg").position, 0.2, {x:newPixelPositionX,y:newPixelPositionY})
-  //   // TweenMax.to(Controls.cursor.parent.getChildByName("bg").tilePosition, 0.2, {x:newPixelPositionX,y:newPixelPositionY});
-  // }
 }
 
 const eventSchema = z

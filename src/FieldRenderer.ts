@@ -10,6 +10,7 @@ import { Cell } from "./Cell.js";
 import { Field } from "./Field.js";
 import { FieldPersistence } from "./FieldPersistence.js";
 
+// todo bug: when i flag a safe cell, then unflag, then open, then the cell looks like it is a 0.
 type CellSprites = Record<
   number,
   Record<number, CellSprite | undefined> | undefined
