@@ -40,22 +40,11 @@ export class Cursor extends PIXI.Sprite {
 
   // todo pass in local-for-foreground coordinates instead of cell coordinates to simplify transforms.
   public moveTo(x: WorldCoord, y: WorldCoord) {
-    // const pos = {
-    //   x: cellCoordToWorldCoord(x),
-    //   y: cellCoordToWorldCoord(y),
-    // } as WorldPos | undefined;
-
     this.cellCoordX = worldCoordToCellCoord(x);
     this.cellCoordY = worldCoordToCellCoord(y);
 
     const snappedWorldCoordX = cellCoordToWorldCoord(this.cellCoordX);
     const snappedWorldCoordY = cellCoordToWorldCoord(this.cellCoordY);
-
-    // shit this should never happen, i think we might be initializing in incorrect order.
-    // if (!pos) {
-    //   console.warn("Tried to move cursor, but foreground is not defined");
-    //   return;
-    // }
 
     TweenMax.to(this, 0.1, {
       x: snappedWorldCoordX,

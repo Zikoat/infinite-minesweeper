@@ -20,15 +20,10 @@ import { z } from "zod";
 // import { SCALE } from "./CellSprite";
 import { Field } from "./Field";
 import { FieldPersistence } from "./FieldPersistence";
+import { assert } from "./assert";
 
 // const DRAG_THRESHOLD = 30;
 // const LONG_PRESS_DURATION = 200; // Duration in milliseconds to consider it a long press
-
-// type PixiEvent = {
-//   data: {
-//     getLocalPosition: (arg0: PIXI.Container) => PIXI.Point;
-//   };
-// };
 
 export class Controls {
   private static cursor: Cursor;
@@ -145,63 +140,51 @@ export class Controls {
   }
 
   private static setupZoom(rootObject: PIXI.Container) {
-    const zoomHandler = zoom();
     function logZoomEvent(e: { type: string }) {
       console.log(e.type);
     }
-    zoomHandler.on("start", (rawEvent) => {
-      const event = eventSchema.parse(rawEvent);
-      logZoomEvent(event);
-    });
-    zoomHandler.on("end", (rawEvent) => {
-      const event = eventSchema.parse(rawEvent);
-      logZoomEvent(event);
-    });
 
-    zoomHandler.on("zoom", (rawEvent) => {
-      const event = eventSchema.parse(rawEvent);
-      logZoomEvent(event);
+    const zoomHandler = zoom()
+      .on("start", (rawEvent) => {
+        const event = eventSchema.parse(rawEvent);
+        logZoomEvent(event);
+      })
+      .on("end", (rawEvent) => {
+        const event = eventSchema.parse(rawEvent);
+        logZoomEvent(event);
+      })
+      .on("zoom", (rawEvent) => {
+        const event = eventSchema.parse(rawEvent);
+        logZoomEvent(event);
 
-      const foreground = rootObject.getChildByName("fg") as PIXI.Sprite;
-      const background = rootObject.getChildByName("bg") as PIXI.TilingSprite;
+        const foreground = rootObject.getChildByName("fg") as PIXI.Sprite;
+        const background = rootObject.getChildByName("bg") as PIXI.TilingSprite;
 
-      const x = event.transform.x;
-      const y = event.transform.y;
-      const scale = event.transform.k;
+        const x = event.transform.x;
+        const y = event.transform.y;
+        const scale = event.transform.k;
 
-      foreground.position.set(x, y);
-      foreground.scale.set(scale);
-      background.tilePosition.set(x, y);
-      background.tileScale.set(scale);
-    });
+        foreground.position.set(x, y);
+        foreground.scale.set(scale);
+        background.tilePosition.set(x, y);
+        background.tileScale.set(scale);
+      });
+    // .duration(0);
 
     select<Element, unknown>("canvas")
       .call(zoomHandler)
+      .on("dblclick.zoom", null)
       .on("click", (event: MouseEvent) => {
         console.log(event.type);
         // todo we can simplify position calculations massively by rendering all of the closed cells and adding interactivity to them, then add some metadata to each sprite which coordinate it represents.
         Controls.open();
       })
-      .on("pointermove", (event: PointerEvent) => {
-        const eventPoint: ScreenPos = {
-          x: event.clientX as ScreenCoord,
-          y: event.clientY as ScreenCoord,
-        };
-
-        function screenPosToWorldPos(screenPos: ScreenPos): WorldPos {
-          const foreground = (
-            rootObject.getChildByName("fg") as PIXI.Sprite
-          ).toLocal(screenPos) as unknown as WorldPos;
-
-          // shit it doesn't make sense to multiply by 3 here
-          // sht is screen cord really same as wordl coord?
-          const worldCoordX = foreground.x;
-          const worldCoordY = foreground.y;
-          return { x: worldCoordX, y: worldCoordY };
-        }
-
-        // todo inline
-        const worldPos = screenPosToWorldPos(eventPoint);
+      .on("mousemove", (event: PointerEvent & ScreenPos) => {
+        assert(typeof event.x === "number");
+        assert(typeof event.y === "number");
+        const foreground = rootObject.getChildByName("fg");
+        assert(foreground);
+        const worldPos = foreground.toLocal(event) as WorldPos;
 
         Controls.cursor.moveTo(worldPos.x, worldPos.y);
       })
@@ -209,6 +192,7 @@ export class Controls {
         Controls.flag();
       });
   }
+
   // todo create method on the parent which applies transform instead of mutating the object directly.
   // todo add different types (maybe with brands) for the different types of transforms, because we are starting to work in a lot of different coordinate systems.
 
