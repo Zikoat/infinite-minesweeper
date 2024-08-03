@@ -176,6 +176,8 @@ export class Controls {
       });
 
     zoomHandler.translateTo(selection, 0, 0);
+
+    zoomHandler.scaleBy(selection, window.devicePixelRatio * 2);
   }
 
   // todo create method on the parent which applies transform instead of mutating the object directly.
