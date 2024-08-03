@@ -8,7 +8,7 @@ export class Chunk {
   private cells: Cell[][];
 
   public constructor(x: number, y: number) {
-    console.log(" creating new chunkS");
+    console.log("creating new chunkS");
     this.x = x;
     this.y = y;
     this.cells = [];

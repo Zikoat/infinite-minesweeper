@@ -3,16 +3,22 @@
  */
 
 import * as PIXI from "pixi.js";
-import { loadTextures } from "./Textures.js";
+import { getTextures, loadTextures } from "./Textures.js";
 import { Controls } from "./Controls";
 import { CellSprite } from "./CellSprite";
 import { Cell } from "./Cell.js";
 import { Field } from "./Field.js";
-import { MinesTextures } from "./Textures.js";
 import { FieldPersistence } from "./FieldPersistence.js";
+
+type CellSprites = Record<
+  number,
+  Record<number, CellSprite | undefined> | undefined
+>;
 
 export class FieldRenderer extends PIXI.Application {
   private field: Field;
+
+  public cellSprites: CellSprites = {};
 
   public constructor(
     field: Field,
@@ -23,83 +29,76 @@ export class FieldRenderer extends PIXI.Application {
     this.field = field;
 
     field.on("cellChanged", (cell) => {
-      updateCell(field, cell, true);
+      this.updateCell(cell, true);
       updateScore(field);
     });
 
-    // todo use async
-    loadTextures().then((minesTextures) =>
-      setup(minesTextures, field, fieldPersistence),
-    );
+    // todo use async, move to before fieldRenderer initialisation.
+    loadTextures().then(() => this.setup(field, fieldPersistence));
   }
 
-  public updateCell(cell: Cell) {
-    updateCell(this.field, cell, true);
-  }
-
-  public updateAllCells() {
-    updateAllCells(this.field);
-  }
-}
-
-// todo inline
-// todo: bug when i reset the game to reset the camera to 0,0, then the cell at 0,0 flashes with the "zoom out to spawn" animation every time the camera moves a pixel.
-function updateCell(
-  field: Field,
-  cell: Cell & { sprite?: CellSprite },
-  playAnimation: boolean,
-) {
-  if (cell.sprite === undefined) {
-    const value = field.value(cell.x, cell.y);
-    cell.sprite = new CellSprite(cell, value, fieldContainer, playAnimation);
-  } else {
-    cell.sprite.update(cell);
-  }
-}
-
-// todo inline
-function updateAllCells(field: Field): void {
-  field
-    .getAll()
-    .filter((cell) => cell.isOpen || cell.isFlagged)
-    .forEach((cell) => updateCell(field, cell, false));
-}
-
-function setup(
-  // todo rename
-  minesTextures: MinesTextures,
-  field: Field,
-  fieldPersistence: FieldPersistence,
-): void {
-  // todo migrate away from tilingsprite
-  const background = new PIXI.TilingSprite(
-    minesTextures.closed,
-    app.renderer.width,
-    app.renderer.height,
-  );
-
-  window.addEventListener("resize", function (_event) {
-    function resize(width: number, height: number) {
-      app.renderer.resize(width, height);
-      background.width = app.renderer.width;
-      background.height = app.renderer.height;
+  public updateCell(cell: Cell, playAnimation: boolean) {
+    if (!this.cellSprites[cell.y]) {
+      this.cellSprites[cell.y] = {};
     }
+    let cellSprite = this.cellSprites[cell.y]![cell.x];
+    if (cellSprite) {
+      cellSprite.update(cell);
+    } else {
+      const value = this.field.value(cell.x, cell.y);
+      cellSprite = new CellSprite(cell, value, fieldContainer, playAnimation);
+      this.cellSprites[cell.y]![cell.x] = cellSprite;
+    }
+  }
 
-    resize(window.innerWidth, window.innerHeight);
-  });
+  public updateAllCells(): void {
+    this.field
+      .getAll()
+      .filter((cell) => cell.isOpen || cell.isFlagged)
+      .forEach((cell) => this.updateCell(cell, false));
+  }
 
-  // const width = minesTextures.closed?.width;
+  // todo: bug when i reset the game to reset the camera to 0,0, then the cell at 0,0 flashes with the "zoom out to spawn" animation every time the camera moves a pixel.
 
-  // todo this is deprecated?
-  background.name = "bg";
-  fieldContainer.name = "fg";
+  // todo inline
+  private setup(
+    // todo get from textures directly
 
-  clickHandler.addChildAt(background, 0);
-  clickHandler.addChildAt(fieldContainer, 1);
+    field: Field,
+    fieldPersistence: FieldPersistence,
+  ): void {
+    const closedTexture = getTextures().closed;
 
-  new Controls(clickHandler, field, fieldPersistence);
+    // todo migrate away from tilingsprite
+    const background = new PIXI.TilingSprite(
+      closedTexture,
+      app.renderer.width,
+      app.renderer.height,
+    );
 
-  updateAllCells(field);
+    window.addEventListener("resize", function (_event) {
+      function resize(width: number, height: number) {
+        app.renderer.resize(width, height);
+        background.width = app.renderer.width;
+        background.height = app.renderer.height;
+      }
+
+      resize(window.innerWidth, window.innerHeight);
+    });
+
+    // const width = minesTextures.closed?.width;
+
+    // todo this is deprecated?
+    background.name = "bg";
+    fieldContainer.name = "fg";
+
+    clickHandler.addChildAt(background, 0);
+    clickHandler.addChildAt(fieldContainer, 1);
+
+    new Controls(clickHandler, field, fieldPersistence);
+
+    this.updateAllCells();
+  }
 }
 
 const app = new PIXI.Application();

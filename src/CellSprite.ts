@@ -51,7 +51,6 @@ export class CellSprite {
     this.back.zIndex = 1;
     this.front.zIndex = 2;
     parent.addChild(this.back, this.front);
-    console.log("creating cell");
     if (playAnimation) this.playUpdateAnimation();
   }
 

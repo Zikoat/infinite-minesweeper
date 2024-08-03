@@ -1,6 +1,5 @@
 import {
   Cursor,
-  ScreenCoord,
   ScreenPos,
   // WorldCoord,
   // worldCoordToCellCoord,
@@ -140,42 +139,26 @@ export class Controls {
   }
 
   private static setupZoom(rootObject: PIXI.Container) {
-    function logZoomEvent(e: { type: string }) {
-      console.log(e.type);
-    }
+    const zoomHandler = zoom().on("zoom", (rawEvent) => {
+      const event = eventSchema.parse(rawEvent);
 
-    const zoomHandler = zoom()
-      .on("start", (rawEvent) => {
-        const event = eventSchema.parse(rawEvent);
-        logZoomEvent(event);
-      })
-      .on("end", (rawEvent) => {
-        const event = eventSchema.parse(rawEvent);
-        logZoomEvent(event);
-      })
-      .on("zoom", (rawEvent) => {
-        const event = eventSchema.parse(rawEvent);
-        logZoomEvent(event);
+      const foreground = rootObject.getChildByName("fg") as PIXI.Sprite;
+      const background = rootObject.getChildByName("bg") as PIXI.TilingSprite;
 
-        const foreground = rootObject.getChildByName("fg") as PIXI.Sprite;
-        const background = rootObject.getChildByName("bg") as PIXI.TilingSprite;
+      const x = event.transform.x;
+      const y = event.transform.y;
+      const scale = event.transform.k;
 
-        const x = event.transform.x;
-        const y = event.transform.y;
-        const scale = event.transform.k;
-
-        foreground.position.set(x, y);
-        foreground.scale.set(scale);
-        background.tilePosition.set(x, y);
-        background.tileScale.set(scale);
-      });
-    
+      foreground.position.set(x, y);
+      foreground.scale.set(scale);
+      background.tilePosition.set(x, y);
+      background.tileScale.set(scale);
+    });
 
     select<Element, unknown>("canvas")
       .call(zoomHandler)
       .on("dblclick.zoom", null)
-      .on("click", (event: MouseEvent) => {
-        console.log(event.type);
+      .on("click", () => {
         // todo we can simplify position calculations massively by rendering all of the closed cells and adding interactivity to them, then add some metadata to each sprite which coordinate it represents.
         Controls.open();
       })
