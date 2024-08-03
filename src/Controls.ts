@@ -155,7 +155,7 @@ export class Controls {
       background.tileScale.set(scale);
     });
 
-    select<Element, unknown>("canvas")
+    const selection = select<Element, unknown>("canvas")
       .call(zoomHandler)
       .on("dblclick.zoom", null)
       .on("click", () => {
@@ -174,6 +174,8 @@ export class Controls {
       .on("contextmenu", (_event: MouseEvent) => {
         Controls.flag();
       });
+
+    zoomHandler.translateTo(selection, 0, 0);
   }
 
   // todo create method on the parent which applies transform instead of mutating the object directly.
