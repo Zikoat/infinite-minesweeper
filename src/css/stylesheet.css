@@ -30,26 +30,39 @@ canvas,
   src: url("../assets/fonts/silkscreen.ttf") format("truetype");
 }
 
-.ui {
-  font-family: "silkscreen";
-  font-size: 16px;
-  border: 2px solid #696969;
-  background-color: #292929;
-  padding: 2px;
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   position: absolute;
   top: 2px;
   left: 2px;
+}
+
+.ui {
+  font-family: "silkscreen";
+  font-size: 16px;
+  background-color: #292929;
+  padding: 2px;
   color: lightgray;
   zoom: 2;
 }
 
 .menubutton {
-  width: 2em;
+  width: 3em;
+  height: 3em;
+  border: 2px solid darkgray;
 }
 
 .menubutton > img {
   image-rendering: pixelated;
   width: 100%;
+  filter: brightness(2);
+}
+
+.menu {
+  display: none;
+  border: 2px solid darkgray;
 }
 
 .menu button {
@@ -60,19 +73,6 @@ canvas,
   color: lightgray;
 }
 
-.menu {
-  display: none;
-  position: absolute;
-  top: 32px;
-  left: 2px;
-  border: 2px solid #696969;
-}
-
-button {
-  border: 2px #696969;
-  padding: 4px;
-  border-style: dashed;
-}
 a {
   color: dodgerblue;
 }
