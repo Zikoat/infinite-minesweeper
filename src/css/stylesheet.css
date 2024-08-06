@@ -4,6 +4,7 @@ body {
   padding: 0;
   overflow: hidden;
   background-color: #0f0f0f;
+  touch-action: none;
 }
 
 img,
