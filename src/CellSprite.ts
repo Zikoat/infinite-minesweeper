@@ -26,6 +26,7 @@ export class CellSprite {
   public neighborCount: NeighborCount | null;
   private back: PIXI.Sprite;
   private front: PIXI.Sprite;
+  private lorez: PIXI.Sprite;
 
   public constructor(
     cell: Cell,
@@ -34,6 +35,7 @@ export class CellSprite {
     playAnimation: boolean,
   ) {
     this.neighborCount = neighborCount;
+    // todo when we zoom out a lot, we should use single-pixel texture. could do white with tint, and then remove alpha on top layer.
     const cellTexture = this.getCellTexture(cell);
     this.back = new PIXI.Sprite(cellTexture.back);
     this.front = new PIXI.Sprite(cellTexture.front);
@@ -54,7 +56,18 @@ export class CellSprite {
     this.back.y = y;
     this.back.zIndex = 1;
     this.front.zIndex = 2;
-    parent.addChild(this.back, this.front);
+    this.lorez = new PIXI.Sprite(PIXI.Texture.WHITE);
+    this.lorez.width = CELL_WIDTH;
+    this.lorez.height = CELL_WIDTH;
+    this.lorez.anchor.set(0.5);
+    this.lorez.tint = cellTexture.lorezTint;
+    this.lorez.x = x;
+    this.lorez.y = y;
+    const lorezLayer = parent.getChildByName("lorez") as PIXI.Container;
+    const foregroundLayer = parent.getChildByName("fg") as PIXI.Container;
+    foregroundLayer.addChild(this.front, this.back);
+    lorezLayer.addChild(this.lorez);
+
     if (playAnimation) this.playUpdateAnimation();
   }
 
@@ -62,6 +75,7 @@ export class CellSprite {
     const cellTexture = this.getCellTexture(cell);
     this.back.texture = cellTexture.back;
     this.front.texture = cellTexture.front;
+    this.lorez.tint = cellTexture.lorezTint;
 
     this.playUpdateAnimation();
   }
@@ -79,31 +93,58 @@ export class CellSprite {
   private getCellTexture(cell: Cell): {
     back: MyTexture;
     front: MyTexture;
+    lorezTint: number;
   } {
     const textures = getTextures();
 
     let back: PIXI.Texture;
     let front: PIXI.Texture;
+    let lorezTint: number;
 
     if (cell.isOpen) {
       back = textures.open;
-      if (cell.isMine) front = textures.mineWrong;
-      else if (this.neighborCount !== null && this.neighborCount > 0)
-        front = textures[this.neighborCount as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8];
-      else front = PIXI.Texture.EMPTY;
+      if (cell.isMine) {
+        front = textures.mineWrong;
+        lorezTint = 0xff0000;
+      } else if (this.neighborCount !== null && this.neighborCount > 0) {
+        type NeighborCountOpen = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+
+        front = textures[this.neighborCount as NeighborCountOpen];
+        lorezTint =
+          lorezTintNeighborCount[this.neighborCount as NeighborCountOpen];
+      } else {
+        front = PIXI.Texture.EMPTY;
+        lorezTint = 0x1c1c1c;
+      }
     } else {
-      back = PIXI.Texture.EMPTY;
-      front = cell.isFlagged ? textures.flag : PIXI.Texture.EMPTY;
+      back = textures.closed;
+      if (cell.isFlagged) {
+        front = textures.flag;
+        lorezTint = 0xa0a0a0;
+      } else {
+        front = PIXI.Texture.EMPTY;
+        lorezTint = 0x000000;
+      }
     }
 
     assert(front);
     assert(back);
 
-    const texture: { back: MyTexture; front: MyTexture } = {
+    return {
       back,
       front,
+      lorezTint,
     };
-
-    return texture;
   }
 }
+const lorezTintNeighborCount = [
+  undefined,
+  0x0000cd,
+  0x006700,
+  0xcd0000,
+  0x6116b1,
+  0x800000,
+  0x008080,
+  0xffffff,
+  0xaa00ff, // todo, we need to make the 8 stand out when zoomed out.
+] as const;
