@@ -8,6 +8,7 @@ declare global {
     FieldStorage: FieldPersistence;
     toggleMenu: () => void;
     restart: () => void;
+    toggleFullscreen: () => void;
     fieldName: string;
   }
 }

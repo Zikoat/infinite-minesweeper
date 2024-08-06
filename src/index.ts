@@ -45,6 +45,22 @@ self.restart = function () {
   window.location.reload();
 };
 
+self.toggleFullscreen = function () {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch((err) => {
+      console.error(
+        `Error attempting to enable fullscreen mode: ${err.message} (${err.name})`,
+      );
+    });
+  } else {
+    document.exitFullscreen().catch((err) => {
+      console.error(
+        `Error attempting to exit fullscreen mode: ${err.message} (${err.name})`,
+      );
+    });
+  }
+};
+
 (async () => {
   PIXI.TextureSource.defaultOptions.scaleMode = "nearest";
   PIXI.TextureSource.defaultOptions.autoGenerateMipmaps = true;
