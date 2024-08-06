@@ -11,8 +11,10 @@ type MyTexture = PIXI.Texture;
 
 type NeighborCount = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
-// todo rename to neighborcount
-function numberToValueNumber(value: number): NeighborCount {
+export function numberToNeighborCount(
+  value: number | null,
+): NeighborCount | null {
+  if (value === null) return value;
   assert(value % 1 === 0);
   assert(value >= 0);
   assert(value <= 8);
@@ -21,17 +23,17 @@ function numberToValueNumber(value: number): NeighborCount {
 }
 
 export class CellSprite {
-  private value: NeighborCount | null;
+  public neighborCount: NeighborCount | null;
   private back: PIXI.Sprite;
   private front: PIXI.Sprite;
 
   public constructor(
     cell: Cell,
-    value: number | null,
+    neighborCount: NeighborCount | null,
     parent: PIXI.Container,
     playAnimation: boolean,
   ) {
-    this.value = value === null ? null : numberToValueNumber(value);
+    this.neighborCount = neighborCount;
     const cellTexture = this.getCellTexture(cell);
     this.back = new PIXI.Sprite(cellTexture.back);
     this.front = new PIXI.Sprite(cellTexture.front);
@@ -50,8 +52,6 @@ export class CellSprite {
     this.front.y = y;
     this.back.x = x;
     this.back.y = y;
-    this.back.name = "bg";
-    this.front.name = "fg";
     this.back.zIndex = 1;
     this.front.zIndex = 2;
     parent.addChild(this.back, this.front);
@@ -80,20 +80,19 @@ export class CellSprite {
     back: MyTexture;
     front: MyTexture;
   } {
-    // todo create a getter, maybe call load every time
     const textures = getTextures();
 
-    let back;
-    let front;
+    let back: PIXI.Texture;
+    let front: PIXI.Texture;
 
     if (cell.isOpen) {
       back = textures.open;
       if (cell.isMine) front = textures.mineWrong;
-      else if (this.value !== null && this.value > 0)
-        front = textures[this.value as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8];
+      else if (this.neighborCount !== null && this.neighborCount > 0)
+        front = textures[this.neighborCount as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8];
       else front = PIXI.Texture.EMPTY;
     } else {
-      back = textures.closed;
+      back = PIXI.Texture.EMPTY;
       front = cell.isFlagged ? textures.flag : PIXI.Texture.EMPTY;
     }
 

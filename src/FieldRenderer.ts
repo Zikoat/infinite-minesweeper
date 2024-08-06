@@ -5,12 +5,12 @@
 import * as PIXI from "pixi.js";
 import { getTextures } from "./Textures.js";
 import { Controls } from "./Controls";
-import { CellSprite } from "./CellSprite";
+import { CellSprite, numberToNeighborCount } from "./CellSprite";
 import { Cell } from "./Cell.js";
 import { Field } from "./Field.js";
 import { FieldPersistence } from "./FieldPersistence.js";
 
-// todo bug: when i flag a safe cell, then unflag, then open, then the cell looks like it is a 0.
+// todo bug: when i open a mine, and the mine has only a single neighbor which is a closed mine, then right pressing the mine flags the
 type CellSprites = Record<
   number,
   Record<number, CellSprite | undefined> | undefined
@@ -46,13 +46,17 @@ export class FieldRenderer extends PIXI.Application {
       this.cellSprites[cell.y] = {};
     }
     let cellSprite = this.cellSprites[cell.y]![cell.x];
+    const neighborCount = numberToNeighborCount(
+      this.field.value(cell.x, cell.y),
+    );
+
     if (cellSprite) {
+      cellSprite.neighborCount = neighborCount;
       cellSprite.update(cell);
     } else {
-      const value = this.field.value(cell.x, cell.y);
       cellSprite = new CellSprite(
         cell,
-        value,
+        neighborCount,
         this.fieldContainer,
         playAnimation,
       );
@@ -71,12 +75,11 @@ export class FieldRenderer extends PIXI.Application {
 
   // todo inline
   private setup(): void {
-    // todo migrate away from tilingsprite
-    const background = new PIXI.TilingSprite(
-      getTextures().closed,
-      this.renderer?.width ?? window.innerWidth,
-      this.renderer?.height ?? window.innerHeight,
-    );
+    const background = new PIXI.TilingSprite({
+      texture: getTextures().closed,
+      width: this.renderer?.width ?? window.innerWidth,
+      height: this.renderer?.height ?? window.innerHeight,
+    });
 
     window.addEventListener("resize", () => {
       const width = window.innerWidth;
