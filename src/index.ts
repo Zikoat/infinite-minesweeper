@@ -63,7 +63,7 @@ self.toggleFullscreen = function () {
 
 (async () => {
   PIXI.TextureSource.defaultOptions.scaleMode = "nearest";
-  PIXI.TextureSource.defaultOptions.autoGenerateMipmaps = true;
+  // PIXI.TextureSource.defaultOptions.autoGenerateMipmaps = true;
   await loadTextures();
   const app = new FieldRenderer(field, updateScore, fieldStorage);
   await app.init({
