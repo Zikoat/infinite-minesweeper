@@ -52,6 +52,11 @@ export class Controls {
       foreground.scale.set(scale);
       background.tilePosition.set(x, y);
       background.tileScale.set(scale);
+      function lerp(a: number, b: number, alpha: number): number {
+        return a + alpha * (b - a);
+      }
+      const lerpedScale = lerp(-1, 0.5, scale);
+      background.alpha = lerpedScale;
 
       // todo dedupe between touchend
       if (longPressTimer) {
@@ -63,6 +68,12 @@ export class Controls {
     });
 
     let longPressTimer: NodeJS.Timeout | null = null;
+
+    // todo when pressing mousedown, then i want to update the cell sprite to be from closed to open. This is both when pressing down(before releasing) on a closed cell, and on an open cell with a closed unflagged neighbor
+    // todo add option to pan using middle mouse button, which allows us to enable immediate mode on left and right click.
+    // todo enable immediate mode on right click, because we are not using it to flag
+    // todo allow switching what the mouse buttons does, we have the actions: pan, chord open, chord flag, open, flag. these actions can be assigned to mouse right, mouse left, middle mouse click, or optionally keyboard buttons.
+    // todo try to create a new mode where we are locking the mouse to the center of the screen, and move the whole field in addition to the cursor when we move the cursor. Then we can open with mouse click. We need to be able to unlock the mouse using escape.
 
     const selection = select<Element, unknown>("canvas")
       .on("touchstart", (event: TouchEvent) => {
