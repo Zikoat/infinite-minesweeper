@@ -123,7 +123,7 @@ export class CellSprite {
           lorezTintNeighborCount[this.neighborCount as NeighborCountOpen];
       } else {
         front = PIXI.Texture.EMPTY;
-        lorezTint = 0x1c1c1c;
+        lorezTint = 0x444444;
       }
     } else {
       back = textures.closed;
@@ -148,12 +148,12 @@ export class CellSprite {
 }
 const lorezTintNeighborCount = [
   undefined,
-  0x0000cd,
-  0x006700,
-  0xcd0000,
-  0x6116b1,
-  0x800000,
-  0x008080,
-  0xffffff,
-  0xaa00ff, // todo, we need to make the 8 stand out when zoomed out.
+  0x2525a6, //1
+  0x125412, //2
+  0xa54747, //3
+  0x613293, //4
+  0x662b2b, //5
+  0x00cccc, //6
+  0xffffff, //7
+  0xaa00ff, //8 todo, we need to make the 8 stand out when zoomed out.
 ] as const;
