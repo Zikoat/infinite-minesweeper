@@ -80,14 +80,23 @@ export class CellSprite {
     this.playUpdateAnimation();
   }
 
-  // todo don't run update animation then updating all cells to improve performance on load and reload.
   private playUpdateAnimation() {
-    TweenMax.from(this.front.scale, 0.2, { x: 0, y: 0 });
+    const animationTime = 0.2;
+
+    TweenMax.from(this.front.scale, animationTime, {
+      x: 0,
+      y: 0,
+    });
+    // TweenMax.from(this.lorez.scale, {
+    //   x: 5,
+    //   y: 5,
+    //   duration: animationTime,
+    // });
     // TweenMax.from(this.front, 0.2, {
     //   x: "+=" + this.back.width / 2,
     //   y: "+=" + this.back.width / 2,
     // });
-    TweenMax.from(this.back, 0.2, { alpha: 0 });
+    TweenMax.from(this.back, animationTime, { alpha: 0 });
   }
 
   private getCellTexture(cell: Cell): {
