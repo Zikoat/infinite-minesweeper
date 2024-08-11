@@ -290,9 +290,12 @@ function fieldsAreEqual(field1: Field, field2: Field): void {
 // }
 
 test("SeddedRandom should get the same random number every time", () => {
-  const wow = seedrandom("shit");
+  const wow = seedrandom("test");
   const randomNumber = wow();
-  assert(randomNumber === 0.4459846419098659);
+  assert(
+    randomNumber === 0.8722025543160253,
+    "Randomnumber was " + randomNumber,
+  );
 });
 
 test("Chunk should be instantiated", () => {
