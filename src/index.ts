@@ -1,7 +1,6 @@
 import { Field } from "./Field";
 import { FieldRenderer } from "./FieldRenderer";
 import { FieldPersistence } from "./FieldPersistence";
-import "./css/stylesheet.css";
 import { loadTextures } from "./Textures";
 import * as PIXI from "pixi.js";
 

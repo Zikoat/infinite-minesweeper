@@ -3,6 +3,102 @@
   <head>
     <meta charset="utf-8" />
     <title>Minefield</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #0f0f0f;
+        touch-action: none;
+      }
+
+      img,
+      canvas {
+        image-rendering: pixelated;
+        image-rendering: -moz-crisp-edges;
+        image-rendering: -o-crisp-edges;
+        image-rendering: optimize-contrast;
+        -ms-interpolation-mode: nearest-neighbor;
+      }
+
+      canvas,
+      .ui {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @font-face {
+        font-family: "silkscreen";
+        src: url("../assets/fonts/silkscreen.ttf") format("truetype");
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        position: absolute;
+        top: 2px;
+        left: 2px;
+      }
+
+      .ui {
+        font-family: "silkscreen";
+        font-size: 16px;
+        background-color: #292929;
+        padding: 2px;
+        color: lightgray;
+        zoom: 2;
+      }
+
+      .menubutton {
+        width: 3em;
+        height: 3em;
+        border: 2px solid darkgray;
+      }
+
+      .menubutton > img {
+        image-rendering: pixelated;
+        width: 100%;
+        filter: brightness(2);
+      }
+
+      .menu {
+        display: none;
+        border: 2px solid darkgray;
+      }
+
+      .menu button {
+        font-family: "silkscreen";
+        font-size: 16px;
+        background-color: Transparent;
+        padding: 2px;
+        color: lightgray;
+      }
+
+      a {
+        color: dodgerblue;
+      }
+
+      #score {
+        display: inline;
+      }
+
+      p {
+        margin: 0.2em 0;
+      }
+
+      hr {
+        border: 0;
+        height: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+      }
+    </style>
   </head>
   <body>
     <div class="container">
