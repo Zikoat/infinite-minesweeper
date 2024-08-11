@@ -326,6 +326,83 @@ test("Chunk should get cell", () => {
   });
 });
 
+test.only("We should be able to chord flag, chord open and chord open should also chord flag", () => {
+  const field = new Field(0.08, 1, "test1", "testSeed");
+
+  field.setCell(4, 1, { isMine: true });
+  field.setCell(7, 2, { isMine: true });
+  field.setCell(1, 3, { isMine: true });
+  field.setCell(8, 4, { isMine: true });
+  field.setCell(5, 5, { isMine: true });
+  field.setCell(6, 5, { isMine: true });
+  field.setCell(2, 6, { isMine: true });
+
+  field.open(3, 3);
+
+  const view = () => fieldViewToString(field, 1, 1, 8, 6);
+  assertFieldViewEquals(
+    view(),
+    `...x....
+.11111x.
+x10001..
+.10122.x
+.111xx..
+.x......`,
+  );
+
+  // Flag chord the one on the corner to flag it
+  field.flag(4, 4);
+
+  assertFieldViewEquals(
+    view(),
+    `...x....
+.11111x.
+x10001..
+.10122.x
+.111Fx..
+.x......`,
+  );
+
+  // Flag chord the 2, which will only flag the ones that are not already flagged
+  field.flag(5, 4);
+
+  assertFieldViewEquals(
+    view(),
+    `...x....
+.11111x.
+x10001..
+.10122.x
+.111FF..
+.x......`,
+  );
+
+  // Chord open the next 2 which is full, so we can open the 3 cells
+  field.open(6, 4);
+
+  assertFieldViewEquals(
+    view(),
+    `...x....
+.11111xx
+x100013.
+.101222x
+.111FF3.
+.x.....x`,
+  );
+
+  // chord open the 1 on the top corner, but this flags the neighbor because the count is the same as the flags
+  field.open(3, 0);
+
+  assertFieldViewEquals(
+    view(),
+    `...x....
+.11111xx
+x100013.
+.101222x
+.111FF3.
+.x.....x`,
+  );
+});
+
 function cellToObject(cell: Cell): {
   isFlagged: boolean;
   isOpen: boolean;
@@ -346,8 +423,8 @@ function fieldViewToString(
 ): string {
   let map = "";
 
-  for (let x = x0; x <= x1; x++) {
-    for (let y = y0; y <= y1; y++) {
+  for (let y = y0; y <= y1; y++) {
+    for (let x = x0; x <= x1; x++) {
       const cell = field.getCell(x, y);
       let character = "";
       if (cell.isMine && cell.isOpen && !cell.isFlagged) character = "X";
@@ -368,5 +445,13 @@ function fieldViewToString(
     }
     map += "\n";
   }
-  return map;
+  return map.trim();
+}
+
+function assertFieldViewEquals(got: string, want: string): void {
+  if (got !== want) {
+    expect(got, `Field is not the same.\nGot:\n${got}\n\nWant:\n${want}`).toBe(
+      want,
+    );
+  }
 }

@@ -60,9 +60,8 @@ export class Field extends PIXI.EventEmitter {
     // freeze mode
   }
 
-  public getCell(x: number, y: number) {
-    const cell = this.cellData.get(x, y);
-    return cell;
+  public getCell(x: number, y: number): Cell {
+    return this.cellData.get(x, y);
   }
 
   public open(x: number, y: number): Cell[] {
@@ -74,7 +73,37 @@ export class Field extends PIXI.EventEmitter {
     if (this.pristine) this.setSafeCells(x, y);
     let cell = this.getCell(x, y);
 
-    if (!this.isEligibleToOpen(x, y)) {
+    if (cell.isOpen) {
+      const neighbors = this.getNeighbors(x, y);
+      const flaggedNeighbors = neighbors.filter((cell) => cell.isFlagged);
+      const closedNeighbors = neighbors.filter((cell) => !cell.isOpen);
+      const closedUnflaggedNeighbors = neighbors.filter(
+        (cell) => !cell.isFlagged && !cell.isOpen,
+      );
+      const value = this.value(x, y);
+      const changedCells = [];
+      if (flaggedNeighbors.length === value) {
+        for (const closedUnflaggedNeighbor of closedUnflaggedNeighbors) {
+          const newOpenedCells = this.open(
+            closedUnflaggedNeighbor.x,
+            closedUnflaggedNeighbor.y,
+          );
+          changedCells.push(...newOpenedCells);
+        }
+        return changedCells;
+      } else if (closedNeighbors.length === value) {
+        for (const closedUnflaggedNeighbor of closedUnflaggedNeighbors) {
+          const newFlaggedCells = this.flag(
+            closedUnflaggedNeighbor.x,
+            closedUnflaggedNeighbor.y,
+          );
+          changedCells.push(...newFlaggedCells);
+        }
+        return changedCells;
+      }
+    }
+
+    if (cell.isFlagged || cell.isOpen) {
       return [];
     }
 
@@ -85,9 +114,6 @@ export class Field extends PIXI.EventEmitter {
 
     this.setCell(x, y, { isOpen: true });
     cell = this.getCell(x, y);
-
-    const openedCells = [];
-    openedCells.push(cell);
 
     if (cell.isMine) {
       this.score -= 100;
@@ -109,30 +135,56 @@ export class Field extends PIXI.EventEmitter {
     // we emit the event before doing the floodfill
     this.emit("cellChanged", cell);
 
+    const openedCells = [];
+    openedCells.push(cell);
+
     // floodfill
     if (this.value(cell.x, cell.y) === 0) {
       const neighbors = this.getNeighbors(cell.x, cell.y);
-      const closedNeighbors = neighbors.filter(
-        (neighbor: Cell) => !neighbor.isOpen && !neighbor.isFlagged,
-      ); // filter the array, so only the closed neighbors are in it
+      const closedNeighbors = neighbors;
       for (const neighbor of closedNeighbors) {
-        const openedNeighbors = this.open(neighbor.x, neighbor.y);
-        openedCells.push(...openedNeighbors);
+        const updatedNeighbor = this.getCell(neighbor.x, neighbor.y);
+        if (!updatedNeighbor.isOpen && !updatedNeighbor.isFlagged) {
+          const openedNeighbors = this.open(
+            updatedNeighbor.x,
+            updatedNeighbor.y,
+          );
+          openedCells.push(...openedNeighbors);
+        }
       }
     }
 
     return openedCells;
   }
 
-  public flag(x: number, y: number): Cell | null {
+  /**
+   * If the cell is closed, it toggles the flag.
+   *
+   * If the cell is open, chords flags.
+   * @returns Changed cells
+   */
+  public flag(x: number, y: number): Cell[] {
+    console.log("flagging", x, y);
     const cell = this.getCell(x, y);
     if (!cell.isOpen) {
       cell.isFlagged = !cell.isFlagged;
       this.setCell(x, y, cell);
+      // todo remove this, we should base on return value of flag.
       this.emit("cellChanged", cell);
-      return cell;
+      return [cell];
+    } else {
+      const closedNeighbors = this.getNeighbors(x, y).filter(
+        (cell) => !cell.isOpen,
+      );
+      if (closedNeighbors.length === this.value(x, y)) {
+        for (const closedNeighbor of closedNeighbors) {
+          if (!closedNeighbor.isFlagged) {
+            this.flag(closedNeighbor.x, closedNeighbor.y);
+          }
+        }
+      }
     }
-    return null;
+    return [];
   }
 
   public getNeighbors(x: number, y: number) {
@@ -143,6 +195,36 @@ export class Field extends PIXI.EventEmitter {
       neighbors.push(this.getCell(newX, newY));
     }
     return neighbors;
+  }
+
+  public restart() {
+    // todo
+    this.pristine = true;
+    // todo: delete all of the rows, update all of the cells
+    throw Error("not implemented");
+  }
+
+  public getAll(): Cell[] {
+    return this.cellData.getAll();
+  }
+
+  public value(x: number, y: number): number | null {
+    // returns the amount of surrounding mines
+    const cell = this.getCell(x, y);
+    // it does not make sense to request the value of a closed cell
+    if (cell.isOpen === false) return null;
+    else return this.getNeighbors(x, y).filter((cell) => cell.isMine).length;
+  }
+
+  public setVisibleChunk(x: number, y: number) {
+    this.visibleChunks.push({ x: x, y: y });
+  }
+
+  public loadVisibleChunks() {
+    for (let i = 0; i < this.visibleChunks.length; i++) {
+      this.showChunk(this.visibleChunks[i].x, this.visibleChunks[i].y);
+    }
+    this.visibleChunks = [];
   }
 
   private showChunk(x: number, y: number) {
@@ -174,43 +256,9 @@ export class Field extends PIXI.EventEmitter {
     return output;
   }
 
-  public restart() {
-    // todo
-    this.pristine = true;
-    // todo: delete all of the rows, update all of the cells
-    throw Error("not implemented");
-  }
-
-  public getAll(): Cell[] {
-    return this.cellData.getAll();
-  }
-
-  public value(x: number, y: number): number | null {
-    // returns the amount of surrounding mines
-    const cell = this.getCell(x, y);
-    // it does not make sense to request the value of a closed cell
-    if (cell.isOpen === false) return null;
-    else return this.getNeighbors(x, y).filter((cell) => cell.isMine).length;
-  }
-
-  private isEligibleToOpen(x: number, y: number) {
+  private isEligibleToOpen(cell: Cell) {
     // returns a bool, whether this cell can be opened
     //if(this.gameOver) return false;
-    const cell = this.getCell(x, y);
-    if (cell.isFlagged) return false;
-    if (cell.isOpen) return false;
-    return true;
-  }
-
-  public setVisibleChunk(x: number, y: number) {
-    this.visibleChunks.push({ x: x, y: y });
-  }
-
-  public loadVisibleChunks() {
-    for (let i = 0; i < this.visibleChunks.length; i++) {
-      this.showChunk(this.visibleChunks[i].x, this.visibleChunks[i].y);
-    }
-    this.visibleChunks = [];
   }
 
   private setSafeCells(x0: number, y0: number) {
@@ -232,7 +280,7 @@ export class Field extends PIXI.EventEmitter {
     }
   }
 
-  private setCell(x: number, y: number, cell: Partial<Cell>) {
+  public setCell(x: number, y: number, cell: Partial<Cell>) {
     const gottenCell = this.cellData.get(x, y);
     if (cell.isMine !== undefined) gottenCell.isMine = cell.isMine;
     if (cell.isFlagged !== undefined) gottenCell.isFlagged = cell.isFlagged;
