@@ -51,6 +51,5 @@ function cellCoordToWorldCoord(cellCoord: CellCoord): WorldCoord {
 }
 
 export function worldCoordToCellCoord(worldCoord: WorldCoord): CellCoord {
-  // shit we should migrate away from using scale here somehow
   return Math.floor(worldCoord / CELL_WIDTH) as CellCoord;
 }

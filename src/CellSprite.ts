@@ -47,7 +47,7 @@ export class CellSprite {
     this.front.scale = 0.85;
     this.back.anchor.set(0.5);
 
-    // shit this should use cell-space to world space helpers
+    // todo this should use cell-space to world space helpers
     const x = cell.x * CELL_WIDTH + CELL_WIDTH / 2;
     const y = cell.y * CELL_WIDTH + CELL_WIDTH / 2;
     this.front.x = x;
