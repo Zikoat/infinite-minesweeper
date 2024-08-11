@@ -38,6 +38,9 @@ export class Controls {
   }
 
   private static setupZoom(rootObject: PIXI.Container) {
+    // We have to get this before setting up zoom so we don't show the zoomed out version for some frames after it has been created.
+    const savedTransform = savedCameraTransform.get();
+
     const zoomHandler = zoom().on("zoom", (rawEvent) => {
       const event = eventSchema.parse(rawEvent);
 
@@ -122,8 +125,6 @@ export class Controls {
       })
       .call(zoomHandler)
       .on("dblclick.zoom", null);
-
-    const savedTransform = savedCameraTransform.get();
 
     if (savedTransform) {
       zoomHandler.transform(
