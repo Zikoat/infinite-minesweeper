@@ -14,7 +14,7 @@ const LONG_PRESS_DURATION = 200; // Duration in milliseconds to consider it a lo
 export class Controls {
   private static cursor: Cursor;
   private static field: Field;
-  private static fieldStorage: FieldPersistence;
+  private static fieldStorage: FieldPersistence | undefined;
 
   public constructor(
     rootObject: PIXI.Container,
@@ -152,62 +152,25 @@ export class Controls {
   private static open() {
     const x = Controls.cursor.getX();
     const y = Controls.cursor.getY();
-    const cell = Controls.field.getCell(x, y);
-    const neighbors = Controls.field.getNeighbors(x, y);
-    const flaggedNeighbors = neighbors.filter(
-      (cell) => cell.isFlagged || (cell.isOpen && cell.isMine),
-    );
-    const closedNotFlaggedNeighbors = neighbors.filter(
-      (cell) => !cell.isOpen && !cell.isFlagged,
-    );
 
     if (Controls.fieldStorage === undefined)
       throw new Error("tried to save, but fieldstorage is undefined");
 
-    if ((!cell.isOpen && !cell.isFlagged) || (cell.isOpen && cell.isMine)) {
-      Controls.field.open(cell.x, cell.y);
-      Controls.fieldStorage.save(Controls.field, Controls.field.fieldName);
-    } else if (
-      flaggedNeighbors.length === Controls.field.value(cell.x, cell.y) &&
-      closedNotFlaggedNeighbors.length > 0
-    ) {
-      closedNotFlaggedNeighbors.forEach((neighbor) => {
-        Controls.field.open(neighbor.x, neighbor.y);
-      });
-      Controls.fieldStorage.save(Controls.field, Controls.field.fieldName);
-    } else if (cell.isOpen) {
-      Controls.flag();
-    }
+    this.field.open(x, y);
+    Controls.fieldStorage.save(Controls.field, Controls.field.fieldName);
   }
 
   // todo this logic should be moved to the field. If we want custom behavior then we should save settings on the field to enable/disable multi-flagging.
   private static flag() {
     const x = Controls.cursor.getX();
     const y = Controls.cursor.getY();
-    const cell = Controls.field.getCell(x, y);
-    const neighbors = Controls.field.getNeighbors(x, y);
-    const closedNeighbors = neighbors.filter(
-      (cell) => !cell.isOpen || (cell.isOpen && cell.isMine),
-    );
-    const closedNotFlaggedNeighbors = neighbors.filter(
-      (cell) => !cell.isOpen && !cell.isFlagged,
-    );
 
     if (Controls.fieldStorage === undefined)
       throw new Error("tried to save, but fieldstorage is undefined");
 
-    if (!cell.isOpen) {
-      Controls.field.flag(cell.x, cell.y);
-      Controls.fieldStorage.save(Controls.field, Controls.field.fieldName);
-    } else if (
-      closedNeighbors.length === Controls.field.value(cell.x, cell.y) &&
-      closedNotFlaggedNeighbors.length > 0
-    ) {
-      closedNotFlaggedNeighbors.forEach((neighbor) => {
-        Controls.field.flag(neighbor.x, neighbor.y);
-      });
-      Controls.fieldStorage.save(Controls.field, Controls.field.fieldName);
-    }
+    Controls.field.flag(x, y);
+
+    Controls.fieldStorage.save(Controls.field, Controls.field.fieldName);
   }
 }
 

@@ -95,11 +95,13 @@ describe("FieldStorage", () => {
     // assert(      fieldStorage.localStorage.length,      1,      "localstorage length before open"    );
 
     const openedCells = field1.open(0, 0);
-    const flaggedCell1 = field1.flag(3, 3);
+    const flaggedCells1 = field1.flag(3, 3);
 
     assert(field1.getCell(0, 0).isOpen === true, "opened cell should be open");
-    if (!(flaggedCell1 instanceof Cell))
-      throw Error("flag does not return cell");
+    expect(flaggedCells1).toHaveLength(1);
+    const flaggedCell1 = flaggedCells1[0];
+    expect(flaggedCell1).toBeInstanceOf(Cell);
+
     assert(openedCells.length === 9);
     assert(flaggedCell1.isFlagged === true);
     assertCellsAreSame(flaggedCell1, field1.getCell(3, 3));
@@ -215,17 +217,15 @@ describe("FieldStorage", () => {
     field1.open(0, 0);
 
     const map = fieldViewToString(field1, -3, -3, 3, 3);
-
-    assert(
-      map ===
-        `.......
-.xxx...
-..422x.
-.x202..
-.x324x.
-...xxx.
-.......
-`,
+    assertFieldViewEquals(
+      map,
+      `.......
+.x.xx..
+.x423..
+.x202x.
+..224x.
+..x.xx.
+.......`,
     );
   });
 });
@@ -246,20 +246,20 @@ export function getAllKeys(localStorage: LocalStorage): string[] {
 }
 
 function fieldsAreEqual(field1: Field, field2: Field): void {
-  assert(
-    fieldViewToString(field2, -3, -3, 3, 3) ===
-      `.......
-.xxx...
-..422x.
-.x202..
-.x324x.
-...xxx.
-......F
-`,
+  assertFieldViewEquals(
+    fieldViewToString(field2, -3, -3, 3, 3),
+    `.......
+.x.xx..
+.x423..
+.x202x.
+..224x.
+..x.xx.
+......F`,
   );
-  assert(
-    fieldViewToString(field1, -3, -3, 3, 3) ===
-      fieldViewToString(field2, -3, -3, 3, 3),
+
+  assertFieldViewEquals(
+    fieldViewToString(field1, -3, -3, 3, 3),
+    fieldViewToString(field2, -3, -3, 3, 3),
   );
 
   assert(field1.fieldName === field2.fieldName);
@@ -326,7 +326,7 @@ test("Chunk should get cell", () => {
   });
 });
 
-test.only("We should be able to chord flag, chord open and chord open should also chord flag", () => {
+test("should be able to chord flag, chord open and chord open should also chord flag", () => {
   const field = new Field(0.08, 1, "test1", "testSeed");
 
   field.setCell(4, 1, { isMine: true });
@@ -448,7 +448,10 @@ function fieldViewToString(
   return map.trim();
 }
 
-function assertFieldViewEquals(got: string, want: string): void {
+function assertFieldViewEquals(
+  got: string,
+  want: string,
+): asserts got is typeof want {
   if (got !== want) {
     expect(got, `Field is not the same.\nGot:\n${got}\n\nWant:\n${want}`).toBe(
       want,

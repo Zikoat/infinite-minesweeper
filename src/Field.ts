@@ -256,10 +256,6 @@ export class Field extends PIXI.EventEmitter {
     return output;
   }
 
-  private isEligibleToOpen(cell: Cell) {
-    // returns a bool, whether this cell can be opened
-    //if(this.gameOver) return false;
-  }
 
   private setSafeCells(x0: number, y0: number) {
     // initiate the field with a circle of cells that aren't mines
