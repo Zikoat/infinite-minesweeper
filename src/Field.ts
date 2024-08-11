@@ -75,13 +75,18 @@ export class Field extends PIXI.EventEmitter {
 
     if (cell.isOpen) {
       const neighbors = this.getNeighbors(x, y);
-      const flaggedNeighbors = neighbors.filter((cell) => cell.isFlagged);
-      const closedNeighbors = neighbors.filter((cell) => !cell.isOpen);
+
       const closedUnflaggedNeighbors = neighbors.filter(
         (cell) => !cell.isFlagged && !cell.isOpen,
       );
+
       const value = this.value(x, y);
       const changedCells = [];
+
+      const flaggedNeighbors = neighbors.filter(
+        (cell) => cell.isFlagged || (cell.isOpen && cell.isMine), // Open mines should be treated as flags when chording
+      );
+
       if (flaggedNeighbors.length === value) {
         for (const closedUnflaggedNeighbor of closedUnflaggedNeighbors) {
           const newOpenedCells = this.open(
@@ -91,7 +96,13 @@ export class Field extends PIXI.EventEmitter {
           changedCells.push(...newOpenedCells);
         }
         return changedCells;
-      } else if (closedNeighbors.length === value) {
+      }
+
+      const closedNeighbors = neighbors.filter(
+        (cell) => !cell.isOpen || (cell.isOpen && cell.isMine),
+      );
+
+      if (closedNeighbors.length === value) {
         for (const closedUnflaggedNeighbor of closedUnflaggedNeighbors) {
           const newFlaggedCells = this.flag(
             closedUnflaggedNeighbor.x,
@@ -109,10 +120,10 @@ export class Field extends PIXI.EventEmitter {
 
     if (cell.isMine === undefined) {
       cell.isMine = this.rng() < this.probability;
-      this.setCell(cell.x, cell.y, cell);
+      this._setCell(cell.x, cell.y, cell);
     }
 
-    this.setCell(x, y, { isOpen: true });
+    this._setCell(x, y, { isOpen: true });
     cell = this.getCell(x, y);
 
     if (cell.isMine) {
@@ -128,7 +139,7 @@ export class Field extends PIXI.EventEmitter {
       const neighbor = neighbors[i];
       if (neighbor.isMine === undefined) {
         neighbor.isMine = this.rng() < this.probability;
-        this.setCell(neighbor.x, neighbor.y, neighbor);
+        this._setCell(neighbor.x, neighbor.y, neighbor);
         // this.generateCell(neighbors[i].x, neighbors[i].y);
       }
     }
@@ -168,13 +179,13 @@ export class Field extends PIXI.EventEmitter {
     const cell = this.getCell(x, y);
     if (!cell.isOpen) {
       cell.isFlagged = !cell.isFlagged;
-      this.setCell(x, y, cell);
+      this._setCell(x, y, cell);
       // todo remove this, we should base on return value of flag.
       this.emit("cellChanged", cell);
       return [cell];
     } else {
       const closedNeighbors = this.getNeighbors(x, y).filter(
-        (cell) => !cell.isOpen,
+        (cell) => !cell.isOpen || (cell.isMine && cell.isOpen),
       );
       if (closedNeighbors.length === this.value(x, y)) {
         for (const closedNeighbor of closedNeighbors) {
@@ -256,7 +267,6 @@ export class Field extends PIXI.EventEmitter {
     return output;
   }
 
-
   private setSafeCells(x0: number, y0: number) {
     // initiate the field with a circle of cells that aren't mines
     this.pristine = false;
@@ -269,14 +279,14 @@ export class Field extends PIXI.EventEmitter {
           const x = x0 + dx;
           const y = y0 + dy;
           // we generate the cell, and overwrite the isMine state
-          this.setCell(x, y, { isFlagged: false, isMine: false });
+          this._setCell(x, y, { isFlagged: false, isMine: false });
           // this.generateCell(x, y, false, false);
         }
       }
     }
   }
 
-  public setCell(x: number, y: number, cell: Partial<Cell>) {
+  public _setCell(x: number, y: number, cell: Partial<Cell>) {
     const gottenCell = this.cellData.get(x, y);
     if (cell.isMine !== undefined) gottenCell.isMine = cell.isMine;
     if (cell.isFlagged !== undefined) gottenCell.isFlagged = cell.isFlagged;

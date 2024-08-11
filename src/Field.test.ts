@@ -329,13 +329,13 @@ test("Chunk should get cell", () => {
 test("should be able to chord flag, chord open and chord open should also chord flag", () => {
   const field = new Field(0.08, 1, "test1", "testSeed");
 
-  field.setCell(4, 1, { isMine: true });
-  field.setCell(7, 2, { isMine: true });
-  field.setCell(1, 3, { isMine: true });
-  field.setCell(8, 4, { isMine: true });
-  field.setCell(5, 5, { isMine: true });
-  field.setCell(6, 5, { isMine: true });
-  field.setCell(2, 6, { isMine: true });
+  field._setCell(4, 1, { isMine: true });
+  field._setCell(7, 2, { isMine: true });
+  field._setCell(1, 3, { isMine: true });
+  field._setCell(8, 4, { isMine: true });
+  field._setCell(5, 5, { isMine: true });
+  field._setCell(6, 5, { isMine: true });
+  field._setCell(2, 6, { isMine: true });
 
   field.open(3, 3);
 
@@ -400,6 +400,100 @@ x100013.
 .101222x
 .111FF3.
 .x.....x`,
+  );
+});
+
+test("An opened mine should be handled like a flag when chord opening", () => {
+  // shit todo, we should be able to pass a visual field, and it should set the field like that.
+
+  const field = new Field(0, 2, "test1", "testSeed");
+  field._setCell(2, 1, { isMine: true });
+  field._setCell(5, 2, { isMine: true });
+  field._setCell(6, 2, { isMine: true });
+  field._setCell(1, 4, { isMine: true });
+  field._setCell(7, 5, { isMine: true });
+  field._setCell(4, 6, { isMine: true });
+  const view = () => fieldViewToString(field, 1, 1, 8, 6);
+
+  // Open 0 to reveal
+  field.open(3, 3);
+  // Open mine on corner
+  field.open(5, 2);
+
+  assertFieldViewEquals(
+    view(),
+    `.x......
+.111Xx..
+.10122..
+x10001..
+.11111x.
+...x....`,
+  );
+
+  // Chord open 2 below mine, which should flag the other mine
+  field.open(5, 3);
+
+  assertFieldViewEquals(
+    view(),
+    `.x......
+.111XF..
+.10122..
+x10001..
+.11111x.
+...x....`,
+  );
+
+  // Chord open the next 2, which should open the 3 tiles to the right
+  field.open(6, 3);
+
+  assertFieldViewEquals(
+    view(),
+    `.x......
+.111XF1.
+.101221.
+x100011.
+.11111x.
+...x....`,
+  );
+});
+test("An opened mine should be handled like a flag when chord flagging", () => {
+  // shit todo, we should be able to pass a visual field, and it should set the field like that.
+
+  const field = new Field(0, 2, "test1", "testSeed");
+  field._setCell(2, 1, { isMine: true });
+  field._setCell(5, 2, { isMine: true });
+  field._setCell(6, 2, { isMine: true });
+  field._setCell(1, 4, { isMine: true });
+  field._setCell(7, 5, { isMine: true });
+  field._setCell(4, 6, { isMine: true });
+  const view = () => fieldViewToString(field, 1, 1, 8, 6);
+
+  // Open 0 to reveal
+  field.open(3, 3);
+  // Open mine on corner
+  field.open(5, 2);
+
+  assertFieldViewEquals(
+    view(),
+    `.x......
+.111Xx..
+.10122..
+x10001..
+.11111x.
+...x....`,
+  );
+
+  // Chord flag 2 below mine, which should flag the other mine
+  field.flag(5, 3);
+
+  assertFieldViewEquals(
+    view(),
+    `.x......
+.111XF..
+.10122..
+x10001..
+.11111x.
+...x....`,
   );
 });
 
