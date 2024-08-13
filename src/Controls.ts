@@ -41,7 +41,10 @@ export class Controls {
     // We have to get this before setting up zoom so we don't show the zoomed out version for some frames after it has been created.
     const savedTransform = savedCameraTransform.get();
 
+    const logEvent = (event: Event) => console.log(event.type);
+
     const zoomHandler = zoom().on("zoom", (rawEvent) => {
+      logEvent(rawEvent);
       const event = eventSchema.parse(rawEvent);
 
       const container = rootObject.getChildByLabel("container") as PIXI.Sprite;
@@ -71,17 +74,18 @@ export class Controls {
 
       savedCameraTransform.set(event.transform);
     });
-
-    let longPressTimer: NodeJS.Timeout | null = null;
-
     // todo when pressing mousedown, then i want to update the cell sprite to be from closed to open. This is both when pressing down(before releasing) on a closed cell, and on an open cell with a closed unflagged neighbor
     // todo add option to pan using middle mouse button, which allows us to enable immediate mode on left and right click.
     // todo enable immediate mode on right click, because we are not using it to flag
     // todo allow switching what the mouse buttons does, we have the actions: pan, chord open, chord flag, open, flag. these actions can be assigned to mouse right, mouse left, middle mouse click, or optionally keyboard buttons.
     // todo try to create a new mode where we are locking the mouse to the center of the screen, and move the whole field in addition to the cursor when we move the cursor. Then we can open with mouse click. We need to be able to unlock the mouse using escape.
 
+    let longPressTimer: NodeJS.Timeout | null = null;
+
     const selection = select<Element, unknown>("canvas")
       .on("touchstart", (event: TouchEvent) => {
+        logEvent(event);
+
         if (event.touches.length > 1) return;
 
         const touchPosition = event.touches[0];
@@ -101,20 +105,25 @@ export class Controls {
           Controls.flag();
         }, LONG_PRESS_DURATION);
       })
-      .on("touchend", () => {
+      .on("touchend", (e) => {
+        logEvent(e);
         if (longPressTimer) {
           clearTimeout(longPressTimer);
           longPressTimer = null;
         }
       })
-      .on("click", () => {
+      .on("click", (e) => {
+        logEvent(e);
         // todo we can simplify position calculations massively by rendering all of the closed cells and adding interactivity to them, then add some metadata to each sprite which coordinate it represents.
         Controls.open();
       })
+
       .on("mouseup", (e: MouseEvent) => {
+        logEvent(e);
         if (e.button === 2) Controls.flag();
       })
       .on("mousemove", (event: PointerEvent & ScreenPos) => {
+        logEvent(event);
         assert(typeof event.x === "number");
         assert(typeof event.y === "number");
         const foreground = rootObject.getChildByLabel("container");
