@@ -15,6 +15,7 @@ export class Controls {
   private static cursor: Cursor;
   private static field: Field;
   private static fieldStorage: FieldPersistence | undefined;
+  private static skipEventTimer: NodeJS.Timeout | null = null;
 
   public constructor(
     rootObject: PIXI.Container,
@@ -86,6 +87,11 @@ export class Controls {
       .on("touchstart", (event: TouchEvent) => {
         logEvent(event);
 
+        if (Controls.skipEventTimer) {
+          clearTimeout(Controls.skipEventTimer);
+          Controls.skipEventTimer = null;
+        }
+
         if (event.touches.length > 1) return;
 
         const touchPosition = event.touches[0];
@@ -103,6 +109,19 @@ export class Controls {
         longPressTimer = setTimeout(() => {
           Controls.cursor.moveTo(worldPos.x, worldPos.y);
           Controls.flag();
+
+          /**
+           * Workaround: On mobile devices, when a long press is done and
+           * released before 300ms, a `mouseup` and `click` event is fired. This
+           * is expected for a short tap, but if we tap for a duration which is
+           * longer than LONG_PRESS_DURATION but shorter than the 300 ms, we
+           * will both trigger a long press and a short press. We create a timer
+           * to disable this long press event which is created by the dom, and
+           * clear this if another touch event starts.
+           */
+          Controls.skipEventTimer = setTimeout(() => {
+            Controls.skipEventTimer = null;
+          }, 200);
         }, LONG_PRESS_DURATION);
       })
       .on("touchend", (e) => {
@@ -113,12 +132,18 @@ export class Controls {
         }
       })
       .on("click", (e) => {
+        if (Controls.skipEventTimer) {
+          e.stopImmediatePropagation();
+          return;
+        }
         logEvent(e);
-        // todo we can simplify position calculations massively by rendering all of the closed cells and adding interactivity to them, then add some metadata to each sprite which coordinate it represents.
         Controls.open();
       })
-
       .on("mouseup", (e: MouseEvent) => {
+        if (Controls.skipEventTimer) {
+          e.stopImmediatePropagation();
+          return;
+        }
         logEvent(e);
         if (e.button === 2) Controls.flag();
       })
