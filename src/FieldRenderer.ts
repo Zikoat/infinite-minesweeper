@@ -91,14 +91,14 @@ export class FieldRenderer extends PIXI.Application {
       background.height = height;
     });
 
-    background.name = "bg";
+    background.label = "bg";
     const lorezLayer = new PIXI.Container({ interactiveChildren: false });
     const foregroundLayer = new PIXI.Container({ interactiveChildren: false });
-    foregroundLayer.name = "fg";
-    lorezLayer.name = "lorez";
+    foregroundLayer.label = "fg";
+    lorezLayer.label = "lorez";
     this.fieldContainer.addChild(lorezLayer);
     this.fieldContainer.addChild(foregroundLayer);
-    this.fieldContainer.name = "container";
+    this.fieldContainer.label = "container";
 
     this.clickHandler.addChildAt(background, 0);
     this.clickHandler.addChildAt(this.fieldContainer, 1);

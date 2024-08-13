@@ -25,7 +25,7 @@ export class Controls {
     Controls.fieldStorage = fieldStorage;
 
     Controls.cursor = new Cursor();
-    const foreground = rootObject.getChildByName("container");
+    const foreground = rootObject.getChildByLabel("container");
     assert(foreground);
     foreground.addChild(Controls.cursor);
 
@@ -44,9 +44,9 @@ export class Controls {
     const zoomHandler = zoom().on("zoom", (rawEvent) => {
       const event = eventSchema.parse(rawEvent);
 
-      const container = rootObject.getChildByName("container") as PIXI.Sprite;
-      const foreground = container.getChildByName("fg") as PIXI.Sprite;
-      const background = rootObject.getChildByName("bg") as PIXI.TilingSprite;
+      const container = rootObject.getChildByLabel("container") as PIXI.Sprite;
+      const foreground = container.getChildByLabel("fg") as PIXI.Sprite;
+      const background = rootObject.getChildByLabel("bg") as PIXI.TilingSprite;
 
       const x = event.transform.x;
       const y = event.transform.y;
@@ -89,7 +89,7 @@ export class Controls {
         // todo dedup between mousemove.
         assert(typeof touchPosition.clientX === "number");
         assert(typeof touchPosition.clientY === "number");
-        const foreground = rootObject.getChildByName("container");
+        const foreground = rootObject.getChildByLabel("container");
         assert(foreground);
         const worldPos = foreground.toLocal({
           x: touchPosition.clientX,
@@ -117,7 +117,7 @@ export class Controls {
       .on("mousemove", (event: PointerEvent & ScreenPos) => {
         assert(typeof event.x === "number");
         assert(typeof event.y === "number");
-        const foreground = rootObject.getChildByName("container");
+        const foreground = rootObject.getChildByLabel("container");
         assert(foreground);
         const worldPos = foreground.toLocal(event) as WorldPos;
 

@@ -63,8 +63,8 @@ export class CellSprite {
     this.lorez.tint = cellTexture.lorezTint;
     this.lorez.x = x;
     this.lorez.y = y;
-    const lorezLayer = parent.getChildByName("lorez") as PIXI.Container;
-    const foregroundLayer = parent.getChildByName("fg") as PIXI.Container;
+    const lorezLayer = parent.getChildByLabel("lorez") as PIXI.Container;
+    const foregroundLayer = parent.getChildByLabel("fg") as PIXI.Container;
     foregroundLayer.addChild(this.front, this.back);
     lorezLayer.addChild(this.lorez);
 
