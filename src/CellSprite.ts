@@ -6,6 +6,7 @@ import { getTextures } from "./Textures";
 import { CellWidth } from "./CoordTypes";
 
 export const CELL_WIDTH = 16 as CellWidth;
+const frontScale = 0.85;
 
 type MyTexture = PIXI.Texture;
 
@@ -44,7 +45,7 @@ export class CellSprite {
     this.front.width = CELL_WIDTH;
     this.front.height = CELL_WIDTH;
     this.front.anchor.set(0.5);
-    this.front.scale = 0.85;
+    this.front.scale.set(frontScale);
     this.back.anchor.set(0.5);
 
     // todo this should use cell-space to world space helpers
@@ -82,6 +83,9 @@ export class CellSprite {
 
   private playUpdateAnimation() {
     const animationTime = 0.2;
+
+    this.front.scale.set(frontScale);
+    this.back.alpha = 1;
 
     TweenMax.from(this.front.scale, animationTime, {
       x: 0,
