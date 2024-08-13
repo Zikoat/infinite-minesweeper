@@ -71,8 +71,6 @@ export class FieldRenderer extends PIXI.Application {
       .forEach((cell) => this.updateCell(cell, false));
   }
 
-  // todo: bug when i reset the game to reset the camera to 0,0, then the cell at 0,0 flashes with the "zoom out to spawn" animation every time the camera moves a pixel.
-
   // todo inline
   private setup(): void {
     const background = new PIXI.TilingSprite({
