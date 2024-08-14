@@ -74,6 +74,7 @@ export class Field extends PIXI.EventEmitter {
     let cell = this.getCell(x, y);
 
     if (cell.isOpen) {
+      if (cell.isMine) return [];
       const neighbors = this.getNeighbors(x, y);
 
       const closedUnflaggedNeighbors = neighbors.filter(
@@ -175,7 +176,6 @@ export class Field extends PIXI.EventEmitter {
    * @returns Changed cells
    */
   public flag(x: number, y: number): Cell[] {
-    console.log("flagging", x, y);
     const cell = this.getCell(x, y);
     if (!cell.isOpen) {
       cell.isFlagged = !cell.isFlagged;
@@ -184,6 +184,7 @@ export class Field extends PIXI.EventEmitter {
       this.emit("cellChanged", cell);
       return [cell];
     } else {
+      if (cell.isMine) return [];
       const closedNeighbors = this.getNeighbors(x, y).filter(
         (cell) => !cell.isOpen || (cell.isMine && cell.isOpen),
       );

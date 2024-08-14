@@ -497,6 +497,93 @@ x10001..
   );
 });
 
+test("chord opening an open mine should not open cells", () => {
+  const field = new Field(0, 2, "test1", "testSeed");
+
+  field._setCell(5, 1, { isMine: true });
+  field._setCell(2, 2, { isMine: true });
+  field._setCell(8, 3, { isMine: true });
+  field._setCell(5, 4, { isMine: true });
+  field._setCell(1, 5, { isMine: true });
+  field._setCell(8, 6, { isMine: true });
+  field._setCell(3, 8, { isMine: true });
+  field._setCell(6, 8, { isMine: true });
+
+  const view = () => fieldViewToString(field, 1, 1, 8, 8);
+
+  // Open 0 to reveal
+  field.open(3, 4);
+  // Open the mine to create an opened mine
+  field.open(5, 4);
+
+  assertFieldViewEquals(
+    view(),
+    `....x...
+.x......
+.111...x
+.101X...
+x101111.
+.100001x
+.111112.
+..x..x..`,
+  );
+
+  // Try to open the opened mine again. Nothing should change from previous field.
+  field.open(5, 4);
+
+  assertFieldViewEquals(
+    view(),
+    `....x...
+.x......
+.111...x
+.101X...
+x101111.
+.100001x
+.111112.
+..x..x..`,
+  );
+});
+
+test("chord opening or flagging an open mine should not flag cells", () => {
+  const field = new Field(0, 2, "test1", "testSeed");
+
+  field._setCell(4, 1, { isMine: true });
+  field._setCell(7, 1, { isMine: true });
+  field._setCell(1, 3, { isMine: true });
+  field._setCell(5, 5, { isMine: true });
+  field._setCell(6, 5, { isMine: true });
+  field._setCell(8, 4, { isMine: true });
+  field._setCell(3, 9, { isMine: true });
+  field._setCell(6, 9, { isMine: true });
+  field._setCell(8, 7, { isMine: true });
+  field._setCell(1, 6, { isMine: true });
+
+  const view = () => fieldViewToString(field, 1, 1, 8, 9);
+
+  // Open 0 to reveal
+  field.open(3, 4);
+  // Open the mine to create an opened mine
+  field.open(5, 5);
+  const fieldViewOpenedMine = `...x..x.
+.111111.
+x100001.
+.101222x
+.101Xx..
+x101222.
+.100001x
+.111112.
+..x..x..`;
+  assertFieldViewEquals(view(), fieldViewOpenedMine);
+
+  // Try to open the opened mine again. Nothing should change from previous field.
+  field.open(5, 5);
+  assertFieldViewEquals(view(), fieldViewOpenedMine);
+
+  // Try to flag the opened mine. Nothing should change from previous field.
+  field.flag(5, 5);
+  assertFieldViewEquals(view(), fieldViewOpenedMine);
+});
+
 function cellToObject(cell: Cell): {
   isFlagged: boolean;
   isOpen: boolean;
