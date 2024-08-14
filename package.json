@@ -9,7 +9,7 @@
     "test": "vitest",
     "test-single": "uvu -r tsm",
     "test-watch": "watchlist -e src -- bun run test-single",
-    "type-watch":"tsc --noEmit --watch"
+    "type-watch": "tsc --noEmit --watch"
   },
   "repository": {
     "type": "git",

@@ -40,7 +40,7 @@ self.toggleMenu = function () {
 
 self.restart = function () {
   localStorage.clear();
-  console.log("removed: ", fieldName);
+
   window.location.reload();
 };
 
@@ -62,14 +62,17 @@ self.toggleFullscreen = function () {
 
 (async () => {
   PIXI.TextureSource.defaultOptions.scaleMode = "nearest";
-  // PIXI.TextureSource.defaultOptions.autoGenerateMipmaps = true;
+
   await loadTextures();
+
   const app = new FieldRenderer(field, updateScore, fieldStorage);
   await app.init({
     resizeTo: window,
     backgroundColor: 0x0f0f0f,
   });
+
   document.body.appendChild(app.canvas);
+
   // We have to setup after canvas has been added to the dom because we add interactivity on the canvas element instead of using pixi interaction manager.
   app.setupAfterCanvasReady();
 })();
